@@ -1,0 +1,37 @@
+{
+  "app": {
+    "background": {
+      "scripts": ["background.js"]
+    }
+  },
+  "manifest_version": 2,
+  "name": "BrightCast - VK Music Player",
+  "short_name": "BrightCast",
+  "version": "0.6.0",
+  "version_name": "0.6 beta",
+
+  "description": "",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+
+  "author": "Taras Mazurkevych",
+
+  "minimum_chrome_version": "46",
+  "offline_enabled": false,
+  "permissions": [
+    "webview",
+    "storage",
+    "http://*.vk.com/",
+    "https://*.vk.com/",
+    "system.network",
+    {
+      "socket": [
+        "tcp-connect",
+        "tcp-listen"
+      ]
+    }
+  ]
+}

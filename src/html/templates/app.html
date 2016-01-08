@@ -1,0 +1,319 @@
+<!doctype html>
+<html>
+<head>
+    {% block head %} {% endblock %}
+</head>
+<body>
+
+    <aside class="drawer-panel" id="drawer-panel">
+        <header class="drawer-panel_header" id="drawer-panel_header">
+            <img class="drawer-panel_header_user-avatar" id="drawer-panel_header_user-avatar" alt="">
+            <span class="drawer-panel_header_user-name" id="drawer-panel_header_user-name"></span>
+        </header>
+
+        <nav class="drawer-panel_nav" id="drawer-panel_nav">
+            <a class="drawer-panel_nav_link current" href="#" data-open="#my-audios-section">
+                Мої аудіозаписи
+            </a>
+            <a class="drawer-panel_nav_link" href="#" data-open="#search-section">
+                Пошук
+            </a>
+            <a class="drawer-panel_nav_link" href="#" data-open="#profiles-section">
+                Друзі і спільноти
+            </a>
+            <a class="drawer-panel_nav_link drawer-panel_nav_link_profile" href="#" data-open="#profile-section"
+              id="drawer-panel_nav_link_profile"></a>
+            <a class="drawer-panel_nav_link" href="#" data-open="#current-playlist-section">
+                Поточний плейлист
+            </a>
+
+            <div class="player-controller">
+                <div class="player-controller_song-info-wrapper">
+                    <div class="player-controller_song-info" id="player-controller_song-info">Party on!</div>
+                    <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect
+                    player-controller_btns_btn player-controller_add-songs-to-audios-btn"
+                    id="player-controller_add-songs-to-audios-btn" data-current-song-id="">
+                        <i class="material-icons">add</i>
+                    </button>
+                </div>
+                <div class="player-controller_song-range-wrapper" id="player-controller_song-range-wrapper">
+                    <span class="player-controller_current-time" id="player-controller_current-time">0:00</span>
+                    <input class="player-controller_song-range"
+                      id="player-controller_song-range" type="range"
+                      min="0" max="100" value="0" tabindex="0">
+                    <span class="player-controller_song-duration" id="player-controller_song-duration">0:00</span>
+                </div>
+                <div class="player-controller_volume-range-wrapper" id="player-controller_volume-range-wrapper">
+                    <i class="material-icons">volume_down</i>
+                    <input class="player-controller_volume-range"
+                      id="player-controller_volume-range" type="range"
+                      min="0" max="100" value="40" tabindex="0">
+                    <i class="material-icons">volume_up</i>
+                </div>
+                <div class="player-controller_btns-row1">
+                    <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect player-controller_btns_btn"
+                      id="player-controller_skip-previous-btn">
+                        <i class="material-icons">skip_previous</i>
+                    </button>
+                    <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect player-controller_btns_btn"
+                      id="player-controller_play-pause-btn">
+                        <i class="material-icons" id="player-controller_play-pause-btn_icon">play_arrow</i>
+                    </button>
+                    <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect player-controller_btns_btn"
+                      id="player-controller_skip-next-btn">
+                        <i class="material-icons">skip_next</i>
+                    </button>
+                </div>
+                <div class="player-controller_btns-row2">
+                    <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect player-controller_btns_btn player-controller_loop-btn"
+                      id="player-controller_loop-btn">
+                        <i class="material-icons">loop</i>
+                    </button>
+                    <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect player-controller_btns_btn player-controller_shuffle-btn"
+                      id="player-controller_shuffle-btn">
+                        <i class="material-icons">shuffle</i>
+                    </button>
+                    <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect player-controller_btns_btn player-controller_broadcast-btn"
+                      id="player-controller_broadcast-btn">
+                        <i class="material-icons">cast</i>
+                    </button>
+                </div>
+            </div>
+            {% block desktopAdditionalMenuLinks %} {% endblock %}
+        </nav>
+    </aside> <!-- #drawer-panel -->
+
+    <div id="content" class="content">
+
+        <div class="section current" id="my-audios-section">
+            <header class="section_header">
+                <div class="section_header_row">
+                    <button class="mdl-button mdl-js-button mdl-button--icon section_header_drawer-toggle-btn">
+                        <i class="material-icons">menu</i>
+                    </button>
+                    <span class="mdl-layout-title">Мої аудіозаписи</span>
+                    <div class="mdl-layout-spacer"></div>
+                </div>
+            </header>
+            <div class="section-content">
+                <div class="songlist" id="my-audios-section_songlist"></div>
+                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent
+                    load-more-songs-btn" id="my-audios-section_load-more-songs-btn">
+                Показати ще
+                </button>
+            </div>
+        </div> <!-- .section -->
+
+        <div class="section" id="search-section">
+            <header class="section_header">
+                <div class="section_header_row">
+                    <button class="mdl-button mdl-js-button mdl-button--icon section_header_drawer-toggle-btn">
+                        <i class="material-icons">menu</i>
+                    </button>
+                    <span class="mdl-layout-title">Пошук</span>
+                    <div class="mdl-layout-spacer"></div>
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable
+                        mdl-textfield--floating-label mdl-textfield--align-right">
+                        <label class="mdl-button mdl-js-button mdl-button--icon" for="search-section_search-input">
+                        <i class="material-icons">search</i>
+                        </label>
+                        <div class="mdl-textfield__expandable-holder">
+                            <input class="mdl-textfield__input" type="text" name="sample" id="search-section_search-input">
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <div class="section-content">
+                <div class="songlist" id="search-section_songlist"></div>
+                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent
+                    load-more-songs-btn" id="search-section_load-more-songs-btn">
+                Показати ще
+                </button>
+            </div>
+        </div> <!-- .section -->
+
+        <div class="section" id="profiles-section">
+            <header class="section_header">
+                <div class="section_header_row">
+                    <button class="mdl-button mdl-js-button mdl-button--icon section_header_drawer-toggle-btn">
+                        <i class="material-icons">menu</i>
+                    </button>
+                    <span class="mdl-layout-title">Друзі і спільноти</span>
+                    <div class="mdl-layout-spacer"></div>
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable
+                        mdl-textfield--floating-label mdl-textfield--align-right">
+                        <label class="mdl-button mdl-js-button mdl-button--icon" for="profiles-section_search-input">
+                        <i class="material-icons">search</i>
+                        </label>
+                        <div class="mdl-textfield__expandable-holder">
+                            <input class="mdl-textfield__input" type="text" name="sample" id="profiles-section_search-input">
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+                <div class="mdl-tabs__tab-bar">
+                    <a href="#profiles-section_friends-tab" class="mdl-tabs__tab is-active">Друзі</a>
+                    <a href="#profiles-section_groups-tab" class="mdl-tabs__tab">Спільноти</a>
+                    <a href="#profiles-section_broadcasting-tab" class="mdl-tabs__tab"
+                        id="profiles-section_tabs_broadcasting-tab">Статуси</a>
+                </div>
+                <div class="mdl-tabs__panel is-active" id="profiles-section_friends-tab">
+                    <div class="profiles-section_profiles" id="profiles-section_friends-profiles">
+
+                    </div>
+                </div>
+                <div class="mdl-tabs__panel" id="profiles-section_groups-tab">
+                    <div class="profiles-section_profiles" id="profiles-section_groups-profiles">
+
+                    </div>
+                </div>
+                <div class="mdl-tabs__panel" id="profiles-section_broadcasting-tab">
+                    <div class="profiles-section_broadcasting-profiles" id="profiles-section_broadcasting-profiles">
+
+                    </div>
+                </div>
+            </div>
+        </div> <!-- .section -->
+
+        <div class="section" id="profile-section">
+            <header class="section_header">
+                <div class="section_header_row">
+                    <button class="mdl-button mdl-js-button mdl-button--icon section_header_drawer-toggle-btn">
+                        <i class="material-icons">menu</i>
+                    </button>
+                    <span class="mdl-layout-title" id="profile-section_title">Профіль</span>
+                    <div class="mdl-layout-spacer"></div>
+                </div>
+            </header>
+            <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+                <div class="mdl-tabs__tab-bar">
+                    <a href="#profile-section_audios-tab" class="mdl-tabs__tab is-active">Аудіозаписи</a>
+                    <a href="#profile-section_wall-tab" class="mdl-tabs__tab">Стіна</a>
+                </div>
+                <div class="mdl-tabs__panel is-active" id="profile-section_audios-tab">
+                    <div class="songlist" id="profile-section_songlist"></div>
+                    <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent
+                        load-more-songs-btn" id="profile-section_load-more-songs-btn">
+                    Показати ще
+                    </button>
+                </div>
+                <div class="mdl-tabs__panel" id="profile-section_wall-tab">
+                    <div class="postslist" id="profile-section_postslist"></div>
+                    <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent
+                        load-more-posts-btn" id="profile-section_load-more-posts-btn">
+                    Показати ще
+                    </button>
+                </div>
+            </div>
+        </div> <!-- .section -->
+
+        <div class="section" id="current-playlist-section">
+            <header class="section_header">
+                <div class="section_header_row">
+                    <button class="mdl-button mdl-js-button mdl-button--icon section_header_drawer-toggle-btn">
+                        <i class="material-icons">menu</i>
+                    </button>
+                    <span class="mdl-layout-title">Поточний плейлист</span>
+                    <div class="mdl-layout-spacer"></div>
+                </div>
+            </header>
+            <div class="section-content">
+                <div class="songlist" id="current-playlist-section_songlist"></div>
+            </div>
+        </div> <!-- .section -->
+
+        {% block desktopSettingsSection %} {% endblock %}
+
+    </div>
+
+    <div class="mdl-spinner mdl-js-spinner is-active spinner" id="spinner" hidden></div> <!-- loading spinner -->
+
+    <script id="profileTemplate" type="text/html">
+        <div class="profiles_item" data-profile-id="{{profileId}}">
+            <div class="profiles_item_user-icon-wrapper">
+                <i class="material-icons">{{profileType}}</i>
+            </div>
+            <span class="profiles_item_title">{{profileTitle}}</span>
+        </div>
+    </script>
+        <!--
+            profileId - id of user or group (if group use with "-")
+            profileType - person or group
+            profileTitle - name and surname of person or name of group
+        -->
+
+    <script id="broadcastingProfileTemplate" type="text/html">
+        <div class="broadcasting-profiles_item" data-profile-id="{{profileId}}"
+          data-song-info='{"class":"{{status_audio.owner_id}}_{{status_audio.id}}",
+          "duration":"{{status_audio.duration}}","url":"{{status_audio.url}}",
+          "songTitle":"{{status_audio.title}} - {{status_audio.artist}}"}'>
+            <div class="broadcasting-profiles_item_user-icon-wrapper">
+                <i class="material-icons">{{profileType}}</i>
+            </div>
+            <div class="broadcasting-profiles_item_descr">
+                <span class="broadcasting-profiles_item_descr_title">{{profileTitle}}</span>
+                <span class="broadcasting-profiles_item_descr_song-title">
+                    {{status_audio.title}} - {{status_audio.artist}}
+                </span>
+            </div>
+            <div class="broadcasting-profiles_item_songlist songlist" hidden>
+                <div class="songlist_item" data-song-class="{{status_audio.owner_id}}_{{status_audio.id}}"
+                  data-song-duration="{{status_audio.duration}}" data-song-url="{{status_audio.url}}"
+                  data-song-title="{{status_audio.title}} - {{status_audio.artist}}">
+                    <div class="songlist_item_play-icon-wrapper">
+                        <i class="material-icons songlist_item_play-icon">play_arrow</i>
+                        <i class="material-icons songlist_item_pause-icon">pause</i>
+                    </div>
+                    <div class="songlist_item_descr">
+                        <span class="songlist_item_descr_song-title">{{status_audio.title}}</span>
+                        <span class="songlist_item_descr_artist">{{status_audio.artist}}</span>
+                    </div>
+                    <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect
+                      songlist_item_menu-btn">
+                        <i class="material-icons songlist_item_menu-btn_icon">more_vert</i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </script>
+        <!--
+            profileId - id of user or group (if group use with "-")
+            profileType - person or group
+            profileTitle - name and surname of person or name of group
+            songTitle - song name - artist name
+        -->
+
+    <script id="songlistItemTemplate" type="text/html">
+        <div class="songlist_item" data-song-class="{{owner_id}}_{{id}}"
+          data-song-duration="{{duration}}" data-song-url="{{url}}" data-song-title="{{title}} - {{artist}}">
+            <div class="songlist_item_play-icon-wrapper">
+                <i class="material-icons songlist_item_play-icon">play_arrow</i>
+                <i class="material-icons songlist_item_pause-icon">pause</i>
+            </div>
+            <div class="songlist_item_descr">
+                <span class="songlist_item_descr_song-title">{{title}}</span>
+                <span class="songlist_item_descr_artist">{{artist}}</span>
+            </div>
+            <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect
+              songlist_item_menu-btn">
+                <i class="material-icons songlist_item_menu-btn_icon">more_vert</i>
+            </button>
+        </div>
+    </script>
+
+    <script id="postslistItemTemplate" type="text/html">
+        <div class="postslist_item" id="{{owner_id}}_{{id}}">
+            <div class="postlists_item_descr">{{text}}</div>
+            <div class="postlists_item_songlist songlist" id="postlist_item_songlist-{{owner_id}}_{{id}}"></div>
+        </div>
+    </script>
+        <!--
+            owner_id
+            id - post id
+        -->
+
+    <script src="app.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,122 @@
+/**
+ * Body styles.
+ */
+
+html {
+    box-sizing: border-box;
+}
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+body {
+    font-family: 'Roboto', 'Noto', sans-serif;
+    height: 100vh;
+    max-height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    color: #fff;
+}
+
+/**
+ * Auth page styles.
+ */
+
+.auth-page_top-section,
+.auth-page_bottom-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-page_top-section {
+    background-color: #000;
+    flex: 2;
+}
+
+.auth-page_bottom-section {
+    flex: 1;
+}
+
+.auth-page_info-btn {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+}
+
+.auth-page_sign-in-btn {
+    transform: scale(1.1);
+    background-color: #E91E63 !important; 
+}
+
+.auth-page_big-title {
+    -webkit-user-select: none;
+}
+
+@media screen and (max-width: 500px) {
+    .auth-page_big-title {
+        font-size: 2em;
+    }
+}
+
+@media screen and (min-width: 500px) {
+    .auth-page_big-title {
+        font-size: 2.33em;
+    }
+    .auth-page_sign-in-btn {
+        transform: scale(1.2);
+    }
+}
+
+@media screen and (min-width: 600px) {
+    .auth-page_big-title {
+        font-size: 3em;
+    }
+    .auth-page_sign-in-btn {
+        transform: scale(1.3);
+    }
+}
+
+@media screen and (min-width: 700px) {
+    .auth-page_big-title {
+        font-size: 3.67em;
+    }
+    .auth-page_sign-in-btn {
+        transform: scale(1.4);
+    }
+}
+
+@media screen and (min-width: 800px) {
+    .auth-page_big-title {
+        font-size: 4.33em;
+    }
+    .auth-page_sign-in-btn {
+        transform: scale(1.5);
+    }
+}
+
+@media screen and (min-width: 900px) {
+    .auth-page_big-title {
+        font-size: 5em;
+    }
+    .auth-page_sign-in-btn {
+        transform: scale(1.6);
+    }
+}
+
+.auth-page_vk-auth-window {
+    display: none;
+}
+
+.auth-page_vk-auth-window.active {
+    display: block;
+    position: absolute;
+    z-index: 99999;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+}
