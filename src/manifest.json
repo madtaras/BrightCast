@@ -10,7 +10,7 @@
   "version": "0.6.0",
   "version_name": "0.6 beta",
 
-  "description": "",
+  "description": "Керуй музикою на комп'ютері за допомогою смартфона чи планшета.",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",

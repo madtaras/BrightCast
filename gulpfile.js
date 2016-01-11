@@ -298,7 +298,8 @@ gulp.task('img', () => {
   'use strict'
 
   let desktop = gulp.src([
-    'src/img/drawer-header-bg.jpg'
+    'src/img/drawer-header-bg.jpg',
+    'src/img/sign-in-page-bg.jpg'
   ])
     .pipe(gulp.dest('./release/img'))
 

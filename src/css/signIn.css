@@ -29,16 +29,20 @@ body {
 .auth-page_bottom-section {
     display: flex;
     align-items: center;
-    justify-content: center;
 }
 
 .auth-page_top-section {
-    background-color: #000;
+    background-image: url(img/sign-in-page-bg.jpg);
+    background-position: center center;
+    background-size: cover;
+    background-repeat: no-repeat;
     flex: 2;
+    flex-direction: column;
 }
 
 .auth-page_bottom-section {
     flex: 1;
+    justify-content: center;
 }
 
 .auth-page_info-btn {
@@ -54,11 +58,25 @@ body {
 
 .auth-page_big-title {
     -webkit-user-select: none;
+    height: 100px;
+    margin: 0;
+    margin-top: calc(100vh/3 - 50px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-page_short-descr {
+    font-size: 1.45em;
+    text-align: center;
 }
 
 @media screen and (max-width: 500px) {
     .auth-page_big-title {
         font-size: 2em;
+    }
+    .auth-page_short-descr {
+        font-size: 1.2em;
     }
 }
 
@@ -69,6 +87,9 @@ body {
     .auth-page_sign-in-btn {
         transform: scale(1.2);
     }
+    .auth-page_short-descr {
+        font-size: 1.25em;
+    }
 }
 
 @media screen and (min-width: 600px) {
@@ -77,6 +98,9 @@ body {
     }
     .auth-page_sign-in-btn {
         transform: scale(1.3);
+    }
+    .auth-page_short-descr {
+        font-size: 1.3em;
     }
 }
 
@@ -87,6 +111,9 @@ body {
     .auth-page_sign-in-btn {
         transform: scale(1.4);
     }
+    .auth-page_short-descr {
+        font-size: 1.3em;
+    }
 }
 
 @media screen and (min-width: 800px) {
@@ -96,6 +123,9 @@ body {
     .auth-page_sign-in-btn {
         transform: scale(1.5);
     }
+    .auth-page_short-descr {
+        font-size: 1.4em;
+    }
 }
 
 @media screen and (min-width: 900px) {
@@ -104,6 +134,9 @@ body {
     }
     .auth-page_sign-in-btn {
         transform: scale(1.6);
+    }
+    .auth-page_short-descr {
+        font-size: 1.45em;
     }
 }
 
