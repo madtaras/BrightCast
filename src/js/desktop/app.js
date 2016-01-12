@@ -25,6 +25,11 @@ var isServer = true
             if (addressRegEx.test(networkInterface.address)) {
               var address = networkInterface.address + ':' + port
               document.getElementById('settings-section_connection-info_address').innerText = address
+              domManipulations.showToast({
+                'innerText': 'Введіть ' + address + ' в адресний рядок браузера на ' +
+                  'вашому мобільному пристрої для використання його, як пульта для плеєра.',
+                'duration': 999999
+              })
             }
           })
         })
