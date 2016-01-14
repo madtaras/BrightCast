@@ -857,3 +857,9 @@ body {
 .slideout-open .slideout-menu {
     display: block;
 }
+
+.addressInToast {
+    background: #9E9E9E;
+    color: #000;
+    font-size: 1.2em;
+}

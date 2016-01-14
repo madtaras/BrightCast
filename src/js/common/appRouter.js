@@ -32,12 +32,16 @@
   })
 
   function adjustMadtarasToastPosition () {
+    var currentToast = document.querySelector('.madtaras-toast')
     if (document.documentElement.clientWidth > 1024) {
       madtarasToast.changeConfig({'style': {'left': '252px'}})
+      if (currentToast) currentToast.style.left = '252px'
     } else if (document.documentElement.clientWidth > 568) {
       madtarasToast.changeConfig({'style': {'left': '12px'}})
+      if (currentToast) currentToast.style.left = '12px'
     } else {
       madtarasToast.changeConfig({'style': {'left': '0'}})
+      if (currentToast) currentToast.style.left = '0'
     }
   }
 
