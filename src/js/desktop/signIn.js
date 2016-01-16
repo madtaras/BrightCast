@@ -32,7 +32,7 @@
         } else {
           vkAuthWindow.classList.remove('active')
           vkAuthWindow.src = ''
-          madtarasToast.show({'innerText': 'Something went wrong. Try again.'})
+          madtarasToast.show({'innerText': 'Щось пішло не так. Спробуйте знову.'})
         }
       }
     })

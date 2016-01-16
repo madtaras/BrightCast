@@ -28,7 +28,7 @@ var isServer = true
               domManipulations.showToast({
                 'innerText': 'Введіть <span class="addressInToast">' + address + '</span> в адресний рядок браузера на ' +
                   'вашому мобільному пристрої для використання його, як пульта для плеєра.',
-                'duration': 999999
+                'duration': 9999999
               })
             }
           })
