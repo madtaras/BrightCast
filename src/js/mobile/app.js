@@ -1,6 +1,20 @@
 /* globals domManipulations, componentHandler, vkUserID, Jets */
 var isServer = false
 ;(function () {
+  var localization = {}
+  var localizationRequest = new window.XMLHttpRequest()
+  localizationRequest.open('GET', 'localization', true)
+  localizationRequest.send()
+  localizationRequest.onload = function () {
+    localization = JSON.parse(localizationRequest.responseText)
+    var objects = document.getElementsByTagName('*')
+    for (var i = 0, l = objects.length; i < l; i++) {
+      if (objects[i].dataset && objects[i].dataset.i18nContent) {
+        objects[i].innerHTML = localization[objects[i].dataset.i18nContent].message || objects[i].innerHTML
+      }
+    }
+  }
+
   var socket = new window.WebSocket(window.location.origin.replace(/^(https|http)/, 'ws'))
 
   socket.addEventListener('message', function handleSocketsMessage (e) {
@@ -135,9 +149,11 @@ var isServer = false
     var contextMenuContent = ''
     // check if song is in user's audios and add appropriate message
     if (songlistItemElem.dataset.songClass.indexOf(vkUserID) === 0) {
-      contextMenuContent += '<li class="mdl-menu__item remove-from-audios">Видалити з моїх аудіозаписів</li>'
+      contextMenuContent += '<li class="mdl-menu__item remove-from-audios">' +
+      (localization.deleteSong.message || 'Видалити з моїх аудіозаписів') + '</li>'
     } else {
-      contextMenuContent += '<li class="mdl-menu__item add-to-audios">Додати до моїх аудіозаписів</li>'
+      contextMenuContent += '<li class="mdl-menu__item add-to-audios">' +
+      (localization.addSong.message || 'Додати до моїх аудіозаписів') + '</li>'
     }
 
     var menuBtnId = guid()

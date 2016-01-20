@@ -19,10 +19,11 @@ gulp.task('default', () => {
   gulp.watch('src/js/background.js', ['backgroundJS'])
   gulp.watch('src/manifest.json', ['appManifest'])
   gulp.watch('src/img/**', ['img'])
+  gulp.watch('src/_locales/**', ['locales'])
 })
 
-gulp.task('release_dev', ['html_dev', 'css_dev', 'js_dev', 'fonts', 'icons', 'backgroundJS', 'appManifest', 'img'])
-gulp.task('release_prod', ['html_prod', 'css_prod', 'js_prod', 'fonts', 'icons', 'backgroundJS', 'appManifest', 'img'])
+gulp.task('release_dev', ['html_dev', 'css_dev', 'js_dev', 'fonts', 'icons', 'backgroundJS', 'appManifest', 'img', 'locales'])
+gulp.task('release_prod', ['html_prod', 'css_prod', 'js_prod', 'fonts', 'icons', 'backgroundJS', 'appManifest', 'img', 'locales'])
 
 gulp.task('cleanReleaseFolder', () => {
   return del(['release/**/*'])
@@ -307,6 +308,18 @@ gulp.task('img', () => {
     'src/img/drawer-header-bg.jpg'
   ])
     .pipe(gulp.dest('./release/public/img'))
+
+  return merge(desktop, mobile)
+})
+
+gulp.task('locales', () => {
+  'use strict'
+
+  let desktop = gulp.src(['./src/_locales/**/*'])
+    .pipe(gulp.dest('./release/_locales'))
+
+  let mobile = gulp.src(['./src/_locales/**/*'])
+    .pipe(gulp.dest('./release/public/_locales'))
 
   return merge(desktop, mobile)
 })

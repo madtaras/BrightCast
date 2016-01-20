@@ -2,10 +2,20 @@
 Jets, MutationSummary, secondsTohhmmss, getRandomIntFromTo */
 var isServer = true
 ;(function () {
+  // localization
+  (function () {
+    var objects = document.getElementsByTagName('*')
+    for (var i = 0, l = objects.length; i < l; i++) {
+      if (objects[i].dataset && objects[i].dataset.i18nContent) {
+        objects[i].innerHTML = chrome.i18n.getMessage(objects[i].dataset.i18nContent) || objects[i].innerHTML
+      }
+    }
+  })()
+
   if (!navigator.onLine) {
     domManipulations.showToast({
-      'innerText': "Під'єднайтесь до інтернету і перезапустіть програму",
-      'duration': 1000000
+      'innerText': chrome.i18n.getMessage('connectToTheInternetAndRestartApp') || "Під'єднайтесь до інтернету і перезапустіть програму",
+      'duration': 9999999
     })
     throw new Error('No internet connection')
   }
@@ -26,8 +36,10 @@ var isServer = true
               var address = networkInterface.address + ':' + port
               document.getElementById('settings-section_connection-info_address').innerText = address
               domManipulations.showToast({
-                'innerText': 'Введіть <span class="addressInToast">' + address + '</span> в адресний рядок браузера на ' +
-                  'вашому мобільному пристрої для використання його, як пульта для плеєра.',
+                'innerText': (chrome.i18n.getMessage('enterAddressMsgPart1') || 'Введіть') +
+                ' <span class="addressInToast">' + address + '</span> ' +
+                (chrome.i18n.getMessage('enterAddressMsgPart2') || 'в адресний рядок браузера на ' +
+                  'вашому мобільному пристрої для використання його, як пульта для плеєра.'),
                 'duration': 9999999
               })
             }
@@ -54,6 +66,15 @@ var isServer = true
       var url = req.headers.url
       if (url === '/') {
         url = '/public/mobileApp.html'
+      } else if (url === '/localization') {
+        var currentLocale = chrome.i18n.getUILanguage()
+        if (currentLocale.indexOf('uk') > -1) {
+          url = '/public/_locales/uk/messages.json'
+        } else if (currentLocale.indexOf('ru') > -1) {
+          url = '/public/_locales/ru/messages.json'
+        } else {
+          url = '/public/_locales/en/messages.json'
+        }
       } else {
         url = '/public' + url
       }
@@ -557,14 +578,14 @@ var isServer = true
         })
       })
       domManipulations.showToast({
-        'innerText': 'Сталася помилка'
+        'innerText': chrome.i18n.getMessage('errorOccurred') || 'Сталася помилка'
       })
       connectedSockets.forEach(function (socket) {
         sendDomManipulationsMessage({
           'socket': socket,
           'function': 'showToast',
           'args': {
-            'innerText': 'Сталася помилка'
+            'innerText': chrome.i18n.getMessage('errorOccurred') || 'Сталася помилка'
           }
         })
       })
@@ -643,14 +664,14 @@ var isServer = true
         })
       })
       domManipulations.showToast({
-        'innerText': 'Сталася помилка'
+        'innerText': chrome.i18n.getMessage('errorOccurred') || 'Сталася помилка'
       })
       connectedSockets.forEach(function (socket) {
         sendDomManipulationsMessage({
           'socket': socket,
           'function': 'showToast',
           'args': {
-            'innerText': 'Сталася помилка'
+            'innerText': chrome.i18n.getMessage('errorOccurred') || 'Сталася помилка'
           }
         })
       })
@@ -693,9 +714,11 @@ var isServer = true
     var contextMenuContent = ''
     // check if song is in user's audios and add appropriate message
     if (songlistItemElem.dataset.songClass.indexOf(vkUserID) === 0) {
-      contextMenuContent += '<li class="mdl-menu__item remove-from-audios">Видалити з моїх аудіозаписів</li>'
+      contextMenuContent += '<li class="mdl-menu__item remove-from-audios">' +
+      (chrome.i18n.getMessage('deleteSong') || 'Видалити з моїх аудіозаписів') + '</li>'
     } else {
-      contextMenuContent += '<li class="mdl-menu__item add-to-audios">Додати до моїх аудіозаписів</li>'
+      contextMenuContent += '<li class="mdl-menu__item add-to-audios">' +
+      (chrome.i18n.getMessage('addSong') || 'Додати до моїх аудіозаписів') + '</li>'
     }
 
     var menuBtnId = guid()
@@ -785,14 +808,14 @@ var isServer = true
         })
       })
       domManipulations.showToast({
-        'innerText': 'Видалено'
+        'innerText': chrome.i18n.getMessage('deleted') || 'Видалено'
       })
       connectedSockets.forEach(function (socket) {
         sendDomManipulationsMessage({
           'socket': socket,
           'function': 'showToast',
           'args': {
-            'innerText': 'Видалено'
+            'innerText': chrome.i18n.getMessage('deleted') || 'Видалено'
           }
         })
       })
@@ -805,14 +828,14 @@ var isServer = true
         })
       })
       domManipulations.showToast({
-        'innerText': 'Сталася помилка'
+        'innerText': chrome.i18n.getMessage('errorOccurred') || 'Сталася помилка'
       })
       connectedSockets.forEach(function (socket) {
         sendDomManipulationsMessage({
           'socket': socket,
           'function': 'showToast',
           'args': {
-            'innerText': 'Сталася помилка'
+            'innerText': chrome.i18n.getMessage('errorOccurred') || 'Сталася помилка'
           }
         })
       })
@@ -871,14 +894,14 @@ var isServer = true
         })
       })
       domManipulations.showToast({
-        'innerText': 'Додано'
+        'innerText': chrome.i18n.getMessage('added') || 'Додано'
       })
       connectedSockets.forEach(function (socket) {
         sendDomManipulationsMessage({
           'socket': socket,
           'function': 'showToast',
           'args': {
-            'innerText': 'Додано'
+            'innerText': chrome.i18n.getMessage('added') || 'Додано'
           }
         })
       })
@@ -891,14 +914,14 @@ var isServer = true
         })
       })
       domManipulations.showToast({
-        'innerText': 'Сталася помилка'
+        'innerText': chrome.i18n.getMessage('errorOccurred') || 'Сталася помилка'
       })
       connectedSockets.forEach(function (socket) {
         sendDomManipulationsMessage({
           'socket': socket,
           'function': 'showToast',
           'args': {
-            'innerText': 'Сталася помилка'
+            'innerText': chrome.i18n.getMessage('errorOccurred') || 'Сталася помилка'
           }
         })
       })
@@ -931,21 +954,21 @@ var isServer = true
   // show message on online and offline events
   window.addEventListener('online', function () {
     domManipulations.showToast({
-      'innerText': "З'єднання з інтернетом встановлено"
+      'innerText': chrome.i18n.getMessage('internetConnectionEstablished') || "З'єднання з інтернетом встановлено"
     })
     connectedSockets.forEach(function (socket) {
       sendDomManipulationsMessage({
         'socket': socket,
         'function': 'showToast',
         'args': {
-          'innerText': "З'єднання з інтернетом встановлено"
+          'innerText': chrome.i18n.getMessage('internetConnectionEstablished') || "З'єднання з інтернетом встановлено"
         }
       })
     })
   }, false)
   window.addEventListener('offline', function () {
     domManipulations.showToast({
-      'innerText': "З'єднання з інтернетом втрачено",
+      'innerText': chrome.i18n.getMessage('internetConnectionLost') || "З'єднання з інтернетом втрачено",
       'duration': 100000
     })
     connectedSockets.forEach(function (socket) {
@@ -953,7 +976,7 @@ var isServer = true
         'socket': socket,
         'function': 'showToast',
         'args': {
-          'innerText': "З'єднання з інтернетом втрачено",
+          'innerText': chrome.i18n.getMessage('internetConnectionLost') || "З'єднання з інтернетом втрачено",
           'duration': 100000
         }
       })
@@ -1154,14 +1177,14 @@ var isServer = true
         })
       })
       domManipulations.showToast({
-        'innerText': 'Сталася помилка'
+        'innerText': chrome.i18n.getMessage('errorOccurred') || 'Сталася помилка'
       })
       connectedSockets.forEach(function (socket) {
         sendDomManipulationsMessage({
           'socket': socket,
           'function': 'showToast',
           'args': {
-            'innerText': 'Сталася помилка'
+            'innerText': chrome.i18n.getMessage('errorOccurred') || 'Сталася помилка'
           }
         })
       })
@@ -1267,14 +1290,14 @@ var isServer = true
         })
       })
       domManipulations.showToast({
-        'innerText': 'Сталася помилка'
+        'innerText': chrome.i18n.getMessage('errorOccurred') || 'Сталася помилка'
       })
       connectedSockets.forEach(function (socket) {
         sendDomManipulationsMessage({
           'socket': socket,
           'function': 'showToast',
           'args': {
-            'innerText': 'Сталася помилка'
+            'innerText': chrome.i18n.getMessage('errorOccurred') || 'Сталася помилка'
           }
         })
       })
@@ -1355,26 +1378,26 @@ var isServer = true
         })
       })
       domManipulations.showToast({
-        'innerText': 'Сталася помилка'
+        'innerText': chrome.i18n.getMessage('errorOccurred') || 'Сталася помилка'
       })
       connectedSockets.forEach(function (socket) {
         sendDomManipulationsMessage({
           'socket': socket,
           'function': 'showToast',
           'args': {
-            'innerText': 'Сталася помилка'
+            'innerText': chrome.i18n.getMessage('errorOccurred') || 'Сталася помилка'
           }
         })
       })
       domManipulations.showToast({
-        'innerText': 'Сталася помилка'
+        'innerText': chrome.i18n.getMessage('errorOccurred') || 'Сталася помилка'
       })
       connectedSockets.forEach(function (socket) {
         sendDomManipulationsMessage({
           'socket': socket,
           'function': 'showToast',
           'args': {
-            'innerText': 'Сталася помилка'
+            'innerText': chrome.i18n.getMessage('errorOccurred') || 'Сталася помилка'
           }
         })
       })
@@ -1516,14 +1539,14 @@ var isServer = true
     if (document.querySelector('#player-controller_song-info').innerText === '') return
 
     domManipulations.showToast({
-      'innerText': 'Композиція недоступна'
+      'innerText': chrome.i18n.getMessage('songUnavailable') || 'Композиція недоступна'
     })
     connectedSockets.forEach(function (socket) {
       sendDomManipulationsMessage({
         'socket': socket,
         'function': 'showToast',
         'args': {
-          'innerText': 'Композиція недоступна'
+          'innerText': chrome.i18n.getMessage('songUnavailable') || 'Композиція недоступна'
         }
       })
     })
@@ -2051,14 +2074,14 @@ var isServer = true
           player.playSong(myAudioSectionSonglist.firstElementChild)
         } else {
           domManipulations.showToast({
-            'innerText': 'There aren\'t any songs in playlist.'
+            'innerText': chrome.i18n.getMessage('noSongsInPlaylist') || 'У цьому плейлисті немає пісень'
           })
           connectedSockets.forEach(function (socket) {
             sendDomManipulationsMessage({
               'socket': socket,
               'function': 'showToast',
               'args': {
-                'innerText': 'There aren\'t any songs in playlist.'
+                'innerText': chrome.i18n.getMessage('noSongsInPlaylist') || 'У цьому плейлисті немає пісень'
               }
             })
           })
@@ -2190,14 +2213,14 @@ var isServer = true
         })
       })
       domManipulations.showToast({
-        'innerText': 'Сталася помилка'
+        'innerText': chrome.i18n.getMessage('errorOccurred') || 'Сталася помилка'
       })
       connectedSockets.forEach(function (socket) {
         sendDomManipulationsMessage({
           'socket': socket,
           'function': 'showToast',
           'args': {
-            'innerText': 'Сталася помилка'
+            'innerText': chrome.i18n.getMessage('errorOccurred') || 'Сталася помилка'
           }
         })
       })
@@ -2271,14 +2294,14 @@ var isServer = true
         })
       })
       domManipulations.showToast({
-        'innerText': 'Додано'
+        'innerText': chrome.i18n.getMessage('added') || 'Додано'
       })
       connectedSockets.forEach(function (socket) {
         sendDomManipulationsMessage({
           'socket': socket,
           'function': 'showToast',
           'args': {
-            'innerText': 'Додано'
+            'innerText': chrome.i18n.getMessage('added') || 'Додано'
           }
         })
       })
@@ -2291,14 +2314,14 @@ var isServer = true
         })
       })
       domManipulations.showToast({
-        'innerText': 'Сталася помилка'
+        'innerText': chrome.i18n.getMessage('errorOccurred') || 'Сталася помилка'
       })
       connectedSockets.forEach(function (socket) {
         sendDomManipulationsMessage({
           'socket': socket,
           'function': 'showToast',
           'args': {
-            'innerText': 'Сталася помилка'
+            'innerText': chrome.i18n.getMessage('errorOccurred') || 'Сталася помилка'
           }
         })
       })

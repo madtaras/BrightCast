@@ -1,0 +1,2 @@
+BrightCast - VK Music Player
+Manage music on a computer via mobile device.

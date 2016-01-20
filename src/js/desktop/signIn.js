@@ -1,5 +1,15 @@
 /* globals madtarasToast, chrome */
 ;(function () {
+  // localization
+  (function () {
+    var objects = document.getElementsByTagName('*')
+    for (var i = 0, l = objects.length; i < l; i++) {
+      if (objects[i].dataset && objects[i].dataset.i18nContent) {
+        objects[i].innerHTML = chrome.i18n.getMessage(objects[i].dataset.i18nContent) || objects[i].innerHTML
+      }
+    }
+  })()
+
   var vkAuthWindow = document.getElementById('auth-page_vk-auth-window')
   var signInBtn = document.getElementById('auth-page_sign-in-btn')
   var authUrl = 'https://oauth.vk.com/authorize?client_id=5142990&' +
@@ -32,7 +42,9 @@
         } else {
           vkAuthWindow.classList.remove('active')
           vkAuthWindow.src = ''
-          madtarasToast.show({'innerText': 'Щось пішло не так. Спробуйте знову.'})
+          madtarasToast.show({
+            'innerText': chrome.i18n.getMessage('smthWentWrongTryAgain') || 'Щось пішло не так. Спробуйте знову.'
+          })
         }
       }
     })

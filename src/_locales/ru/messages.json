@@ -1,0 +1,95 @@
+{
+    "shortDescr": {
+        "message": "Управляй музыкой на компьютере при помощи смартфона или планшета"
+    },
+    "signInBtn": {
+        "message": "Залогиниться VK"
+    },
+    "smthWentWrongTryAgain": {
+        "message": "Что-то пошло не так, пожалуйста, повторите попытку."
+    },
+    "listIsEmpty": {
+        "message": "Список пустой"
+    },
+    "myMusic": {
+        "message": "Мои Аудиозаписи"
+    },
+    "search": {
+        "message": "Поиск"
+    },
+    "friendsAndCommunities": {
+        "message": "Друзья и сообщества"
+    },
+    "currentPlaylist": {
+        "message": "Текущий плейлист"
+    },
+    "settings": {
+        "message": "Настройки"
+    },
+    "signOut": {
+        "message": "Выйти"
+    },
+    "friends": {
+        "message": "Друзья"
+    },
+    "communities": {
+        "message": "Сообщества"
+    },
+    "statuses": {
+        "message": "Статусы"
+    },
+    "loadMore": {
+        "message": "Показать еще"
+    },
+    "remote": {
+        "message": "Пульт"
+    },
+    "enterAddressMsgPart1": {
+        "message": "Введите"
+    },
+    "enterAddressMsgPart2": {
+        "message": "в адресную строку браузера на вашем мобильными устройстве для использования его, как пульта для плеера."
+    },
+    "support": {
+        "message": "Поддержка"
+    },
+    "supportText1": {
+        "message": "Если у вас возникли проблемы с приложением, пишите в"
+    },
+    "supportText2": {
+        "message": "официальной группе"
+    },
+    "supportText3": {
+        "message": "в ВКонтакте."
+    },
+    "connectToTheInternetAndRestartApp": {
+        "message": "Подключитесь к интернету и перезапустите приложение"
+    },
+    "errorOccurred": {
+        "message": "Произошла ошибка"
+    },
+    "deleted": {
+        "message": "Удалено"
+    },
+    "added": {
+        "message": "Добавлено"
+    },
+    "internetConnectionEstablished": {
+        "message": "Интернет-соединение установлено"
+    },
+    "internetConnectionLost": {
+        "message": "Интернет-соединение потеряно"
+    },
+    "songUnavailable": {
+        "message": "Песня недоступна"
+    },
+    "noSongsInPlaylist": {
+        "message": "Нет песен в плейлисте"
+    },
+    "addSong": {
+        "message": "Добавить себе"
+    },
+    "deleteSong": {
+        "message": "Удалить"
+    }
+}

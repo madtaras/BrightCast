@@ -102,14 +102,14 @@ chrome.storage.local.get(['vkAccessToken', 'vkUserID'], function (userAuthData) 
             })
           })
           domManipulations.showToast({
-            'innerText': 'Сталася помилка'
+            'innerText': chrome.i18n.getMessage('errorOccurred') || 'Сталася помилка'
           })
           connectedSockets.forEach(function (socket) {
             sendDomManipulationsMessage({
               'socket': socket,
               'function': 'showToast',
               'args': {
-                'innerText': 'Сталася помилка'
+                'innerText': chrome.i18n.getMessage('errorOccurred') || 'Сталася помилка'
               }
             })
           })
@@ -170,14 +170,14 @@ chrome.storage.local.get(['vkAccessToken', 'vkUserID'], function (userAuthData) 
   }).catch(function (err) {
     domManipulations.hideSpinner()
     domManipulations.showToast({
-      'innerText': 'Сталася помилка'
+      'innerText': chrome.i18n.getMessage('errorOccurred') || 'Сталася помилка'
     })
     connectedSockets.forEach(function (socket) {
       sendDomManipulationsMessage({
         'socket': socket,
         'function': 'showToast',
         'args': {
-          'innerText': 'Сталася помилка'
+          'innerText': chrome.i18n.getMessage('errorOccurred') || 'Сталася помилка'
         }
       })
     })

@@ -9,8 +9,9 @@
   "short_name": "BrightCast",
   "version": "0.6.1",
   "version_name": "0.6.1 beta",
+  "default_locale": "uk",
 
-  "description": "Керуй музикою на комп'ютері за допомогою смартфона чи планшета.",
+  "description": "__MSG_shortDescr__.",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
