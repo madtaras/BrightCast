@@ -1678,7 +1678,7 @@ var isServer = true
 
     domManipulations.setElemInnerHTML({
       'selector': '#player-controller_song-info',
-      'html': songlistItem.dataset.songTitle
+      'html': songlistItem.dataset.songTitle.slice(0, 45)
     })
     connectedSockets.forEach(function (socket) {
       sendDomManipulationsMessage({
@@ -1686,7 +1686,7 @@ var isServer = true
         'function': 'setElemInnerHTML',
         'args': {
           'selector': '#player-controller_song-info',
-          'html': songlistItem.dataset.songTitle
+          'html': songlistItem.dataset.songTitle.slice(0, 45)
         }
       })
     })
