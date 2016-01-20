@@ -1,0 +1,6 @@
+Design and implementation of the system of the remote control of multimedia files via mobile devices.
+
+  Nowadays mobile devices become more and more popular and at the same time they are used by almost all average users. Besides technologies which use a remote control become popular. They are also called "Smart houses".
+  In this connection it was decided to create the system of the remote control of  multimedia files via mobile devices. VK supplies this system with music compositions and this particular system is essentially a VK music client in which almost all features available on VK were implemented. Another opportunity of the system is formation of the playlist taking into consideration tempo and rhythm of music compositions.
+  The system was written in html, css, javascript using Google Chrome Apps API. It makes the system fully cross-platform. The remote control works using WebSockets. 
+The web page which user needs to open in a mobile device browser is an interface for remote control. It provides users with qualitative support on different platforms. As a result we have got a suitable system for work with multimedia files using vk.com API and the system can be controlled via mobile devices. It should be mentioned that the system is available to be downloaded from Chrome Web Store free of charge.
