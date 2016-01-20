@@ -7,8 +7,8 @@
   "manifest_version": 2,
   "name": "BrightCast - VK Music Player",
   "short_name": "BrightCast",
-  "version": "0.6.1",
-  "version_name": "0.6.1 beta",
+  "version": "0.6.2",
+  "version_name": "0.6.2 beta",
   "default_locale": "uk",
 
   "description": "__MSG_shortDescr__.",
