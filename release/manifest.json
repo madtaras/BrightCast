@@ -11,7 +11,7 @@
   "version_name": "0.6.2 beta",
   "default_locale": "uk",
 
-  "description": "__MSG_shortDescr__.",
+  "description": "__MSG_shortDescr__",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
