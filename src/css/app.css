@@ -660,6 +660,19 @@ body.user-audios-loaded .profiles-section_broadcasting-profiles:empty:after {
     background: #e0e0e0;
 }
 
+.settings-section-qr-code {
+    display: none;
+}
+
+.settings-section-qr-code.upgraded {
+    display: block;
+    height: 170px;
+    width: 170px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 12px;
+}
+
 .made-with-love-block {
     padding: 16px 16px 16px 16px;
     width: calc(100% - 16px);

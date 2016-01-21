@@ -44,11 +44,14 @@
     "remote": {
         "message": "Пульт"
     },
-    "enterAddressMsgPart1": {
-        "message": "Введите"
+    "settingsSectionConnectionInfoPart1": {
+        "message": "Просканируйте QR код или введите"
     },
-    "enterAddressMsgPart2": {
-        "message": "в адресную строку браузера на вашем мобильными устройстве для использования его, как пульта для плеера."
+    "settingsSectionConnectionInfoPart2": {
+        "message": "в адресную строку браузера на мобильном устройстве."
+    },
+    "initialToast": {
+        "message": "Информация для подключения удаленного управления находится на странице настроек"
     },
     "support": {
         "message": "Поддержка"

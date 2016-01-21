@@ -1,5 +1,5 @@
 /* global domManipulations, http, vkRequest, vkAccessToken, vkUserID, chrome, parseBoolean, componentHandler, guid,
-Jets, MutationSummary, secondsTohhmmss, getRandomIntFromTo */
+Jets, MutationSummary, secondsTohhmmss, getRandomIntFromTo, qr */
 var isServer = true
 ;(function () {
   // localization
@@ -36,12 +36,16 @@ var isServer = true
               var address = networkInterface.address + ':' + port
               document.getElementById('settings-section_connection-info_address').innerText = address
               domManipulations.showToast({
-                'innerText': (chrome.i18n.getMessage('enterAddressMsgPart1') || 'Введіть') +
-                ' <span class="addressInToast">' + address + '</span> ' +
-                (chrome.i18n.getMessage('enterAddressMsgPart2') || 'в адресний рядок браузера на ' +
-                  'вашому мобільному пристрої для використання його, як пульта для плеєра.'),
+                'innerText': (chrome.i18n.getMessage('initialToast') ||
+                  'Інформація для підключення віддаленого керування знаходиться на сторінці налаштувань'),
                 'duration': 9999999
               })
+              var QRCodeCanvas = document.getElementById('settings-section-qr-code')
+              qr.canvas({
+                'canvas': QRCodeCanvas,
+                'value': address
+              })
+              QRCodeCanvas.classList.add('upgraded')
             }
           })
         })

@@ -44,11 +44,14 @@
     "remote": {
         "message": "Remote control"
     },
-    "enterAddressMsgPart1": {
-        "message": "Enter"
+    "settingsSectionConnectionInfoPart1": {
+        "message": "Scan QR code or enter"
     },
-    "enterAddressMsgPart2": {
-        "message": "into address bar of your browser on mobile device to use it as a remote."
+    "settingsSectionConnectionInfoPart2": {
+        "message": "into address bar of browser on your mobile device."
+    },
+    "initialToast": {
+        "message": "Information to connect remote control is on the settings page"
     },
     "support": {
         "message": "Support"
