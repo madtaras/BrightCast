@@ -18,12 +18,6 @@
     'response_type=token&v=5.40&revoke=1'
   var userAuthData = {}
 
-  chrome.storage.local.get(['vkAccessToken', 'vkUserID'], function (userAuthData) {
-    if (userAuthData.vkAccessToken && userAuthData.vkUserID) {
-      window.dispatchEvent(new window.CustomEvent('successfulAuth'))
-    }
-  })
-
   signInBtn.addEventListener('click', function () {
     vkAuthWindow.src = authUrl
     vkAuthWindow.classList.add('active')
