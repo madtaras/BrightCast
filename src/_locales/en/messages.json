@@ -94,5 +94,11 @@
     },
     "deleteSong": {
         "message": "Delete song"
+    },
+    "music": {
+        "message": "Music"
+    },
+    "wall": {
+        "message": "Wall"
     }
 }

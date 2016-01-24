@@ -94,5 +94,11 @@
     },
     "deleteSong": {
         "message": "Видалити пісню"
+    },
+    "music": {
+        "message": "Аудіозаписи"
+    },
+    "wall": {
+        "message": "Стіна"
     }
 }

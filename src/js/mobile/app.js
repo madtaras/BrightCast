@@ -8,11 +8,11 @@ var isServer = false
   localizationRequest.onload = function () {
     localization = JSON.parse(localizationRequest.responseText)
     var objects = document.getElementsByTagName('*')
-    for (var i = 0, l = objects.length; i < l; i++) {
-      if (objects[i].dataset && objects[i].dataset.i18nContent) {
-        objects[i].innerHTML = localization[objects[i].dataset.i18nContent].message || objects[i].innerHTML
+    Array.prototype.forEach.call(objects, function (object) {
+      if (object.dataset && object.dataset.i18nContent) {
+        object.innerHTML = localization[object.dataset.i18nContent].message || object.innerHTML
       }
-    }
+    })
   }
 
   var socket = new window.WebSocket(window.location.origin.replace(/^(https|http)/, 'ws'))

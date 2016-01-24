@@ -5,11 +5,11 @@ var isServer = true
   // localization
   (function () {
     var objects = document.getElementsByTagName('*')
-    for (var i = 0, l = objects.length; i < l; i++) {
-      if (objects[i].dataset && objects[i].dataset.i18nContent) {
-        objects[i].innerHTML = chrome.i18n.getMessage(objects[i].dataset.i18nContent) || objects[i].innerHTML
+    Array.prototype.forEach.call(objects, function (object) {
+      if (object.dataset && object.dataset.i18nContent) {
+        object.innerHTML = chrome.i18n.getMessage(object.dataset.i18nContent) || object.innerHTML
       }
-    }
+    })
   })()
 
   window.addEventListener('load', function () {
