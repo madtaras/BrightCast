@@ -1,4 +1,4 @@
-/* globals madtarasToast, Slideout */
+/* globals madtarasToast, Slideout, isServer */
 ;(function () {
   var appRouter = {}
 
@@ -54,7 +54,9 @@
   })
 
   if (document.documentElement.clientWidth > 1024) {
-    slideout.open()
+    setTimeout(function () {
+      slideout.open()
+    }, isServer ? 200 : 0)
   }
 
   window.addEventListener('resize', function () {

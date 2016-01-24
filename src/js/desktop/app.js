@@ -12,6 +12,14 @@ var isServer = true
     }
   })()
 
+  window.addEventListener('load', function () {
+    setTimeout(function () {
+      document.querySelector('#drawer-panel').style.display = 'flex'
+      document.querySelector('#content').style.display = 'block'
+      document.querySelector('.appLoading').classList.add('moveOut')
+    }, 700)
+  })
+
   if (!navigator.onLine) {
     domManipulations.showToast({
       'innerText': chrome.i18n.getMessage('connectToTheInternetAndRestartApp') || "Під'єднайтесь до інтернету і перезапустіть програму",
