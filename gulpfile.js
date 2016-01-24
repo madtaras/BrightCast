@@ -79,35 +79,44 @@ gulp.task('html_prod', () => {
   return merge(desktop, mobile)
 })
 
+const AUTOPREFIXER_BROWSERS = [
+  'iOS >= 7',
+  'Android >= 4',
+  'ChromeAndroid >= 40',
+  'FirefoxAndroid >= 40'
+]
+
+const DESKTOP_APP_CSS_SOURCES = [
+  './src/css/material.css',
+  './src/css/madtaras-toast.css',
+  './src/css/app.css'
+]
+
+const MOBILE_APP_CSS_SOURCES = [
+  './src/css/material.css',
+  './src/css/madtaras-toast.css',
+  './src/css/app.css'
+]
+
+const DESKTOP_SIGN_IN_CSS_SOURCES = [
+  './src/css/material.css',
+  './src/css/madtaras-toast.css',
+  './src/css/signIn.css'
+]
+
 gulp.task('css_dev', () => {
   'use strict'
 
-  let desktopApp = gulp.src([
-    './src/css/material.css',
-    './src/css/madtaras-toast.css',
-    './src/css/app.css'
-  ])
+  let desktopApp = gulp.src(DESKTOP_APP_CSS_SOURCES)
     .pipe(concat('app.css'))
     .pipe(gulp.dest('./release'))
-  let mobileApp = gulp.src([
-    './src/css/material.css',
-    './src/css/madtaras-toast.css',
-    './src/css/app.css'
-  ])
+  let mobileApp = gulp.src(MOBILE_APP_CSS_SOURCES)
     .pipe(concat('app.css'))
     .pipe(autoprefixer({
-      'browsers': [
-        'iOS >= 7',
-        'ChromeAndroid >= 40',
-        'FirefoxAndroid >= 40'
-      ]
+      'browsers': AUTOPREFIXER_BROWSERS
     }))
     .pipe(gulp.dest('./release/public'))
-  let desktopSignIn = gulp.src([
-    './src/css/material.css',
-    './src/css/madtaras-toast.css',
-    './src/css/signIn.css'
-  ])
+  let desktopSignIn = gulp.src(DESKTOP_SIGN_IN_CSS_SOURCES)
     .pipe(concat('signIn.css'))
     .pipe(gulp.dest('./release'))
 
@@ -117,34 +126,18 @@ gulp.task('css_dev', () => {
 gulp.task('css_prod', () => {
   'use strict'
 
-  let desktopApp = gulp.src([
-    './src/css/material.css',
-    './src/css/madtaras-toast.css',
-    './src/css/app.css'
-  ])
+  let desktopApp = gulp.src(DESKTOP_APP_CSS_SOURCES)
     .pipe(concat('app.css'))
     .pipe(cssnano())
     .pipe(gulp.dest('./release'))
-  let mobileApp = gulp.src([
-    './src/css/material.css',
-    './src/css/madtaras-toast.css',
-    './src/css/app.css'
-  ])
+  let mobileApp = gulp.src(MOBILE_APP_CSS_SOURCES)
     .pipe(concat('app.css'))
     .pipe(autoprefixer({
-      'browsers': [
-        'iOS >= 7',
-        'ChromeAndroid >= 40',
-        'FirefoxAndroid >= 40'
-      ]
+      'browsers': AUTOPREFIXER_BROWSERS
     }))
     .pipe(cssnano())
     .pipe(gulp.dest('./release/public'))
-  let desktopSignIn = gulp.src([
-    './src/css/material.css',
-    './src/css/madtaras-toast.css',
-    './src/css/signIn.css'
-  ])
+  let desktopSignIn = gulp.src(DESKTOP_SIGN_IN_CSS_SOURCES)
     .pipe(concat('signIn.css'))
     .pipe(cssnano())
     .pipe(gulp.dest('./release'))
@@ -152,48 +145,54 @@ gulp.task('css_prod', () => {
   return merge(desktopApp, mobileApp, desktopSignIn)
 })
 
+const DESKTOP_APP_JS_SOURCES = [
+  './src/js/common/material.js',
+  './src/js/common/madtaras-toast.js',
+  './src/js/common/slideout.min.js',
+  './src/js/common/appHelpfulModules.js',
+  './src/js/common/mutation-summary.js',
+  './src/js/common/arrive.min.js',
+  './src/js/common/jets.min.js',
+  './src/js/desktop/sha1.js',
+  './src/js/desktop/http.js',
+  './src/js/desktop/qr.js',
+  './src/js/common/appRouter.js',
+  './src/js/desktop/vkRequest.js',
+  './src/js/common/mustache.min.js',
+  './src/js/common/domManipulations.js',
+  './src/js/desktop/app.js',
+  './src/js/desktop/appInit.js'
+]
+
+const MOBILE_APP_JS_SOURCES = [
+  './src/js/common/material.js',
+  './src/js/common/madtaras-toast.js',
+  './src/js/common/slideout.min.js',
+  './src/js/common/jets.min.js',
+  './src/js/common/mutation-summary.js',
+  './src/js/common/arrive.min.js',
+  './src/js/common/mustache.min.js',
+  './src/js/common/appRouter.js',
+  './src/js/common/domManipulations.js',
+  './src/js/mobile/app.js'
+]
+
+const DESKTOP_SIGN_IN_JS_SOURCES = [
+  './src/js/common/material.js',
+  './src/js/common/madtaras-toast.js',
+  './src/js/desktop/signIn.js'
+]
+
 gulp.task('js_dev', () => {
   'use strict'
 
-  let desktopApp = gulp.src([
-    './src/js/common/material.js',
-    './src/js/common/madtaras-toast.js',
-    './src/js/common/slideout.min.js',
-    './src/js/common/appHelpfulModules.js',
-    './src/js/common/mutation-summary.js',
-    './src/js/common/arrive.min.js',
-    './src/js/common/jets.min.js',
-    './src/js/desktop/sha1.js',
-    './src/js/desktop/http.js',
-    './src/js/desktop/qr.js',
-    './src/js/common/appRouter.js',
-    './src/js/desktop/vkRequest.js',
-    './src/js/common/mustache.min.js',
-    './src/js/common/domManipulations.js',
-    './src/js/desktop/app.js',
-    './src/js/desktop/appInit.js'
-  ])
+  let desktopApp = gulp.src(DESKTOP_APP_JS_SOURCES)
     .pipe(concat('app.js'))
     .pipe(gulp.dest('./release'))
-  let mobileApp = gulp.src([
-    './src/js/common/material.js',
-    './src/js/common/madtaras-toast.js',
-    './src/js/common/slideout.min.js',
-    './src/js/common/jets.min.js',
-    './src/js/common/mutation-summary.js',
-    './src/js/common/arrive.min.js',
-    './src/js/common/mustache.min.js',
-    './src/js/common/appRouter.js',
-    './src/js/common/domManipulations.js',
-    './src/js/mobile/app.js'
-  ])
+  let mobileApp = gulp.src(MOBILE_APP_JS_SOURCES)
     .pipe(concat('app.js'))
     .pipe(gulp.dest('./release/public'))
-  let desktopSignIn = gulp.src([
-    './src/js/common/material.js',
-    './src/js/common/madtaras-toast.js',
-    './src/js/desktop/signIn.js'
-  ])
+  let desktopSignIn = gulp.src(DESKTOP_SIGN_IN_JS_SOURCES)
     .pipe(concat('signIn.js'))
     .pipe(gulp.dest('./release'))
 
@@ -203,47 +202,15 @@ gulp.task('js_dev', () => {
 gulp.task('js_prod', () => {
   'use strict'
 
-  let desktopApp = gulp.src([
-    './src/js/common/material.js',
-    './src/js/common/madtaras-toast.js',
-    './src/js/common/slideout.min.js',
-    './src/js/common/appHelpfulModules.js',
-    './src/js/common/mutation-summary.js',
-    './src/js/common/arrive.min.js',
-    './src/js/common/jets.min.js',
-    './src/js/desktop/sha1.js',
-    './src/js/desktop/http.js',
-    './src/js/desktop/qr.js',
-    './src/js/common/appRouter.js',
-    './src/js/desktop/vkRequest.js',
-    './src/js/common/mustache.min.js',
-    './src/js/common/domManipulations.js',
-    './src/js/desktop/app.js',
-    './src/js/desktop/appInit.js'
-  ])
+  let desktopApp = gulp.src(DESKTOP_APP_JS_SOURCES)
     .pipe(concat('app.js'))
     .pipe(uglify({'mangle': false}))
     .pipe(gulp.dest('./release'))
-  let mobileApp = gulp.src([
-    './src/js/common/material.js',
-    './src/js/common/madtaras-toast.js',
-    './src/js/common/slideout.min.js',
-    './src/js/common/jets.min.js',
-    './src/js/common/mutation-summary.js',
-    './src/js/common/arrive.min.js',
-    './src/js/common/mustache.min.js',
-    './src/js/common/appRouter.js',
-    './src/js/common/domManipulations.js',
-    './src/js/mobile/app.js'
-  ])
+  let mobileApp = gulp.src(MOBILE_APP_JS_SOURCES)
     .pipe(concat('app.js'))
     .pipe(uglify({'mangle': false}))
     .pipe(gulp.dest('./release/public'))
-  let desktopSignIn = gulp.src([
-    './src/js/common/material.js',
-    './src/js/common/madtaras-toast.js',
-    './src/js/desktop/signIn.js'
-  ])
+  let desktopSignIn = gulp.src(DESKTOP_SIGN_IN_JS_SOURCES)
     .pipe(concat('signIn.js'))
     .pipe(uglify({'mangle': false}))
     .pipe(gulp.dest('./release'))
