@@ -18,6 +18,12 @@
     'response_type=token&v=5.40&revoke=1'
   var userAuthData = {}
 
+  // allow users to open links from webview (it is blocked by default)
+  vkAuthWindow.addEventListener('newwindow', function (e) {
+    e.preventDefault()
+    window.open(e.targetUrl, '_blank')
+  })
+
   signInBtn.addEventListener('click', function () {
     vkAuthWindow.src = authUrl
     vkAuthWindow.classList.add('active')
