@@ -656,15 +656,15 @@ body.user-audios-loaded .profiles-section_broadcasting-profiles:empty:after {
     font-size: 1.2em;
 }
 
+.settings-section_connection-info:not(.is-upgraded) {
+    display: none;
+}
+
 .settings-section_connection-info_address {
     background: #e0e0e0;
 }
 
 .settings-section-qr-code {
-    display: none;
-}
-
-.settings-section-qr-code.upgraded {
     display: block;
     height: 170px;
     width: 170px;

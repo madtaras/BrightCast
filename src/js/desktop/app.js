@@ -43,17 +43,16 @@ var isServer = true
             if (addressRegEx.test(networkInterface.address)) {
               var address = networkInterface.address + ':' + port
               document.getElementById('settings-section_connection-info_address').innerText = address
+              qr.canvas({
+                'canvas': document.getElementById('settings-section-qr-code'),
+                'value': address
+              })
+              document.querySelector('#settings-section_connection-info').classList.add('is-upgraded')
               domManipulations.showToast({
                 'innerText': (chrome.i18n.getMessage('initialToast') ||
                   'Інформація для підключення віддаленого керування знаходиться на сторінці налаштувань'),
                 'duration': 9999999
               })
-              var QRCodeCanvas = document.getElementById('settings-section-qr-code')
-              qr.canvas({
-                'canvas': QRCodeCanvas,
-                'value': address
-              })
-              QRCodeCanvas.classList.add('upgraded')
             }
           })
         })
