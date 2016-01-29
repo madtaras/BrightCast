@@ -11,12 +11,16 @@ response.userInfo = API.users.get({
 
 
 // Getting user's audios
+// fallback for old versions of app in which only 40 audios were load on launch
+if (!Args.my_audios_to_load) {
+    Args.my_audios_to_load = 40;
+}
+
 response.userAudios = API.audio.get({
     "user_id": Args.user_id,
     "access_token": Args.access_token,
     "v": 5.40,
-    "count": 40});
-
+    "count": Args.my_audios_to_load});
 
 // Getting user's audios count
 response.userAudiosCount = API.audio.getCount({

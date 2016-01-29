@@ -4,12 +4,15 @@ chrome.storage.local.get(['vkAccessToken', 'vkUserID'], function (userAuthData) 
   window.vkAccessToken = userAuthData.vkAccessToken
   window.vkUserID = userAuthData.vkUserID
 
+  var MY_AUDIOS_TO_LOAD = 120
+
   domManipulations.showSpinner()
   vkRequest.send({
     'method': 'execute.getDataForAppInit',
     'requestParams': {
       'access_token': vkAccessToken,
-      'user_id': vkUserID
+      'user_id': vkUserID,
+      'my_audios_to_load': MY_AUDIOS_TO_LOAD
     }
   }).then(function (response) {
     domManipulations.insertUserInfoIntoDrawerHeader(response.userInfo)
@@ -22,7 +25,7 @@ chrome.storage.local.get(['vkAccessToken', 'vkUserID'], function (userAuthData) 
     var myAudioSectionSonglist = document.getElementById('my-audios-section_songlist')
 
     // hide load-more-songs-btn if there aren't anymore audios to load
-    if (+response.userAudiosCount < 41) {
+    if (+response.userAudiosCount < (MY_AUDIOS_TO_LOAD + 1)) {
       domManipulations.addAttributeToElem({
         'selector': '#my-audios-section_load-more-songs-btn',
         'attrName': 'hidden',
@@ -30,7 +33,7 @@ chrome.storage.local.get(['vkAccessToken', 'vkUserID'], function (userAuthData) 
       })
     } else {
       myAudioSectionSonglist.dataset.userAudiosCount = response.userAudiosCount
-      myAudioSectionSonglist.dataset.userAudiosLoaded = 40
+      myAudioSectionSonglist.dataset.userAudiosLoaded = MY_AUDIOS_TO_LOAD
       myAudiosSectionLoadMoreBtn.addEventListener('click', function () {
         domManipulations.showSpinner()
         connectedSockets.forEach(function (socket) {

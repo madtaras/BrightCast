@@ -115,7 +115,8 @@ var isServer = true
         'method': 'execute.getDataForAppInit',
         'requestParams': {
           'access_token': vkAccessToken,
-          'user_id': vkUserID
+          'user_id': vkUserID,
+          'my_audios_to_load': document.querySelector('#my-audios-section_songlist').children.length
         }
       }).then(function (response) {
         sendDomManipulationsMessage({
@@ -148,7 +149,7 @@ var isServer = true
             'className': 'user-audios-loaded'
           }
         })
-        if (response.userAudios.items.length < 40) {
+        if (document.querySelector('#my-audios-section_load-more-songs-btn').hidden) {
           sendDomManipulationsMessage({
             'socket': socket,
             'function': 'addAttributeToElem',
