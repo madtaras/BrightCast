@@ -4,6 +4,15 @@ chrome.storage.local.get(['vkAccessToken', 'vkUserID'], function (userAuthData) 
   window.vkAccessToken = userAuthData.vkAccessToken
   window.vkUserID = userAuthData.vkUserID
 
+  // need it for stats on vk dev page
+  vkRequest.send({
+    'method': 'stats.trackVisitor',
+    'requestParams': {
+      'access_token': vkAccessToken,
+      'user_id': vkUserID
+    }
+  })
+
   var MY_AUDIOS_TO_LOAD = 120
 
   domManipulations.showSpinner()
