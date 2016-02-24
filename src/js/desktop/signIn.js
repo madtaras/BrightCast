@@ -1,4 +1,4 @@
-/* globals madtarasToast, chrome */
+/* globals chrome */
 ;(function () {
   // localization
   (function () {
@@ -10,6 +10,7 @@
     }
   })()
 
+  var materialSnackbar = document.querySelector('#material-snackbar')
   var vkAuthWindow = document.getElementById('auth-page_vk-auth-window')
   var signInBtn = document.getElementById('auth-page_sign-in-btn')
   var authUrl = 'https://oauth.vk.com/authorize?client_id=5142990&' +
@@ -42,8 +43,8 @@
         } else {
           vkAuthWindow.classList.remove('active')
           vkAuthWindow.src = ''
-          madtarasToast.show({
-            'innerText': chrome.i18n.getMessage('smthWentWrongTryAgain') || 'Щось пішло не так. Спробуйте знову.'
+          materialSnackbar.MaterialSnackbar.showSnackbar({
+            'message': chrome.i18n.getMessage('smthWentWrongTryAgain') || 'Щось пішло не так. Спробуйте знову.'
           })
         }
       }

@@ -1,4 +1,4 @@
-/* globals madtarasToast, Slideout, isServer */
+/* globals Slideout, isServer */
 ;(function () {
   var appRouter = {}
 
@@ -31,22 +31,6 @@
     })
   })
 
-  function adjustMadtarasToastPosition () {
-    var currentToast = document.querySelector('.madtaras-toast')
-    if (document.documentElement.clientWidth > 1024) {
-      madtarasToast.changeConfig({'style': {'left': '252px'}})
-      if (currentToast) currentToast.style.left = '252px'
-    } else if (document.documentElement.clientWidth > 568) {
-      madtarasToast.changeConfig({'style': {'left': '12px'}})
-      if (currentToast) currentToast.style.left = '12px'
-    } else {
-      madtarasToast.changeConfig({'style': {'left': '0'}})
-      if (currentToast) currentToast.style.left = '0'
-    }
-  }
-
-  adjustMadtarasToastPosition()
-
   var slideout = new Slideout({
     'panel': document.getElementById('content'),
     'menu': document.getElementById('drawer-panel'),
@@ -63,14 +47,12 @@
     if (document.documentElement.clientWidth > 1024) {
       slideout.open()
     }
-    adjustMadtarasToastPosition()
   })
 
   window.addEventListener('resize', function () {
     if (document.documentElement.clientWidth <= 1024) {
       slideout.close()
     }
-    adjustMadtarasToastPosition()
   })
 
   Array.prototype.forEach.call(document.querySelectorAll('.section_header_drawer-toggle-btn'), function (button) {

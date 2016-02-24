@@ -88,19 +88,16 @@ const AUTOPREFIXER_BROWSERS = [
 
 const DESKTOP_APP_CSS_SOURCES = [
   './src/css/material.css',
-  './src/css/madtaras-toast.css',
   './src/css/app.css'
 ]
 
 const MOBILE_APP_CSS_SOURCES = [
   './src/css/material.css',
-  './src/css/madtaras-toast.css',
   './src/css/app.css'
 ]
 
 const DESKTOP_SIGN_IN_CSS_SOURCES = [
   './src/css/material.css',
-  './src/css/madtaras-toast.css',
   './src/css/signIn.css'
 ]
 
@@ -147,7 +144,6 @@ gulp.task('css_prod', () => {
 
 const DESKTOP_APP_JS_SOURCES = [
   './src/js/common/material.js',
-  './src/js/common/madtaras-toast.js',
   './src/js/common/slideout.min.js',
   './src/js/common/appHelpfulModules.js',
   './src/js/common/mutation-summary.js',
@@ -166,7 +162,6 @@ const DESKTOP_APP_JS_SOURCES = [
 
 const MOBILE_APP_JS_SOURCES = [
   './src/js/common/material.js',
-  './src/js/common/madtaras-toast.js',
   './src/js/common/slideout.min.js',
   './src/js/common/jets.min.js',
   './src/js/common/mutation-summary.js',
@@ -179,7 +174,6 @@ const MOBILE_APP_JS_SOURCES = [
 
 const DESKTOP_SIGN_IN_JS_SOURCES = [
   './src/js/common/material.js',
-  './src/js/common/madtaras-toast.js',
   './src/js/desktop/signIn.js'
 ]
 

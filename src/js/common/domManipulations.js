@@ -1,4 +1,4 @@
-/* globals Mustache, madtarasToast, profilesSectionSearch, appRouter, isServer */
+/* globals Mustache, profilesSectionSearch, appRouter, isServer */
 ;(function (namespace) {
   // templates
   var profileTemplate = document.getElementById('profileTemplate').innerHTML
@@ -192,7 +192,13 @@
     }
   }
 
-  namespace.showToast = madtarasToast.show
+  var materialSnackbar = document.querySelector('#material-snackbar')
+  namespace.showToast = function (opts) {
+    materialSnackbar.MaterialSnackbar.showSnackbar({
+      'message': opts.innerText,
+      'timeout': opts.duration
+    })
+  }
 
   var spinner = document.getElementById('spinner')
   namespace.showSpinner = function () { spinner.hidden = false }

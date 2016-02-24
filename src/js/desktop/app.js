@@ -51,7 +51,7 @@ var isServer = true
               domManipulations.showToast({
                 'innerText': (chrome.i18n.getMessage('initialToast') ||
                   'Інформація для підключення віддаленого керування знаходиться на сторінці налаштувань'),
-                'duration': 9999999
+                'duration': 10000
               })
             }
           })
