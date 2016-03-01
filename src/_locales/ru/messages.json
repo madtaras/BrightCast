@@ -100,5 +100,8 @@
     },
     "wall": {
         "message": "Стена"
+    },
+    "download": {
+        "message": "Скачать"
     }
 }

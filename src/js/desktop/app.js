@@ -443,6 +443,11 @@ var isServer = true
       sendRequestAndAddAudio({
         'songlistItemSelector': requestParams.args.songlistItemSelector
       })
+    } else if (e.data.indexOf('downloadAudio?') === 0) {
+      if (requestParams.args && requestParams.args !== 'undefined' && requestParams.args !== 'null') {
+        requestParams.args = JSON.parse(requestParams.args)
+      }
+      downloadAudioByUrl(requestParams.args.audioUrl, requestParams.args.songTitle)
     }
   }
 
@@ -718,6 +723,14 @@ var isServer = true
     })
   })
 
+  function downloadAudioByUrl (audioUrl, songTitle) {
+    window.open('data:text/html;charset=utf-8,' +
+      encodeURIComponent('<!doctype html><html><head> <meta charset="utf-8"> <title>Downloading song</title> <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"> <style>html, body{height: 100%; width: 100%; margin: 0; padding: 0;}body{background: #212121; color: #fff; font-family: serif; display: flex; flex-direction: column; align-items: center; justify-content: center; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;}.title{font-size: 3em; margin: 0;}.sub-title{font-size: 1.3em;}@media screen and (min-width: 400px){.title{font-size: 4em;}.sub-title{font-size: 1.6em;}}@media screen and (min-width: 500px){.title{font-size: 5.4em;}.sub-title{font-size: 2.1em;}}@media screen and (min-width: 600px){.title{font-size: 6em;}.sub-title{font-size: 2.3em;}}@media screen and (min-width: 700px){.title{font-size: 7em;}.sub-title{font-size: 2.4em;}}@media screen and (min-width: 800px){.title{font-size: 7.7em;}.sub-title{font-size: 2.45em;}}@media screen and (min-width: 1000px){.title{font-size: 9em;}.sub-title{font-size: 2.55em;}}</style></head><body> <h1 class="title">BrightCast</h1> <h3 class="sub-title">Downloading "' + songTitle + '"</h3> <a class="download-song" id="download-song" href="' + audioUrl + '" hidden download>Download</a> <script>document.querySelector(\'#download-song\').click() </script></body></html>'),
+      null,
+      'menubar=no,location=no,resizable=yes,status=yes'
+    )
+  }
+
   function openContextMenuOnSonglistItem (menuBtn, event) {
     hideContextMenu()
     event.stopPropagation()
@@ -732,6 +745,8 @@ var isServer = true
       contextMenuContent += '<li class="mdl-menu__item add-to-audios">' +
       (chrome.i18n.getMessage('addSong') || 'Додати до моїх аудіозаписів') + '</li>'
     }
+    contextMenuContent += '<li class="mdl-menu__item download">' +
+      (chrome.i18n.getMessage('download') || 'Скачати') + '</li>'
 
     var menuBtnId = guid()
     menuBtn.id = menuBtnId
@@ -753,19 +768,22 @@ var isServer = true
     document.body.addEventListener('click', hideContextMenuAndRemoveEventListener)
     menuBtn.parentNode.parentNode.parentNode.addEventListener('scroll', hideContextMenuAndRemoveEventListener)
 
-    if (menuContainer.querySelector('.remove-from-audios')) {
-      menuContainer.querySelector('.remove-from-audios').addEventListener('click', function () {
+    if (menuContainer.querySelector('.mdl-menu__item.remove-from-audios')) {
+      menuContainer.querySelector('.mdl-menu__item.remove-from-audios').addEventListener('click', function () {
         sendRequestAndRemoveAudio({
           'songlistItemSelector': 'div[data-song-class="' + songlistItemElem.dataset.songClass + '"]'
         })
       })
-    } else if (menuContainer.querySelector('.add-to-audios')) {
-      menuContainer.querySelector('.add-to-audios').addEventListener('click', function () {
+    } else if (menuContainer.querySelector('.mdl-menu__item.add-to-audios')) {
+      menuContainer.querySelector('.mdl-menu__item.add-to-audios').addEventListener('click', function () {
         sendRequestAndAddAudio({
           'songlistItemSelector': 'div[data-song-class="' + songlistItemElem.dataset.songClass + '"]'
         })
       })
     }
+    menuContainer.querySelector('.mdl-menu__item.download').addEventListener('click', function () {
+      downloadAudioByUrl(songlistItemElem.dataset.songUrl, songlistItemElem.dataset.songTitle)
+    })
   }
 
   function hideContextMenu () {

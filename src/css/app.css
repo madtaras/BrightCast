@@ -513,6 +513,10 @@ body.user-audios-loaded .profiles-section_broadcasting-profiles:empty:after {
     }
 }
 
+.songlist {
+    padding-bottom: 70px;
+}
+
 .songlist_item {
     padding-right: 16px;
     height: 72px;

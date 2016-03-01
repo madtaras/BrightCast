@@ -155,6 +155,8 @@ var isServer = false
       contextMenuContent += '<li class="mdl-menu__item add-to-audios">' +
       (localization.addSong.message || 'Додати до моїх аудіозаписів') + '</li>'
     }
+    contextMenuContent += '<li class="mdl-menu__item download">' +
+      (localization.download.message || 'Скачати') + '</li>'
 
     var menuBtnId = guid()
     menuBtn.id = menuBtnId
@@ -176,21 +178,29 @@ var isServer = false
     document.body.addEventListener('click', hideContextMenuAndRemoveEventListener)
     menuBtn.parentNode.parentNode.parentNode.addEventListener('scroll', hideContextMenuAndRemoveEventListener)
 
-    if (menuContainer.querySelector('.remove-from-audios')) {
-      menuContainer.querySelector('.remove-from-audios').addEventListener('click', function () {
+    if (menuContainer.querySelector('.mdl-menu__item.remove-from-audios')) {
+      menuContainer.querySelector('.mdl-menu__item.remove-from-audios').addEventListener('click', function () {
         socket.send('sendRequestAndRemoveAudio' + objToRequestParam({
           'args': JSON.stringify({
             'songlistItemSelector': 'div[data-song-class="' + songlistItemElem.dataset.songClass + '"]'})
         }))
       })
-    } else if (menuContainer.querySelector('.add-to-audios')) {
-      menuContainer.querySelector('.add-to-audios').addEventListener('click', function () {
+    } else if (menuContainer.querySelector('.mdl-menu__item.add-to-audios')) {
+      menuContainer.querySelector('.mdl-menu__item.add-to-audios').addEventListener('click', function () {
         socket.send('sendRequestAndAddAudio' + objToRequestParam({
           'args': JSON.stringify({
             'songlistItemSelector': 'div[data-song-class="' + songlistItemElem.dataset.songClass + '"]'})
         }))
       })
     }
+    menuContainer.querySelector('.mdl-menu__item.download').addEventListener('click', function () {
+      socket.send('downloadAudio' + objToRequestParam({
+        'args': JSON.stringify({
+          'audioUrl': songlistItemElem.dataset.songUrl,
+          'songTitle': songlistItemElem.dataset.songTitle
+        })
+      }))
+    })
   }
 
   function hideContextMenu () {
