@@ -36,23 +36,18 @@ var allFriendsArray = API.friends.get({
     "order": "hints"
 });
 
-var allFriendsString = "";
-// converting arrFriendsArray to string
-while (allFriendsArray.length) {
-    allFriendsString = allFriendsString + allFriendsArray.shift();
-}
 // getting can_see_audio field
-allFriendsArray = API.users.get({
-    "user_ids": allFriendsString,
+var allFriendsArrayWithFields = API.users.get({
+    "user_ids": allFriendsArray.items.slice(0, 450),
     "fields": "can_see_audio",
     "access_token": Args.access_token,
     "v": 5.40});
 
-while (!!allFriendsArray.length && (response.friendsWithOpenedAudios.length < 100 )) {
-    if (allFriendsArray[0].can_see_audio) {
-        response.friendsWithOpenedAudios.push(allFriendsArray[0]);
+while (!!allFriendsArrayWithFields.length) {
+    if (allFriendsArrayWithFields[0].can_see_audio) {
+        response.friendsWithOpenedAudios.push(allFriendsArrayWithFields[0]);
     }
-    allFriendsArray.shift();
+    allFriendsArrayWithFields.shift();
 }
 
 
