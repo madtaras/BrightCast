@@ -156,6 +156,7 @@ const DESKTOP_APP_JS_SOURCES = [
   './src/js/desktop/vkRequest.js',
   './src/js/common/mustache.min.js',
   './src/js/common/domManipulations.js',
+  './src/js/desktop/shortcuts.js',
   './src/js/desktop/app.js',
   './src/js/desktop/appInit.js'
 ]
