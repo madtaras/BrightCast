@@ -12,7 +12,7 @@ Features:
 - English, Ukrainian and Russian languages of interface
 - Full version of app is free of charge
 
-BrightCast need to be installed on your computer into Google Chrome https://goo.gl/RJ3VtS and is managed via web page in browser (Safari 7+, Google Chrome, Firefox, Opera) of your mobile device.
+BrightCast need to be installed on your computer into Google Chrome https://goo.gl/RJ3VtS and is managed via web page in browser (Safari 8+, Google Chrome, Firefox, Opera) of your mobile device.
 
 Features coming soon:
 - Work with albums

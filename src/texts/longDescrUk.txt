@@ -12,7 +12,7 @@ BrightCast - VK Music Player
 - Українська, Російська і Англійська мови інтерфейсу
 - Повна версія додатку доступна безкоштовно
 
-Додаток BrightCast встановлюється на компютер в Google Chrome https://goo.gl/RJ3VtS і керується через браузер (Safari 7+, Google Chrome, Firefox, Opera) вашого мобільного пристрою.
+Додаток BrightCast встановлюється на компютер в Google Chrome https://goo.gl/RJ3VtS і керується через браузер (Safari 8+, Google Chrome, Firefox, Opera) вашого мобільного пристрою.
 
 У перспективі:
 - Керування власними плейлистами
