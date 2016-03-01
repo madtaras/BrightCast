@@ -48,11 +48,6 @@ var isServer = true
                 'value': address
               })
               document.querySelector('#settings-section_connection-info').classList.add('is-upgraded')
-              domManipulations.showToast({
-                'innerText': (chrome.i18n.getMessage('initialToast') ||
-                  'Інформація для підключення віддаленого керування знаходиться на сторінці налаштувань'),
-                'duration': 10000
-              })
             }
           })
         })

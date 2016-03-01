@@ -103,5 +103,9 @@
     },
     "download": {
         "message": "Скачати"
+    },
+    "userAuthorizationFailed": {
+        "message": "Сталася помилка :( Будь ласка, вийдіть і залогіньтесь знову.",
+        "description": "Show this message when getDataForAppInit request fails with error code 5."
     }
 }

@@ -4,6 +4,7 @@ All notable changes to BrightCast will be documented in this file.
 ## [Unreleased]
 ### Added
 - Ability to download songs.
+- Handling vk error 5 (User authorization failed) and showing instruction how to fix it
 
 ### Removed
 - Cleaning users' broadcast on app close.
