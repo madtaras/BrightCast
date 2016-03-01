@@ -25,7 +25,7 @@ gulp.task('default', () => {
 gulp.task('release_dev', ['html_dev', 'css_dev', 'js_dev', 'fonts', 'icons', 'backgroundJS', 'appManifest', 'img', 'locales'])
 gulp.task('release_prod', ['html_prod', 'css_prod', 'js_prod', 'fonts', 'icons', 'backgroundJS', 'appManifest', 'img', 'locales'])
 
-gulp.task('cleanReleaseFolder', () => {
+gulp.task('deleteRelease', () => {
   return del(['release/**'])
 })
 
