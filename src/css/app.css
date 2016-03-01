@@ -636,8 +636,13 @@ body.user-audios-loaded .profiles-section_broadcasting-profiles:empty:after {
  */
 
 .settings-section-content {
-    padding-bottom: 96px;
-    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.settings-section-content-wrapper {
+  overflow-y: auto;
+  flex-grow: 999;
 }
 
 .settings-section-content_item {
@@ -684,7 +689,6 @@ body.user-audios-loaded .profiles-section_broadcasting-profiles:empty:after {
     border-radius: 2px;
     display: flex;
     justify-content: center;
-    position: absolute;
     bottom: 8px;
     left: 8px;
 }
