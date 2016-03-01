@@ -384,8 +384,8 @@ position: absolute;
 .profiles-section_profiles,
 .profiles-section_broadcasting-profiles,
 .postslist {
-    margin-top: 8px;
-    margin-bottom: 8px;
+    padding-top: 8px;
+    padding-bottom: 8px;
 }
 
 .profiles_item {
