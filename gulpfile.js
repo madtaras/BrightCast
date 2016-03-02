@@ -20,10 +20,11 @@ gulp.task('default', () => {
   gulp.watch('src/manifest.json', ['appManifest'])
   gulp.watch('src/img/**', ['img'])
   gulp.watch('src/_locales/**', ['locales'])
+  gulp.watch('src/checkFile', ['checkFile'])
 })
 
-gulp.task('release_dev', ['html_dev', 'css_dev', 'js_dev', 'fonts', 'icons', 'backgroundJS', 'appManifest', 'img', 'locales'])
-gulp.task('release_prod', ['html_prod', 'css_prod', 'js_prod', 'fonts', 'icons', 'backgroundJS', 'appManifest', 'img', 'locales'])
+gulp.task('release_dev', ['html_dev', 'css_dev', 'js_dev', 'fonts', 'icons', 'backgroundJS', 'appManifest', 'img', 'locales', 'checkFile'])
+gulp.task('release_prod', ['html_prod', 'css_prod', 'js_prod', 'fonts', 'icons', 'backgroundJS', 'appManifest', 'img', 'locales', 'checkFile'])
 
 gulp.task('deleteRelease', () => {
   return del(['release/**'])
@@ -286,4 +287,9 @@ gulp.task('locales', () => {
     .pipe(gulp.dest('./release/public/_locales'))
 
   return merge(desktop, mobile)
+})
+
+gulp.task('checkFile', () => {
+  return gulp.src('src/check')
+    .pipe(gulp.dest('./release/public'))
 })
