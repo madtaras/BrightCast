@@ -994,7 +994,7 @@ var isServer = true
   window.addEventListener('offline', function () {
     domManipulations.showToast({
       'innerText': chrome.i18n.getMessage('internetConnectionLost') || 'Internet connection lost',
-      'duration': 100000
+      'duration': 10000
     })
     connectedSockets.forEach(function (socket) {
       sendDomManipulationsMessage({
@@ -1002,7 +1002,7 @@ var isServer = true
         'function': 'showToast',
         'args': {
           'innerText': chrome.i18n.getMessage('internetConnectionLost') || 'Internet connection lost',
-          'duration': 100000
+          'duration': 10000
         }
       })
     })
