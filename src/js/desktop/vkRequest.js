@@ -21,12 +21,3 @@
     })
   }
 })(this.vkRequest = this.vkRequest || {})
-
-/* usage
-vkRequest.send({
-    'method': 'execute.getDataForAppInit',
-    'requestParams': {
-        'access_token': vkAccessToken,
-        'user_id': vkUserID
-    }).then(function (response) { console.log(response) })
-*/
