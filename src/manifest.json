@@ -9,7 +9,7 @@
   "short_name": "BrightCast",
   "version": "0.6.5",
   "version_name": "0.6.5 beta",
-  "default_locale": "uk",
+  "default_locale": "en",
 
   "description": "__MSG_shortDescr__",
   "icons": {

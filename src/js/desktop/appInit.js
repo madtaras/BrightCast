@@ -114,14 +114,14 @@ chrome.storage.local.get(['vkAccessToken', 'vkUserID'], function (userAuthData) 
             })
           })
           domManipulations.showToast({
-            'innerText': chrome.i18n.getMessage('errorOccurred') || 'Сталася помилка'
+            'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
           })
           connectedSockets.forEach(function (socket) {
             sendDomManipulationsMessage({
               'socket': socket,
               'function': 'showToast',
               'args': {
-                'innerText': chrome.i18n.getMessage('errorOccurred') || 'Сталася помилка'
+                'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
               }
             })
           })
@@ -181,16 +181,16 @@ chrome.storage.local.get(['vkAccessToken', 'vkUserID'], function (userAuthData) 
     domManipulations.hideSpinner()
     domManipulations.showToast({
       'innerText': (chrome.i18n.getMessage('initialToast') ||
-        'Інформація для підключення віддаленого керування знаходиться на сторінці налаштувань'),
+        'Information to connect remote control is on the settings page'),
       'duration': 10000
     })
   }).catch(function (err) {
     domManipulations.hideSpinner()
     var errMsg
     if (+err.error_code === 5) {
-      errMsg = chrome.i18n.getMessage('userAuthorizationFailed') || 'Сталася помилка :( Будь ласка, вийдіть і залогіньтесь знову.'
+      errMsg = chrome.i18n.getMessage('userAuthorizationFailed') || 'Error occurred :( Please sign out and sign in again.'
     } else {
-      errMsg = chrome.i18n.getMessage('errorOccurred') || 'Сталася помилка'
+      errMsg = chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
     }
     domManipulations.showToast({
       'innerText': errMsg,

@@ -44,7 +44,7 @@
           vkAuthWindow.classList.remove('active')
           vkAuthWindow.src = ''
           materialSnackbar.MaterialSnackbar.showSnackbar({
-            'message': chrome.i18n.getMessage('smthWentWrongTryAgain') || 'Щось пішло не так. Спробуйте знову.'
+            'message': chrome.i18n.getMessage('smthWentWrongTryAgain') || 'Something went wrong. Please, try again.'
           })
         }
       }
