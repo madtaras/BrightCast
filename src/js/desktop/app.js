@@ -1,6 +1,6 @@
 /* global domManipulations, http, vkRequest, vkAccessToken, vkUserID, chrome, parseBoolean, componentHandler, guid,
 Jets, MutationSummary, secondsTohhmmss, getRandomIntFromTo, qr */
-var isServer = true
+var isServer = true // eslint-disable-line no-unused-vars
 ;(function () {
   // localization
   (function () {
@@ -1495,7 +1495,7 @@ var isServer = true
     })
   }
 
-  var syncWithCurrentPlaylistObserver = new MutationSummary({
+  var syncWithCurrentPlaylistObserver = new MutationSummary({ // eslint-disable-line no-unused-vars
     callback: function (summaries) {
       var changeSummary = summaries[0]
 

@@ -1,5 +1,5 @@
 /* globals domManipulations, componentHandler, vkUserID, Jets */
-var isServer = false
+var isServer = false // eslint-disable-line no-unused-vars
 ;(function () {
   var localization = {}
   var localizationRequest = new window.XMLHttpRequest()
