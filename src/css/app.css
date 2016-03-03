@@ -451,6 +451,8 @@ position: absolute;
 .postslist:empty,
 .profiles-section_broadcasting-profiles:empty {
     height: 100%;
+    padding-bottom: 8px;
+    padding-top: 8px;
 }
 
 body.user-audios-loaded .songlist:empty:after,
