@@ -17,6 +17,20 @@ var isServer = false // eslint-disable-line no-unused-vars
 
   var socket = new window.WebSocket(window.location.origin.replace(/^(https|http)/, 'ws'))
 
+  socket.addEventListener('error', function () {
+    domManipulations.showToast({
+      'innerText': localization.connectionErrorOccurred.message || 'Connection error occurred',
+      'duration': 10000
+    })
+  })
+
+  socket.addEventListener('close', function () {
+    domManipulations.showToast({
+      'innerText': localization.connectionLost.message || 'Connection lost',
+      'duration': 20000
+    })
+  })
+
   socket.addEventListener('message', function handleSocketsMessage (e) {
     if (e.data.indexOf('domManipulations?') === 0) {
       var requestParams = requestParamToObj(e.data)

@@ -107,5 +107,11 @@
     "userAuthorizationFailed": {
         "message": "Сталася помилка :( Будь ласка, вийдіть і залогіньтесь знову.",
         "description": "Show this message when getDataForAppInit request fails with error code 5."
+    },
+    "connectionErrorOccurred": {
+        "message": "Помилка з'єднання."
+    },
+    "connectionLost": {
+        "message": "З'єднання втрачено"
     }
 }
