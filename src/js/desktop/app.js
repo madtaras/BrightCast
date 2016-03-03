@@ -1577,6 +1577,8 @@ var isServer = true
         }
       })
     })
+
+    if (navigator.onLine) document.querySelector('#player-controller_skip-next-btn').dispatchEvent(new window.Event('click'))
   }
 
   player.currentSonglist = null
