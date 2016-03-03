@@ -21,10 +21,12 @@ var isServer = true
   })
 
   if (!navigator.onLine) {
-    domManipulations.showToast({
-      'innerText': chrome.i18n.getMessage('connectToTheInternetAndRestartApp') || 'Connect to the internet and restart the app',
-      'duration': 9999999
-    })
+    setTimeout(function () {
+      domManipulations.showToast({
+        'innerText': chrome.i18n.getMessage('connectToTheInternetAndRestartApp') || 'Connect to the internet and restart the app',
+        'duration': 9999999
+      })
+    }, 700)
     throw new Error('No internet connection')
   }
 
