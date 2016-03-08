@@ -12,6 +12,13 @@ var isServer = true // eslint-disable-line no-unused-vars
     })
   })()
 
+  // set value of volume-range
+  chrome.storage.local.get(['volumeRangeValue'], function (data) {
+    if (data.volumeRangeValue !== null && data.volumeRangeValue !== undefined) {
+      document.querySelector('#player-controller_volume-range').value = +data.volumeRangeValue
+    }
+  })
+
   window.addEventListener('load', function () {
     setTimeout(function () {
       document.querySelector('#drawer-panel').style.display = 'flex'
@@ -1840,6 +1847,9 @@ var isServer = true // eslint-disable-line no-unused-vars
 
   // handle changes on volume range
   document.querySelector('#player-controller_volume-range').addEventListener('input', function (event) {
+    // save value to set after next launch
+    chrome.storage.local.set({'volumeRangeValue': event.target.value})
+
     connectedSockets.forEach(function (socket) {
       sendDomManipulationsMessage({
         'socket': socket,
