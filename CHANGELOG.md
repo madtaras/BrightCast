@@ -8,6 +8,7 @@ All notable changes to BrightCast will be documented in this file.
 - App shortcuts (ctrl + arrow left - skip prev, ctrl + arrow right - skip next, ctrl + space - play/pause, ctrl + arrow up - increase volume, ctrl + arrow down - decrease volume).
 - Showing error message on mobile when connection with desktop lost.
 - Saving value of volume range and restoring it on launch.
+- Copying address to clipboard on click.
 
 ### Removed
 - Cleaning users' broadcast on app close.

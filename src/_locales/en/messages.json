@@ -113,5 +113,8 @@
     },
     "connectionLost": {
         "message": "Connection lost"
+    },
+    "copiedToClipboard": {
+        "message": "Copied to clipboard"
     }
 }

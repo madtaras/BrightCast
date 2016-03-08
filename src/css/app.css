@@ -673,6 +673,7 @@ body.user-audios-loaded .profiles-section_broadcasting-profiles:empty:after {
 
 .settings-section_connection-info_address {
     background: #e0e0e0;
+    cursor: pointer;
 }
 
 .settings-section-qr-code {

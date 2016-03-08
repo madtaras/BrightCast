@@ -113,5 +113,8 @@
     },
     "connectionLost": {
         "message": "З'єднання втрачено"
+    },
+    "copiedToClipboard": {
+        "message": "Скопійовано в буфер"
     }
 }
