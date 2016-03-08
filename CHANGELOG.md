@@ -14,6 +14,7 @@ All notable changes to BrightCast will be documented in this file.
 ### Changed
 - Started using mdl 1.1.1 instead of 1.0.6, mdl-toast instead of madtaras-toast.
 - Default lang to EN.
+- address encoded in QR code (added "http://") to be automatically opened via scanners
 
 ## [0.6.0 - 0.7.0]
 - #### Haven't logged changes.

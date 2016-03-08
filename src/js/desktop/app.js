@@ -47,7 +47,7 @@ var isServer = true // eslint-disable-line no-unused-vars
               document.getElementById('settings-section_connection-info_address').innerText = address
               qr.canvas({
                 'canvas': document.getElementById('settings-section-qr-code'),
-                'value': address
+                'value': 'http://' + address
               })
               document.querySelector('#settings-section_connection-info').classList.add('is-upgraded')
             }
