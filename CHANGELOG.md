@@ -2,6 +2,8 @@
 All notable changes to BrightCast will be documented in this file.
 
 ## [Unreleased]
+
+## 0.7.0 - 2016-03-09
 ### Added
 - Ability to download songs.
 - Handling vk error 5 (User authorization failed) and showing instruction how to fix it.
