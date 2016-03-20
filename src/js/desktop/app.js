@@ -2371,7 +2371,7 @@ var isServer = true // eslint-disable-line no-unused-vars
   })
 
   document.querySelector('#settings-section_connection-info_address').addEventListener('click', function (e) {
-    copyTextToClipboard(e.currentTarget.innerHTML)
+    copyTextToClipboard('http://' + e.currentTarget.innerHTML)
     domManipulations.showToast({
       'innerText': chrome.i18n.getMessage('copiedToClipboard') || 'Copied to clipboard'
     })
