@@ -2,9 +2,12 @@
 All notable changes to BrightCast will be documented in this file.
 
 ## [Unreleased]
+
+## 0.7.1 - 2016-03-21
 ### Added
-- package.json file for installing all the dependencies via `npm install`.
+- Package.json file for installing all the dependencies via `npm install`.
 - Some explanations to settings page.
+- "http://" to address, which is coppied to clipboard.
 
 ### Changed
 - Broadcast icon, added tooltip for it.
