@@ -116,5 +116,8 @@
     },
     "copiedToClipboard": {
         "message": "Copied to clipboard"
+    },
+    "broadcastSong": {
+        "message": "Broadcast song <br> in status"
     }
 }

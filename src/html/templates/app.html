@@ -67,6 +67,11 @@
                     </button>
                 </div>
                 <div class="player-controller_btns-row2">
+                    <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect player-controller_btns_btn player-controller_broadcast-btn"
+                      id="player-controller_broadcast-btn">
+                        <img src="icons/broadcast.svg" class="broadcast-ico">
+                    </button>
+                    {% block desktopBroadCastTooltip %} {% endblock %}
                     <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect player-controller_btns_btn player-controller_loop-btn"
                       id="player-controller_loop-btn">
                         <i class="material-icons">loop</i>
@@ -74,10 +79,6 @@
                     <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect player-controller_btns_btn player-controller_shuffle-btn"
                       id="player-controller_shuffle-btn">
                         <i class="material-icons">shuffle</i>
-                    </button>
-                    <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect player-controller_btns_btn player-controller_broadcast-btn"
-                      id="player-controller_broadcast-btn">
-                        <i class="material-icons">cast</i>
                     </button>
                 </div>
             </div>

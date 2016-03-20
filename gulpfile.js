@@ -233,7 +233,8 @@ gulp.task('icons', () => {
   let desktop = gulp.src([
     'src/icons/desktop/icon16.png',
     'src/icons/desktop/icon48.png',
-    'src/icons/desktop/icon128.png'
+    'src/icons/desktop/icon128.png',
+    'src/icons/broadcast.svg'
   ])
     .pipe(gulp.dest('./release/icons'))
 
@@ -243,11 +244,14 @@ gulp.task('icons', () => {
     'src/icons/mobile/apple-touch-icon-120x120.png',
     'src/icons/mobile/apple-touch-icon-152x152.png',
     'src/icons/mobile/apple-touch-icon-180x180.png',
-    'src/icons/mobile/favicon.ico'
+    'src/icons/broadcast.svg'
   ])
+    .pipe(gulp.dest('./release/public/icons'))
+
+  let favicon = gulp.src('src/icons/mobile/favicon.ico')
     .pipe(gulp.dest('./release/public'))
 
-  return merge(desktop, mobile)
+  return merge(desktop, mobile, favicon)
 })
 
 gulp.task('backgroundJS', () => {

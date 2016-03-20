@@ -116,5 +116,8 @@
     },
     "copiedToClipboard": {
         "message": "Скопійовано в буфер"
+    },
+    "broadcastSong": {
+        "message": "Транслювати пісню<br> в статус"
     }
 }
