@@ -12,6 +12,8 @@ var isServer = true // eslint-disable-line no-unused-vars
     })
   })()
 
+  if (navigator.platform.indexOf('Win') > -1) document.querySelector('.settings-section_for-windows-only-msg').hidden = false
+
   // set value of volume-range
   chrome.storage.local.get(['volumeRangeValue'], function (data) {
     if (data.volumeRangeValue !== null && data.volumeRangeValue !== undefined) {

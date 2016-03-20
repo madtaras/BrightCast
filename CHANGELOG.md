@@ -4,6 +4,7 @@ All notable changes to BrightCast will be documented in this file.
 ## [Unreleased]
 ### Added
 - package.json file for installing all the dependencies via `npm install`.
+- Some explanations to settings page.
 
 ### Changed
 - Broadcast icon, added tooltip for it.

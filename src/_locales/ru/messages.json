@@ -48,7 +48,13 @@
         "message": "Просканируйте QR код или введите"
     },
     "settingsSectionConnectionInfoPart2": {
-        "message": "в адресную строку браузера на мобильном устройстве."
+        "message": "в адресную строку браузера на мобильном устройстве, чтобы использовать его в качестве пульта дистанционного управления для BrightCast."
+    },
+    "settingsSectionConnectionInfoPart3": {
+        "message": "Компьютер и мобильное устройство должны быть подключены к той же сети."
+    },
+    "settingsSectionConnectionInfoPart4": {
+        "message": "Вам нужно открыть порты для приложения. Инструкция <a href='https://goo.gl/wFwtqP' target='_blank'>здесь</a>"
     },
     "initialToast": {
         "message": "Информация для подключения удаленного управления находится на странице настроек"
