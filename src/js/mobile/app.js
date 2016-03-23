@@ -1,43 +1,36 @@
-/* globals domManipulations, componentHandler, vkUserID, Jets */
-var isServer = false // eslint-disable-line no-unused-vars
+/* globals componentHandler, vkUserID */
 ;(function () {
-  var localization = {}
-  var localizationRequest = new window.XMLHttpRequest()
-  localizationRequest.open('GET', 'localization', true)
-  localizationRequest.send()
-  localizationRequest.onload = function () {
-    localization = JSON.parse(localizationRequest.responseText)
-    var objects = document.getElementsByTagName('*')
-    Array.prototype.forEach.call(objects, function (object) {
-      if (object.dataset && object.dataset.i18nContent) {
-        object.innerHTML = localization[object.dataset.i18nContent].message || object.innerHTML
-      }
-    })
-  }
+  // Loading modules
+  require('../common/material.js')
+  var remoteManipulations = require('../common/remoteManipulations.js')
+  var Arrive = require('../common/arrive.js') // eslint-disable-line no-unused-vars
+  var Jets = require('../common/jets.min.js')
+  var guid = require('../common/functions/guid.js')
+  var localization = require('./mobileLocalization.js')
 
   var socket = new window.WebSocket(window.location.origin.replace(/^(https|http)/, 'ws'))
 
   socket.addEventListener('error', function () {
-    domManipulations.showToast({
-      'innerText': localization.connectionErrorOccurred.message || 'Connection error occurred',
+    remoteManipulations.showToast({
+      'innerText': localization.msgs.connectionErrorOccurred.message || 'Connection error occurred',
       'duration': 10000
     })
   })
 
   socket.addEventListener('close', function () {
-    domManipulations.showToast({
-      'innerText': localization.connectionLost.message || 'Connection lost',
+    remoteManipulations.showToast({
+      'innerText': localization.msgs.connectionLost.message || 'Connection lost',
       'duration': 20000
     })
   })
 
   socket.addEventListener('message', function handleSocketsMessage (e) {
-    if (e.data.indexOf('domManipulations?') === 0) {
+    if (e.data.indexOf('remoteManipulations?') === 0) {
       var requestParams = requestParamToObj(e.data)
       if (requestParams.args && requestParams.args !== 'undefined' && requestParams.args !== 'null') {
         requestParams.args = JSON.parse(requestParams.args)
       }
-      domManipulations[requestParams.function](requestParams.args)
+      remoteManipulations[requestParams.func](requestParams.args)
     }
   })
 
@@ -57,18 +50,17 @@ var isServer = false // eslint-disable-line no-unused-vars
     return params
   }
 
-  function sendDomManipulationsMessage (options) {
-    options.socket.send('domManipulations' + objToRequestParam({
-      'function': options.function,
+  function sendRemoteManipulationsMsg (options) {
+    socket.send('remoteManipulations' + objToRequestParam({
+      'func': options.func,
       'args': JSON.stringify(options.args)
     }))
   }
 
   var searchSectionLoadMoreBtn = document.getElementById('search-section_load-more-songs-btn')
   searchSectionLoadMoreBtn.addEventListener('click', function () {
-    sendDomManipulationsMessage({
-      'socket': socket,
-      'function': 'dispatchEventOnElem',
+    sendRemoteManipulationsMsg({
+      'func': 'dispatchEventOnElem',
       'args': {
         'selector': '#search-section_load-more-songs-btn',
         'event': 'click'
@@ -78,17 +70,15 @@ var isServer = false // eslint-disable-line no-unused-vars
 
   var seacrhSectionSearchInput = document.getElementById('search-section_search-input')
   seacrhSectionSearchInput.addEventListener('change', function (e) {
-    sendDomManipulationsMessage({
-      'socket': socket,
-      'function': 'setElemValue',
+    sendRemoteManipulationsMsg({
+      'func': 'setElemValue',
       'args': {
         'selector': '#search-section_search-input',
         'value': e.currentTarget.value
       }
     })
-    sendDomManipulationsMessage({
-      'socket': socket,
-      'function': 'dispatchEventOnElem',
+    sendRemoteManipulationsMsg({
+      'func': 'dispatchEventOnElem',
       'args': {
         'selector': '#search-section_search-input',
         'event': 'change'
@@ -98,22 +88,14 @@ var isServer = false // eslint-disable-line no-unused-vars
 
   var myAudiosSectionLoadMoreBtn = document.getElementById('my-audios-section_load-more-songs-btn')
   myAudiosSectionLoadMoreBtn.addEventListener('click', function () {
-    sendDomManipulationsMessage({
-      'socket': socket,
-      'function': 'dispatchEventOnElem',
+    sendRemoteManipulationsMsg({
+      'func': 'dispatchEventOnElem',
       'args': {
         'selector': '#my-audios-section_load-more-songs-btn',
         'event': 'click'
       }
     })
   })
-
-  function guid () {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-      /** @type {number} */ var r = Math.random() * 16 | 0
-      return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16)
-    })
-  }
 
   /**
    * Handling clicks on all songlist elements.
@@ -126,9 +108,8 @@ var isServer = false // eslint-disable-line no-unused-vars
       event.stopPropagation()
       openContextMenuOnSonglistItem(event.target.parentNode, event)
     } else {
-      sendDomManipulationsMessage({
-        'socket': socket,
-        'function': 'dispatchEventOnElem',
+      sendRemoteManipulationsMsg({
+        'func': 'dispatchEventOnElem',
         'args': {
           'selector': 'div[data-song-class="' + event.currentTarget.dataset.songClass + '"]',
           'event': 'click',
@@ -144,9 +125,8 @@ var isServer = false // eslint-disable-line no-unused-vars
 
   document.body.arrive('.broadcasting-profiles_item', function () {
     this.addEventListener('click', function () {
-      sendDomManipulationsMessage({
-        'socket': socket,
-        'function': 'dispatchEventOnElem',
+      sendRemoteManipulationsMsg({
+        'func': 'dispatchEventOnElem',
         'args': {
           'selector': '.broadcasting-profiles_item[data-profile-id="' + this.dataset.profileId + '"] .songlist_item',
           'event': 'click'
@@ -164,13 +144,13 @@ var isServer = false // eslint-disable-line no-unused-vars
     // check if song is in user's audios and add appropriate message
     if (songlistItemElem.dataset.songClass.indexOf(vkUserID) === 0) {
       contextMenuContent += '<li class="mdl-menu__item remove-from-audios">' +
-      (localization.deleteSong.message || 'Видалити з моїх аудіозаписів') + '</li>'
+      (localization.msgs.deleteSong.message || 'Видалити з моїх аудіозаписів') + '</li>'
     } else {
       contextMenuContent += '<li class="mdl-menu__item add-to-audios">' +
-      (localization.addSong.message || 'Додати до моїх аудіозаписів') + '</li>'
+      (localization.msgs.addSong.message || 'Додати до моїх аудіозаписів') + '</li>'
     }
     contextMenuContent += '<li class="mdl-menu__item download">' +
-      (localization.download.message || 'Скачати') + '</li>'
+      (localization.msgs.download.message || 'Скачати') + '</li>'
 
     var menuBtnId = guid()
     menuBtn.id = menuBtnId
@@ -249,9 +229,8 @@ var isServer = false // eslint-disable-line no-unused-vars
    */
   function handleClickOnProfileslistItem (profileslistItem) {
     var profileId = profileslistItem.dataset.profileId
-    sendDomManipulationsMessage({
-      'socket': socket,
-      'function': 'dispatchEventOnElem',
+    sendRemoteManipulationsMsg({
+      'func': 'dispatchEventOnElem',
       'args': {
         'selector': 'div[data-profile-id="' + profileId + '"]',
         'event': 'click',
@@ -288,9 +267,8 @@ var isServer = false // eslint-disable-line no-unused-vars
   var profileSectionLoadMorePostsBtn = document.getElementById('profile-section_load-more-posts-btn')
 
   profileSectionLoadMoreSongsBtn.addEventListener('click', function () {
-    sendDomManipulationsMessage({
-      'socket': socket,
-      'function': 'dispatchEventOnElem',
+    sendRemoteManipulationsMsg({
+      'func': 'dispatchEventOnElem',
       'args': {
         'selector': '#profile-section_load-more-songs-btn',
         'event': 'click'
@@ -299,9 +277,8 @@ var isServer = false // eslint-disable-line no-unused-vars
   })
 
   profileSectionLoadMorePostsBtn.addEventListener('click', function () {
-    sendDomManipulationsMessage({
-      'socket': socket,
-      'function': 'dispatchEventOnElem',
+    sendRemoteManipulationsMsg({
+      'func': 'dispatchEventOnElem',
       'args': {
         'selector': '#profile-section_load-more-posts-btn',
         'event': 'click'
@@ -313,17 +290,15 @@ var isServer = false // eslint-disable-line no-unused-vars
    * Player controller logic.
    */
   document.querySelector('#player-controller_song-range').addEventListener('input', function (event) {
-    sendDomManipulationsMessage({
-      'socket': socket,
-      'function': 'changeSliderValue',
+    sendRemoteManipulationsMsg({
+      'func': 'changeSliderValue',
       'args': {
         'selector': '#player-controller_song-range',
         'value': event.target.value
       }
     })
-    sendDomManipulationsMessage({
-      'socket': socket,
-      'function': 'dispatchEventOnElem',
+    sendRemoteManipulationsMsg({
+      'func': 'dispatchEventOnElem',
       'args': {
         'selector': '#player-controller_song-range',
         'event': 'input'
@@ -332,17 +307,15 @@ var isServer = false // eslint-disable-line no-unused-vars
   })
 
   document.querySelector('#player-controller_volume-range').addEventListener('input', function (event) {
-    sendDomManipulationsMessage({
-      'socket': socket,
-      'function': 'changeSliderValue',
+    sendRemoteManipulationsMsg({
+      'func': 'changeSliderValue',
       'args': {
         'selector': '#player-controller_volume-range',
         'value': event.target.value
       }
     })
-    sendDomManipulationsMessage({
-      'socket': socket,
-      'function': 'dispatchEventOnElem',
+    sendRemoteManipulationsMsg({
+      'func': 'dispatchEventOnElem',
       'args': {
         'selector': '#player-controller_volume-range',
         'event': 'input'
@@ -350,9 +323,8 @@ var isServer = false // eslint-disable-line no-unused-vars
     })
   })
   document.querySelector('#player-controller_loop-btn').addEventListener('click', function (event) {
-    sendDomManipulationsMessage({
-      'socket': socket,
-      'function': 'dispatchEventOnElem',
+    sendRemoteManipulationsMsg({
+      'func': 'dispatchEventOnElem',
       'args': {
         'selector': '#player-controller_loop-btn',
         'event': 'click'
@@ -360,9 +332,8 @@ var isServer = false // eslint-disable-line no-unused-vars
     })
   })
   document.querySelector('#player-controller_shuffle-btn').addEventListener('click', function (event) {
-    sendDomManipulationsMessage({
-      'socket': socket,
-      'function': 'dispatchEventOnElem',
+    sendRemoteManipulationsMsg({
+      'func': 'dispatchEventOnElem',
       'args': {
         'selector': '#player-controller_shuffle-btn',
         'event': 'click'
@@ -370,9 +341,8 @@ var isServer = false // eslint-disable-line no-unused-vars
     })
   })
   document.querySelector('#player-controller_broadcast-btn').addEventListener('click', function (event) {
-    sendDomManipulationsMessage({
-      'socket': socket,
-      'function': 'dispatchEventOnElem',
+    sendRemoteManipulationsMsg({
+      'func': 'dispatchEventOnElem',
       'args': {
         'selector': '#player-controller_broadcast-btn',
         'event': 'click'
@@ -380,9 +350,8 @@ var isServer = false // eslint-disable-line no-unused-vars
     })
   })
   document.querySelector('#player-controller_skip-previous-btn').addEventListener('click', function (event) {
-    sendDomManipulationsMessage({
-      'socket': socket,
-      'function': 'dispatchEventOnElem',
+    sendRemoteManipulationsMsg({
+      'func': 'dispatchEventOnElem',
       'args': {
         'selector': '#player-controller_skip-previous-btn',
         'event': 'click'
@@ -390,9 +359,8 @@ var isServer = false // eslint-disable-line no-unused-vars
     })
   })
   document.querySelector('#player-controller_skip-next-btn').addEventListener('click', function (event) {
-    sendDomManipulationsMessage({
-      'socket': socket,
-      'function': 'dispatchEventOnElem',
+    sendRemoteManipulationsMsg({
+      'func': 'dispatchEventOnElem',
       'args': {
         'selector': '#player-controller_skip-next-btn',
         'event': 'click'
@@ -400,9 +368,8 @@ var isServer = false // eslint-disable-line no-unused-vars
     })
   })
   document.querySelector('#player-controller_play-pause-btn').addEventListener('click', function (event) {
-    sendDomManipulationsMessage({
-      'socket': socket,
-      'function': 'dispatchEventOnElem',
+    sendRemoteManipulationsMsg({
+      'func': 'dispatchEventOnElem',
       'args': {
         'selector': '#player-controller_play-pause-btn',
         'event': 'click'
@@ -410,13 +377,12 @@ var isServer = false // eslint-disable-line no-unused-vars
     })
   })
   document.querySelector('#drawer-panel_header').addEventListener('click', function () {
-    domManipulations.navigateTo({'sectionId': '#my-audios-section'})
+    remoteManipulations.navigateTo({'sectionId': '#my-audios-section'})
   })
 
   document.querySelector('#profiles-section_tabs_broadcasting-tab').addEventListener('click', function () {
-    sendDomManipulationsMessage({
-      'socket': socket,
-      'function': 'dispatchEventOnElem',
+    sendRemoteManipulationsMsg({
+      'func': 'dispatchEventOnElem',
       'args': {
         'selector': '#profiles-section_tabs_broadcasting-tab',
         'event': 'click'
@@ -425,9 +391,8 @@ var isServer = false // eslint-disable-line no-unused-vars
   })
 
   document.querySelector('#player-controller_add-songs-to-audios-btn').addEventListener('click', function (event) {
-    sendDomManipulationsMessage({
-      'socket': socket,
-      'function': 'dispatchEventOnElem',
+    sendRemoteManipulationsMsg({
+      'func': 'dispatchEventOnElem',
       'args': {
         'selector': '#player-controller_add-songs-to-audios-btn',
         'event': 'click'
@@ -442,6 +407,7 @@ var isServer = false // eslint-disable-line no-unused-vars
     })
   })
 
+  // fix for ios Safari (can't open input field)
   if (/iPad|iPhone|iPod/.test(navigator.platform)) {
     Array.prototype.forEach.call(document.querySelectorAll('.mdl-textfield--expandable'), function (textField) {
       textField.addEventListener('click', function () {

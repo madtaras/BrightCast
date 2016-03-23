@@ -397,6 +397,7 @@ componentHandler = (function() {
   };
 })();
 
+  module.exports = componentHandler
 /**
  * Describes the type of a registered component type managed by
  * componentHandler. Provided for benefit of the Closure compiler.

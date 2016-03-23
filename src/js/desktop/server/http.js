@@ -4,6 +4,7 @@
  * found in the LICENSE file.
  **/
 
+var Sha1 = require('./sha1.js')
 var http = function() {
 
 var socket = (chrome.experimental && chrome.experimental.socket) ||
@@ -801,3 +802,5 @@ return {
   'WebSocketServer': WebSocketServer,
 };
 }();
+
+module.exports = http

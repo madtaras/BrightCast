@@ -18,7 +18,7 @@
     "128": "icons/icon128.png"
   },
 
-  "author": "Taras Mazurkevych",
+  "author": "Taras Mazurkevych <mad.taras@gmail.com>",
 
   "minimum_chrome_version": "46",
   "offline_enabled": false,

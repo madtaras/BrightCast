@@ -1,31 +1,44 @@
-/* globals chrome, vkRequest, vkAccessToken, vkUserID, domManipulations, sendDomManipulationsMessage,
-connectedSockets */
-chrome.storage.local.get(['vkAccessToken', 'vkUserID'], function (userAuthData) {
-  window.vkAccessToken = userAuthData.vkAccessToken
-  window.vkUserID = userAuthData.vkUserID
-
-  // need it for stats on vk dev page
-  vkRequest.send({
-    'method': 'stats.trackVisitor',
-    'requestParams': {
-      'access_token': vkAccessToken,
-      'user_id': vkUserID
+/* globals chrome */
+module.exports = function (user_id, remoteManipulations, vkRequest) {
+  // set value of volume-range
+  chrome.storage.local.get(['volumeRangeValue'], function (data) {
+    if (data.volumeRangeValue !== null && data.volumeRangeValue !== undefined) {
+      document.querySelector('#player-controller_volume-range').value = +data.volumeRangeValue
     }
   })
 
+  window.addEventListener('load', function () {
+    setTimeout(function () {
+      document.querySelector('#drawer-panel').style.display = 'flex'
+      document.querySelector('#content').style.display = 'block'
+      document.querySelector('.appLoading').classList.add('moveOut')
+    }, 700)
+  })
+
+  if (!navigator.onLine) {
+    setTimeout(function () {
+      remoteManipulations.showToast({
+        'innerText': chrome.i18n.getMessage('connectToTheInternetAndRestartApp') || 'Connect to the internet and restart the app',
+        'duration': 9999999
+      })
+    }, 700)
+    throw new Error('No internet connection')
+  }
+
+  // stats
+  vkRequest.send({'method': 'stats.trackVisitor'})
+
   var MY_AUDIOS_TO_LOAD = 120
 
-  domManipulations.showSpinner()
+  remoteManipulations.showSpinner()
   vkRequest.send({
     'method': 'execute.getDataForAppInit',
     'requestParams': {
-      'access_token': vkAccessToken,
-      'user_id': vkUserID,
       'my_audios_to_load': MY_AUDIOS_TO_LOAD
     }
   }).then(function (response) {
-    domManipulations.insertUserInfoIntoDrawerHeader(response.userInfo)
-    domManipulations.insertItemsIntoSonglist({
+    remoteManipulations.insertUserInfoIntoDrawerHeader(response.userInfo)
+    remoteManipulations.insertItemsIntoSonglist({
       'songlistId': 'my-audios-section_songlist',
       'songInfo': response.userAudios.items
     })
@@ -35,7 +48,7 @@ chrome.storage.local.get(['vkAccessToken', 'vkUserID'], function (userAuthData) 
 
     // hide load-more-songs-btn if there aren't anymore audios to load
     if (+response.userAudiosCount < (MY_AUDIOS_TO_LOAD + 1)) {
-      domManipulations.addAttributeToElem({
+      remoteManipulations.addAttributeToElem({
         'selector': '#my-audios-section_load-more-songs-btn',
         'attrName': 'hidden',
         'attrValue': 'true'
@@ -44,35 +57,17 @@ chrome.storage.local.get(['vkAccessToken', 'vkUserID'], function (userAuthData) 
       myAudioSectionSonglist.dataset.userAudiosCount = response.userAudiosCount
       myAudioSectionSonglist.dataset.userAudiosLoaded = MY_AUDIOS_TO_LOAD
       myAudiosSectionLoadMoreBtn.addEventListener('click', function () {
-        domManipulations.showSpinner()
-        connectedSockets.forEach(function (socket) {
-          sendDomManipulationsMessage({
-            'socket': socket,
-            'function': 'showSpinner'
-          })
-        })
+        remoteManipulations.showSpinner()
         vkRequest.send({
           'method': 'audio.get',
           'requestParams': {
-            'access_token': vkAccessToken,
-            'user_id': vkUserID,
             'count': 20,
             'offset': myAudioSectionSonglist.dataset.userAudiosLoaded
           }
         }).then(function (audioData) {
-          domManipulations.insertItemsIntoSonglist({
+          remoteManipulations.insertItemsIntoSonglist({
             'songlistId': 'my-audios-section_songlist',
             'songInfo': audioData.items
-          })
-          connectedSockets.forEach(function (socket) {
-            sendDomManipulationsMessage({
-              'socket': socket,
-              'function': 'insertItemsIntoSonglist',
-              'args': {
-                'songlistId': 'my-audios-section_songlist',
-                'songInfo': audioData.items
-              }
-            })
           })
 
           myAudioSectionSonglist.dataset.userAudiosLoaded = +myAudioSectionSonglist.dataset.userAudiosLoaded + 20
@@ -80,50 +75,18 @@ chrome.storage.local.get(['vkAccessToken', 'vkUserID'], function (userAuthData) 
           // 6000 is vk limit
           if (!(myAudioSectionSonglist.children.length < +myAudioSectionSonglist.dataset.userAudiosCount) ||
             !(myAudioSectionSonglist.children.length < 6000)) {
-            domManipulations.addAttributeToElem({
+            remoteManipulations.addAttributeToElem({
               'selector': '#my-audios-section_load-more-songs-btn',
               'attrName': 'hidden',
               'attrValue': 'true'
             })
-            connectedSockets.forEach(function (socket) {
-              sendDomManipulationsMessage({
-                'socket': socket,
-                'function': 'addAttributeToElem',
-                'args': {
-                  'selector': '#my-audios-section_load-more-songs-btn',
-                  'attrName': 'hidden',
-                  'attrValue': 'true'
-                }
-              })
-            })
           }
 
-          domManipulations.hideSpinner()
-          connectedSockets.forEach(function (socket) {
-            sendDomManipulationsMessage({
-              'socket': socket,
-              'function': 'hideSpinner'
-            })
-          })
+          remoteManipulations.hideSpinner()
         }).catch(function (err) {
-          domManipulations.hideSpinner()
-          connectedSockets.forEach(function (socket) {
-            sendDomManipulationsMessage({
-              'socket': socket,
-              'function': 'hideSpinner'
-            })
-          })
-          domManipulations.showToast({
+          remoteManipulations.hideSpinner()
+          remoteManipulations.showToast({
             'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
-          })
-          connectedSockets.forEach(function (socket) {
-            sendDomManipulationsMessage({
-              'socket': socket,
-              'function': 'showToast',
-              'args': {
-                'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
-              }
-            })
           })
           console.error(err)
         })
@@ -135,7 +98,7 @@ chrome.storage.local.get(['vkAccessToken', 'vkUserID'], function (userAuthData) 
       array[index].profileType = 'person'
       array[index].profileTitle = array[index].first_name + ' ' + array[index].last_name
     })
-    domManipulations.insertItemsIntoProfileslist({
+    remoteManipulations.insertItemsIntoProfileslist({
       'profileslistId': 'profiles-section_friends-profiles',
       'profilesInfo': response.friendsWithOpenedAudios
     })
@@ -145,7 +108,7 @@ chrome.storage.local.get(['vkAccessToken', 'vkUserID'], function (userAuthData) 
       array[index].profileType = 'group'
       array[index].profileTitle = array[index].name
     })
-    domManipulations.insertItemsIntoProfileslist({
+    remoteManipulations.insertItemsIntoProfileslist({
       'profileslistId': 'profiles-section_groups-profiles',
       'profilesInfo': response.userGroups.items
     })
@@ -162,40 +125,40 @@ chrome.storage.local.get(['vkAccessToken', 'vkUserID'], function (userAuthData) 
       }
     })
     if (response.broadcastingFriends) {
-      domManipulations.insertItemsIntoBroadcastingProfileslist({
+      remoteManipulations.insertItemsIntoBroadcastingProfileslist({
         'profileslistId': 'profiles-section_broadcasting-profiles',
         'profilesInfo': response.broadcastingFriends
       })
     }
-    domManipulations.updateProfilesSectionSearch()
+    remoteManipulations.updateProfilesSectionSearch()
 
-    domManipulations.injectStyles({
+    remoteManipulations.injectStyles({
       'rules': [
-        '.player-controller_add-songs-to-audios-btn[data-current-song-id^="' + vkUserID + '"] {' +
+        '.player-controller_add-songs-to-audios-btn[data-current-song-id^="' + user_id + '"] {' +
           'pointer-events: none;' +
           'display: none;' +
         '}'
       ]
     })
 
-    domManipulations.hideSpinner()
-    domManipulations.showToast({
+    remoteManipulations.hideSpinner()
+    remoteManipulations.showToast({
       'innerText': (chrome.i18n.getMessage('initialToast') ||
         'Information to connect remote control is on the settings page'),
       'duration': 10000
     })
   }).catch(function (err) {
-    domManipulations.hideSpinner()
+    remoteManipulations.hideSpinner()
     var errMsg
     if (+err.error_code === 5) {
       errMsg = chrome.i18n.getMessage('userAuthorizationFailed') || 'Error occurred :( Please sign out and sign in again.'
     } else {
       errMsg = chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
     }
-    domManipulations.showToast({
+    remoteManipulations.showToast({
       'innerText': errMsg,
       'duration': 9999999
     })
     console.error(err)
   })
-})
+}

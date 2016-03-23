@@ -1,14 +1,7 @@
 /* globals chrome */
 ;(function () {
-  // localization
-  (function () {
-    var objects = document.getElementsByTagName('*')
-    for (var i = 0, l = objects.length; i < l; i++) {
-      if (objects[i].dataset && objects[i].dataset.i18nContent) {
-        objects[i].innerHTML = chrome.i18n.getMessage(objects[i].dataset.i18nContent) || objects[i].innerHTML
-      }
-    }
-  })()
+  require('../common/material.js')
+  require('./desktopLocalization.js')
 
   var materialSnackbar = document.querySelector('#material-snackbar')
   var vkAuthWindow = document.getElementById('auth-page_vk-auth-window')

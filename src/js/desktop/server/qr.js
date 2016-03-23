@@ -1198,9 +1198,9 @@
     exports.qr = qr;
 
     // Import required node.js modules.
-    Canvas = require('canvas');
+    /* Canvas = require('canvas');
     Image = Canvas.Image;
-    fs = require('fs');
+    fs = require('fs');*/
   } else if (typeof define === 'function' && define.amd) {
     define(function () {
       return qr;

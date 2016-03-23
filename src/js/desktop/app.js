@@ -1,469 +1,340 @@
-/* global domManipulations, http, vkRequest, vkAccessToken, vkUserID, chrome, parseBoolean, componentHandler, guid,
-Jets, MutationSummary, secondsTohhmmss, getRandomIntFromTo, qr */
-var isServer = true // eslint-disable-line no-unused-vars
-;(function () {
-  // localization
-  (function () {
-    var objects = document.getElementsByTagName('*')
-    Array.prototype.forEach.call(objects, function (object) {
-      if (object.dataset && object.dataset.i18nContent) {
-        object.innerHTML = chrome.i18n.getMessage(object.dataset.i18nContent) || object.innerHTML
-      }
-    })
-  })()
+/* global chrome, componentHandler */
+chrome.storage.local.get(['vkUserID', 'vkAccessToken'], function (localStorageData) {
+  // Loading modules
+  require('../common/material.js')
+  var getRandomIntFromTo = require('../common/functions/getRandomIntFromTo.js')
+  var guid = require('../common/functions/guid.js')
+  var parseBoolean = require('../common/functions/parseBoolean.js')
+  var secondsTohhmmss = require('../common/functions/secondsTohhmmss.js')
+  var MutationSummary = require('../common/mutation-summary.js')
+  var Arrive = require('../common/arrive.js') // eslint-disable-line no-unused-vars
+  var remoteManipulations = require('../common/remoteManipulations.js')
+  var server = require('./server/server.js')
+  var vkRequest = require('./vkRequest.js')
+  vkRequest.init(localStorageData.vkUserID, localStorageData.vkAccessToken, '5.40')
+  require('./desktopLocalization.js')
+  require('./shortcuts.js')
 
-  if (navigator.platform.indexOf('Win') > -1) document.querySelector('.settings-section_for-windows-only-msg').hidden = false
-
-  // set value of volume-range
-  chrome.storage.local.get(['volumeRangeValue'], function (data) {
-    if (data.volumeRangeValue !== null && data.volumeRangeValue !== undefined) {
-      document.querySelector('#player-controller_volume-range').value = +data.volumeRangeValue
+  // Setting up a server
+  server.onSocketConnection = function (socket) {
+    function sendRemoteManipulationsMsgToSocket (options) {
+      options.socket.send('remoteManipulations' + server.objToRequestParam({
+        'func': options.func,
+        'args': JSON.stringify(options.args)
+      }))
     }
-  })
 
-  window.addEventListener('load', function () {
-    setTimeout(function () {
-      document.querySelector('#drawer-panel').style.display = 'flex'
-      document.querySelector('#content').style.display = 'block'
-      document.querySelector('.appLoading').classList.add('moveOut')
-    }, 700)
-  })
-
-  if (!navigator.onLine) {
-    setTimeout(function () {
-      domManipulations.showToast({
-        'innerText': chrome.i18n.getMessage('connectToTheInternetAndRestartApp') || 'Connect to the internet and restart the app',
-        'duration': 9999999
-      })
-    }, 700)
-    throw new Error('No internet connection')
-  }
-
-  var addressRegEx = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/
-
-  function chooseAppPortAndListen (port) {
-    chrome.socket.connect(socketPortTesterId, 'localhost', port, function (result) {
-      if (result === 0) {
-        chrome.socket.disconnect(socketPortTesterId)
-        chooseAppPortAndListen(port + 1)
-      } else {
-        chrome.socket.destroy(socketPortTesterId)
-        server.listen(port)
-        chrome.system.network.getNetworkInterfaces(function (networkInterfaces) {
-          networkInterfaces.forEach(function (networkInterface) {
-            if (addressRegEx.test(networkInterface.address)) {
-              var address = networkInterface.address + ':' + port
-              document.getElementById('settings-section_connection-info_address').innerText = address
-              qr.canvas({
-                'canvas': document.getElementById('settings-section-qr-code'),
-                'value': 'http://' + address
-              })
-              document.querySelector('#settings-section_connection-info').classList.add('is-upgraded')
-            }
-          })
-        })
-      }
-    })
-  }
-
-  if (http.Server && http.WebSocketServer) {
-    // Listen for HTTP connections.
-    var server = new http.Server()
-    var wsServer = new http.WebSocketServer(server)
-
-    var socketPortTesterId
-    var port = 52121
-
-    chrome.socket.create('tcp', null, function (createInfo) {
-      socketPortTesterId = createInfo.socketId
-      chooseAppPortAndListen(port)
+    sendRemoteManipulationsMsgToSocket({
+      'socket': socket,
+      'func': 'showSpinner'
     })
 
-    server.addEventListener('request', function (req) {
-      var url = req.headers.url
-      if (url === '/') {
-        url = '/public/mobileApp.html'
-      } else if (url === '/localization') {
-        var currentLocale = chrome.i18n.getUILanguage()
-        if (currentLocale.indexOf('uk') > -1) {
-          url = '/public/_locales/uk/messages.json'
-        } else if (currentLocale.indexOf('ru') > -1) {
-          url = '/public/_locales/ru/messages.json'
-        } else {
-          url = '/public/_locales/en/messages.json'
+    socket.addEventListener('message', function (e) {
+      var requestParams = server.requestParamToObj(e.data)
+      if (e.data.indexOf('remoteManipulations?') === 0) {
+        if (requestParams.args && requestParams.args !== 'undefined' && requestParams.args !== 'null') {
+          requestParams.args = JSON.parse(requestParams.args)
         }
-      } else {
-        url = '/public' + url
+        remoteManipulations[requestParams.func](requestParams.args)
+      } else if (e.data.indexOf('sendRequestAndRemoveAudio?') === 0) {
+        if (requestParams.args && requestParams.args !== 'undefined' && requestParams.args !== 'null') {
+          requestParams.args = JSON.parse(requestParams.args)
+        }
+        sendRequestAndRemoveAudio({
+          'songlistItemSelector': requestParams.args.songlistItemSelector
+        })
+      } else if (e.data.indexOf('sendRequestAndAddAudio?') === 0) {
+        if (requestParams.args && requestParams.args !== 'undefined' && requestParams.args !== 'null') {
+          requestParams.args = JSON.parse(requestParams.args)
+        }
+        sendRequestAndAddAudio({
+          'songlistItemSelector': requestParams.args.songlistItemSelector
+        })
+      } else if (e.data.indexOf('downloadAudio?') === 0) {
+        if (requestParams.args && requestParams.args !== 'undefined' && requestParams.args !== 'null') {
+          requestParams.args = JSON.parse(requestParams.args)
+        }
+        downloadAudioByUrl(requestParams.args.audioUrl, requestParams.args.songTitle)
       }
-      // Serve the pages of this chrome application.
-      req.serveUrl(url)
-      return true
     })
 
-    // A list of connected websockets.
-    var connectedSockets = []
-    window.connectedSockets = connectedSockets
-
-    wsServer.addEventListener('request', function (req) {
-      var socket = req.accept()
-      connectedSockets.push(socket)
-
-      sendDomManipulationsMessage({
+    vkRequest.send({
+      'method': 'execute.getDataForAppInit',
+      'requestParams': {
+        'my_audios_to_load': document.querySelector('#my-audios-section_songlist').children.length
+      }
+    }).then(function (response) {
+      sendRemoteManipulationsMsgToSocket({
         'socket': socket,
-        'function': 'showSpinner'
+        'func': 'insertUserInfoIntoDrawerHeader',
+        'args': response.userInfo
+      })
+      sendRemoteManipulationsMsgToSocket({
+        'socket': socket,
+        'func': 'setGlobalVariable',
+        'args': {
+          'propertyName': 'vkUserID',
+          'propertyValue': localStorageData.vkUserID
+        }
       })
 
-      socket.addEventListener('message', function (e) {
-        handleSocketsMessage(e)
+      sendRemoteManipulationsMsgToSocket({
+        'socket': socket,
+        'func': 'insertItemsIntoSonglist',
+        'args': {
+          'songInfo': response.userAudios.items,
+          'songlistId': 'my-audios-section_songlist'
+        }
+      })
+      sendRemoteManipulationsMsgToSocket({
+        'socket': socket,
+        'func': 'addClassToElem',
+        'args': {
+          'selector': 'body',
+          'className': 'user-audios-loaded'
+        }
+      })
+      if (document.querySelector('#my-audios-section_load-more-songs-btn').hidden) {
+        sendRemoteManipulationsMsgToSocket({
+          'socket': socket,
+          'func': 'addAttributeToElem',
+          'args': {
+            'selector': '#my-audios-section_load-more-songs-btn',
+            'attrName': 'hidden',
+            'attrValue': 'true'
+          }
+        })
+      }
+
+      response.friendsWithOpenedAudios.forEach(function (currentValue, index, array) {
+        array[index].profileId = array[index].id
+        array[index].profileType = 'person'
+        array[index].profileTitle = array[index].first_name + ' ' + array[index].last_name
+      })
+      sendRemoteManipulationsMsgToSocket({
+        'socket': socket,
+        'func': 'insertItemsIntoProfileslist',
+        'args': {
+          'profileslistId': 'profiles-section_friends-profiles',
+          'profilesInfo': response.friendsWithOpenedAudios
+        }
       })
 
-      vkRequest.send({
-        'method': 'execute.getDataForAppInit',
-        'requestParams': {
-          'access_token': vkAccessToken,
-          'user_id': vkUserID,
-          'my_audios_to_load': document.querySelector('#my-audios-section_songlist').children.length
+      response.userGroups.items.forEach(function (currentValue, index, array) {
+        array[index].profileId = '-' + array[index].id
+        array[index].profileType = 'group'
+        array[index].profileTitle = array[index].name
+      })
+      sendRemoteManipulationsMsgToSocket({
+        'socket': socket,
+        'func': 'insertItemsIntoProfileslist',
+        'args': {
+          'profileslistId': 'profiles-section_groups-profiles',
+          'profilesInfo': response.userGroups.items
         }
-      }).then(function (response) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'insertUserInfoIntoDrawerHeader',
-          'args': response.userInfo
-        })
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'setGlobalVariable',
-          'args': {
-            'propertyName': 'vkUserID',
-            'propertyValue': vkUserID
-          }
-        })
+      })
 
-        sendDomManipulationsMessage({
+      if (player.loop) {
+        sendRemoteManipulationsMsgToSocket({
           'socket': socket,
-          'function': 'insertItemsIntoSonglist',
+          'func': 'addClassToElem',
           'args': {
-            'songInfo': response.userAudios.items,
-            'songlistId': 'my-audios-section_songlist'
+            'selector': '#player-controller_loop-btn',
+            'className': 'loop-true'
           }
         })
-        sendDomManipulationsMessage({
+      }
+      if (player.shuffle) {
+        sendRemoteManipulationsMsgToSocket({
           'socket': socket,
-          'function': 'addClassToElem',
+          'func': 'addClassToElem',
           'args': {
-            'selector': 'body',
-            'className': 'user-audios-loaded'
+            'selector': '#player-controller_shuffle-btn',
+            'className': 'shuffle-true'
           }
         })
-        if (document.querySelector('#my-audios-section_load-more-songs-btn').hidden) {
-          sendDomManipulationsMessage({
-            'socket': socket,
-            'function': 'addAttributeToElem',
-            'args': {
-              'selector': '#my-audios-section_load-more-songs-btn',
-              'attrName': 'hidden',
-              'attrValue': 'true'
-            }
-          })
+      }
+      if (player.broadcast) {
+        sendRemoteManipulationsMsgToSocket({
+          'socket': socket,
+          'func': 'addClassToElem',
+          'args': {
+            'selector': '#player-controller_broadcast-btn',
+            'className': 'broadcast-true'
+          }
+        })
+      }
+
+      var playPauseCurrentIcon = document.querySelector('#player-controller_play-pause-btn_icon').innerHTML
+      sendRemoteManipulationsMsgToSocket({
+        'socket': socket,
+        'func': 'setPlayPauseBtnIcon',
+        'args': {
+          'icon': playPauseCurrentIcon
         }
+      })
 
-        response.friendsWithOpenedAudios.forEach(function (currentValue, index, array) {
-          array[index].profileId = array[index].id
-          array[index].profileType = 'person'
-          array[index].profileTitle = array[index].first_name + ' ' + array[index].last_name
-        })
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'insertItemsIntoProfileslist',
-          'args': {
-            'profileslistId': 'profiles-section_friends-profiles',
-            'profilesInfo': response.friendsWithOpenedAudios
-          }
-        })
-
-        response.userGroups.items.forEach(function (currentValue, index, array) {
-          array[index].profileId = '-' + array[index].id
-          array[index].profileType = 'group'
-          array[index].profileTitle = array[index].name
-        })
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'insertItemsIntoProfileslist',
-          'args': {
-            'profileslistId': 'profiles-section_groups-profiles',
-            'profilesInfo': response.userGroups.items
-          }
-        })
-
-        if (player.loop) {
-          sendDomManipulationsMessage({
-            'socket': socket,
-            'function': 'addClassToElem',
-            'args': {
-              'selector': '#player-controller_loop-btn',
-              'className': 'loop-true'
-            }
-          })
+      sendRemoteManipulationsMsgToSocket({
+        'socket': socket,
+        'func': 'changeSliderValue',
+        'args': {
+          'selector': '#player-controller_song-range',
+          'value': document.querySelector('#player-controller_song-range').value
         }
-        if (player.shuffle) {
-          sendDomManipulationsMessage({
-            'socket': socket,
-            'function': 'addClassToElem',
-            'args': {
-              'selector': '#player-controller_shuffle-btn',
-              'className': 'shuffle-true'
-            }
-          })
+      })
+      sendRemoteManipulationsMsgToSocket({
+        'socket': socket,
+        'func': 'changeSliderValue',
+        'args': {
+          'selector': '#player-controller_volume-range',
+          'value': document.querySelector('#player-controller_volume-range').value
         }
-        if (player.broadcast) {
-          sendDomManipulationsMessage({
-            'socket': socket,
-            'function': 'addClassToElem',
-            'args': {
-              'selector': '#player-controller_broadcast-btn',
-              'className': 'broadcast-true'
-            }
-          })
+      })
+      sendRemoteManipulationsMsgToSocket({
+        'socket': socket,
+        'func': 'setElemInnerHTML',
+        'args': {
+          'selector': '#player-controller_current-time',
+          'html': document.querySelector('#player-controller_current-time').innerHTML
         }
+      })
+      sendRemoteManipulationsMsgToSocket({
+        'socket': socket,
+        'func': 'setElemInnerHTML',
+        'args': {
+          'selector': '#player-controller_song-duration',
+          'html': document.querySelector('#player-controller_song-duration').innerHTML
+        }
+      })
+      sendRemoteManipulationsMsgToSocket({
+        'socket': socket,
+        'func': 'setElemInnerHTML',
+        'args': {
+          'selector': '#player-controller_song-info',
+          'html': document.querySelector('#player-controller_song-info').innerHTML
+        }
+      })
 
-        var playPauseCurrentIcon = document.querySelector('#player-controller_play-pause-btn_icon').innerHTML
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'setPlayPauseBtnIcon',
-          'args': {
-            'icon': playPauseCurrentIcon
+      document.querySelector('#profiles-section_broadcasting-profiles').innerHTML = ''
+      if (response.broadcastingFriends) {
+        response.broadcastingFriends.forEach(function (currentValue, index, array) {
+          if (currentValue.type === 'profile') {
+            array[index].profileId = array[index].id
+            array[index].profileType = 'person'
+            array[index].profileTitle = array[index].first_name + ' ' + array[index].last_name
+          } else {
+            array[index].profileId = array[index].id
+            array[index].profileType = 'group'
+            array[index].profileTitle = array[index].name
           }
         })
-
-        sendDomManipulationsMessage({
+        sendRemoteManipulationsMsgToSocket({
           'socket': socket,
-          'function': 'changeSliderValue',
+          'func': 'insertItemsIntoBroadcastingProfileslist',
           'args': {
-            'selector': '#player-controller_song-range',
-            'value': document.querySelector('#player-controller_song-range').value
-          }
-        })
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'changeSliderValue',
-          'args': {
-            'selector': '#player-controller_volume-range',
-            'value': document.querySelector('#player-controller_volume-range').value
-          }
-        })
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'setElemInnerHTML',
-          'args': {
-            'selector': '#player-controller_current-time',
-            'html': document.querySelector('#player-controller_current-time').innerHTML
-          }
-        })
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'setElemInnerHTML',
-          'args': {
-            'selector': '#player-controller_song-duration',
-            'html': document.querySelector('#player-controller_song-duration').innerHTML
-          }
-        })
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'setElemInnerHTML',
-          'args': {
-            'selector': '#player-controller_song-info',
-            'html': document.querySelector('#player-controller_song-info').innerHTML
-          }
-        })
-
-        document.querySelector('#profiles-section_broadcasting-profiles').innerHTML = ''
-        if (response.broadcastingFriends) {
-          response.broadcastingFriends.forEach(function (currentValue, index, array) {
-            if (currentValue.type === 'profile') {
-              array[index].profileId = array[index].id
-              array[index].profileType = 'person'
-              array[index].profileTitle = array[index].first_name + ' ' + array[index].last_name
-            } else {
-              array[index].profileId = array[index].id
-              array[index].profileType = 'group'
-              array[index].profileTitle = array[index].name
-            }
-          })
-          sendDomManipulationsMessage({
-            'socket': socket,
-            'function': 'insertItemsIntoBroadcastingProfileslist',
-            'args': {
-              'profileslistId': 'profiles-section_broadcasting-profiles',
-              'profilesInfo': response.broadcastingFriends
-            }
-          })
-          domManipulations.insertItemsIntoBroadcastingProfileslist({
             'profileslistId': 'profiles-section_broadcasting-profiles',
             'profilesInfo': response.broadcastingFriends
-          })
-        }
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'updateProfilesSectionSearch'
-        })
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'injectStyles',
-          'args': {
-            'rules': [
-              '.player-controller_add-songs-to-audios-btn[data-current-song-id^="' + vkUserID + '"] {' +
-                'pointer-events: none;' +
-                'display: none;' +
-              '}'
-            ]
           }
         })
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'addAttributeToElem',
-          'args': {
-            'selector': '#player-controller_add-songs-to-audios-btn',
-            'attrName': 'data-current-song-id',
-            'attrValue': document.querySelector('#player-controller_add-songs-to-audios-btn').dataset.currentSongId
-          }
-        })
-
-        if (player.currentSong) {
-          connectedSockets.forEach(function (socket) {
-            sendDomManipulationsMessage({
-              'socket': socket,
-              'function': 'addClassToElem',
-              'args': {
-                'selector': 'div[data-song-class="' + player.currentSong.dataset.songClass + '"]',
-                'className': 'current'
-              }
-            })
-          })
-          if (player.currentSong.classList.contains('is-playing')) {
-            connectedSockets.forEach(function (socket) {
-              sendDomManipulationsMessage({
-                'socket': socket,
-                'function': 'addClassToElem',
-                'args': {
-                  'selector': 'div[data-song-class="' + player.currentSong.dataset.songClass + '"]',
-                  'className': 'is-playing'
-                }
-              })
-            })
-          }
-        }
-
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'hideSpinner'
-        })
-      })
-
-      // if opened some profile in profile section copy it to client
-      var profileSectionSonglist = document.getElementById('profile-section_songlist')
-      var profileSectionPostslist = document.getElementById('profile-section_postslist')
-      if (profileSectionSonglist.children.length || profileSectionPostslist.children.length) {
-        var profileSectionTitle = domManipulations.getProfileSectionTitle()
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'setProfileSectionTitle',
-          'args': {'title': profileSectionTitle}
-        })
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'prependElemWithHTML',
-          'args': {
-            'html': profileSectionSonglist.innerHTML,
-            'parentElemSelector': '#profile-section_songlist'
-          }
-        })
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'prependElemWithHTML',
-          'args': {
-            'html': profileSectionPostslist.innerHTML,
-            'parentElemSelector': '#profile-section_postslist'
-          }
+        remoteManipulations.insertItemsIntoBroadcastingProfileslist({
+          'profileslistId': 'profiles-section_broadcasting-profiles',
+          'profilesInfo': response.broadcastingFriends
         })
       }
-      // if there are songs in current playlist copy it to client
-      var currentPlaylistSectionSonglist = document.getElementById('current-playlist-section_songlist')
-      if (currentPlaylistSectionSonglist.innerHTML) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'prependElemWithHTML',
-          'args': {
-            'html': currentPlaylistSectionSonglist.innerHTML,
-            'parentElemSelector': '#current-playlist-section_songlist'
-          }
-        })
-      }
-
-      // When a socket is closed, remove it from the list of connected sockets.
-      socket.addEventListener('close', function () {
-        for (var i = 0; i < connectedSockets.length; i++) {
-          if (connectedSockets[i] === socket) {
-            connectedSockets.splice(i, 1)
-            break
-          }
+      sendRemoteManipulationsMsgToSocket({
+        'socket': socket,
+        'func': 'updateProfilesSectionSearch'
+      })
+      sendRemoteManipulationsMsgToSocket({
+        'socket': socket,
+        'func': 'injectStyles',
+        'args': {
+          'rules': [
+            '.player-controller_add-songs-to-audios-btn[data-current-song-id^="' + localStorageData.vkUserID + '"] {' +
+            'pointer-events: none;' +
+            'display: none;' +
+            '}'
+          ]
         }
       })
-      return true
+      sendRemoteManipulationsMsgToSocket({
+        'socket': socket,
+        'func': 'addAttributeToElem',
+        'args': {
+          'selector': '#player-controller_add-songs-to-audios-btn',
+          'attrName': 'data-current-song-id',
+          'attrValue': document.querySelector('#player-controller_add-songs-to-audios-btn').dataset.currentSongId
+        }
+      })
+
+      if (player.currentSong) {
+        sendRemoteManipulationsMsgToSocket({
+          'socket': socket,
+          'func': 'addClassToElem',
+          'args': {
+            'selector': 'div[data-song-class="' + player.currentSong.dataset.songClass + '"]',
+            'className': 'current'
+          }
+        })
+        if (player.currentSong.classList.contains('is-playing')) {
+          sendRemoteManipulationsMsgToSocket({
+            'socket': socket,
+            'func': 'addClassToElem',
+            'args': {
+              'selector': 'div[data-song-class="' + player.currentSong.dataset.songClass + '"]',
+              'className': 'is-playing'
+            }
+          })
+        }
+      }
+
+      sendRemoteManipulationsMsgToSocket({
+        'socket': socket,
+        'func': 'hideSpinner'
+      })
     })
-  }
 
-  function objToRequestParam (obj) {
-    return '?' + Object.keys(obj).reduce(function (a, k) { a.push(k + '=' + encodeURIComponent(obj[k])); return a }, []).join('&')
-  }
-
-  function requestParamToObj (query) {
-    query = query.substring(query.indexOf('?') + 1).split('&')
-    var params = {}
-    var pair
-    var d = decodeURIComponent
-    for (var i = query.length - 1; i >= 0; i--) {
-      pair = query[i].split('=')
-      params[d(pair[0])] = d(pair[1])
+    // if opened some profile in profile section copy it to client
+    var profileSectionSonglist = document.getElementById('profile-section_songlist')
+    var profileSectionPostslist = document.getElementById('profile-section_postslist')
+    if (profileSectionSonglist.children.length || profileSectionPostslist.children.length) {
+      var profileSectionTitle = remoteManipulations.getProfileSectionTitle()
+      sendRemoteManipulationsMsgToSocket({
+        'socket': socket,
+        'func': 'setProfileSectionTitle',
+        'args': { 'title': profileSectionTitle }
+      })
+      sendRemoteManipulationsMsgToSocket({
+        'socket': socket,
+        'func': 'prependElemWithHTML',
+        'args': {
+          'html': profileSectionSonglist.innerHTML,
+          'parentElemSelector': '#profile-section_songlist'
+        }
+      })
+      sendRemoteManipulationsMsgToSocket({
+        'socket': socket,
+        'func': 'prependElemWithHTML',
+        'args': {
+          'html': profileSectionPostslist.innerHTML,
+          'parentElemSelector': '#profile-section_postslist'
+        }
+      })
     }
-    return params
-  }
 
-  function handleSocketsMessage (e) {
-    var requestParams = requestParamToObj(e.data)
-    if (e.data.indexOf('domManipulations?') === 0) {
-      if (requestParams.args && requestParams.args !== 'undefined' && requestParams.args !== 'null') {
-        requestParams.args = JSON.parse(requestParams.args)
-      }
-      domManipulations[requestParams.function](requestParams.args)
-    } else if (e.data.indexOf('sendRequestAndRemoveAudio?') === 0) {
-      if (requestParams.args && requestParams.args !== 'undefined' && requestParams.args !== 'null') {
-        requestParams.args = JSON.parse(requestParams.args)
-      }
-      sendRequestAndRemoveAudio({
-        'songlistItemSelector': requestParams.args.songlistItemSelector
+    // if there are songs in current playlist copy it to client
+    var currentPlaylistSectionSonglist = document.getElementById('current-playlist-section_songlist')
+    if (currentPlaylistSectionSonglist.innerHTML) {
+      sendRemoteManipulationsMsgToSocket({
+        'socket': socket,
+        'func': 'prependElemWithHTML',
+        'args': {
+          'html': currentPlaylistSectionSonglist.innerHTML,
+          'parentElemSelector': '#current-playlist-section_songlist'
+        }
       })
-    } else if (e.data.indexOf('sendRequestAndAddAudio?') === 0) {
-      if (requestParams.args && requestParams.args !== 'undefined' && requestParams.args !== 'null') {
-        requestParams.args = JSON.parse(requestParams.args)
-      }
-      sendRequestAndAddAudio({
-        'songlistItemSelector': requestParams.args.songlistItemSelector
-      })
-    } else if (e.data.indexOf('downloadAudio?') === 0) {
-      if (requestParams.args && requestParams.args !== 'undefined' && requestParams.args !== 'null') {
-        requestParams.args = JSON.parse(requestParams.args)
-      }
-      downloadAudioByUrl(requestParams.args.audioUrl, requestParams.args.songTitle)
     }
   }
-
-  function sendDomManipulationsMessage (options) {
-    options.socket.send('domManipulations' + objToRequestParam({
-      'function': options.function,
-      'args': JSON.stringify(options.args)
-    }))
-  }
-  window.sendDomManipulationsMessage = sendDomManipulationsMessage
 
   /**
    * Search section logic.
@@ -474,42 +345,31 @@ var isServer = true // eslint-disable-line no-unused-vars
   seacrhSectionSearchInput.addEventListener('change', function (event) {
     seacrhSectionSearchInput.dataset.currentValue = event.currentTarget.value
     if (!event.currentTarget.value) {
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'setElemValue',
-          'args': {
-            'selector': '#search-section_search-input',
-            'value': ''
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'setElemValue',
+        'args': {
+          'selector': '#search-section_search-input',
+          'value': ''
+        }
       })
       return
     }
 
-    domManipulations.showSpinner()
-    connectedSockets.forEach(function (socket) {
-      sendDomManipulationsMessage({
-        'socket': socket,
-        'function': 'showSpinner'
-      })
+    remoteManipulations.showSpinner()
+    server.sendRemoteManipulationsMsg({
+      'func': 'showSpinner'
     })
-    connectedSockets.forEach(function (socket) {
-      sendDomManipulationsMessage({
-        'socket': socket,
-        'function': 'setElemValue',
-        'args': {
-          'selector': '#search-section_search-input',
-          'value': event.currentTarget.value
-        }
-      })
+    server.sendRemoteManipulationsMsg({
+      'func': 'setElemValue',
+      'args': {
+        'selector': '#search-section_search-input',
+        'value': event.currentTarget.value
+      }
     })
 
     vkRequest.send({
       'method': 'audio.search',
       'requestParams': {
-        'access_token': vkAccessToken,
-        'user_id': vkUserID,
         'q': event.currentTarget.value,
         'auto_complete': 1,
         'sort': 2,
@@ -523,94 +383,73 @@ var isServer = true // eslint-disable-line no-unused-vars
         delete searchSectionSonglist.dataset.syncingWithCurrentPlaylistSectionSonglist
       }
 
-      domManipulations.cleanElemContent({
+      remoteManipulations.cleanElemContent({
         'selector': '#search-section_songlist'
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'cleanElemContent',
-          'args': {
-            'selector': '#search-section_songlist'
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'cleanElemContent',
+        'args': {
+          'selector': '#search-section_songlist'
+        }
       })
 
-      domManipulations.insertItemsIntoSonglist({
+      remoteManipulations.insertItemsIntoSonglist({
         'songlistId': 'search-section_songlist',
         'songInfo': searchData.items
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'insertItemsIntoSonglist',
-          'args': {
-            'songlistId': 'search-section_songlist',
-            'songInfo': searchData.items
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'insertItemsIntoSonglist',
+        'args': {
+          'songlistId': 'search-section_songlist',
+          'songInfo': searchData.items
+        }
       })
 
       if (searchData.count === 0) {
-        domManipulations.addAttributeToElem({
+        remoteManipulations.addAttributeToElem({
           'selector': '#search-section_load-more-songs-btn',
           'attrName': 'hidden',
           'attrValue': 'true'
         })
-        connectedSockets.forEach(function (socket) {
-          sendDomManipulationsMessage({
-            'socket': socket,
-            'function': 'addAttributeToElem',
-            'args': {
-              'selector': '#search-section_load-more-songs-btn',
-              'attrName': 'hidden',
-              'attrValue': 'true'
-            }
-          })
+        server.sendRemoteManipulationsMsg({
+          'func': 'addAttributeToElem',
+          'args': {
+            'selector': '#search-section_load-more-songs-btn',
+            'attrName': 'hidden',
+            'attrValue': 'true'
+          }
         })
       } else {
-        domManipulations.removeAttributeFromElem({
+        remoteManipulations.removeAttributeFromElem({
           'selector': '#search-section_load-more-songs-btn',
           'attrName': 'hidden'
         })
-        connectedSockets.forEach(function (socket) {
-          sendDomManipulationsMessage({
-            'socket': socket,
-            'function': 'removeAttributeFromElem',
-            'args': {
-              'selector': '#search-section_load-more-songs-btn',
-              'attrName': 'hidden'
-            }
-          })
+        server.sendRemoteManipulationsMsg({
+          'func': 'removeAttributeFromElem',
+          'args': {
+            'selector': '#search-section_load-more-songs-btn',
+            'attrName': 'hidden'
+          }
         })
       }
 
-      domManipulations.hideSpinner()
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'hideSpinner'
-        })
+      remoteManipulations.hideSpinner()
+      server.sendRemoteManipulationsMsg({
+        'func': 'hideSpinner'
       })
     }).catch(function (err) {
-      domManipulations.hideSpinner()
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'hideSpinner'
-        })
+      remoteManipulations.hideSpinner()
+      server.sendRemoteManipulationsMsg({
+        'func': 'hideSpinner'
       })
-      domManipulations.showToast({
+      remoteManipulations.showToast({
         'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'showToast',
-          'args': {
-            'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'showToast',
+        'args': {
+          'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
+        }
       })
       console.error(err)
     })
@@ -618,18 +457,14 @@ var isServer = true // eslint-disable-line no-unused-vars
 
   var searchSectionLoadMoreBtn = document.getElementById('search-section_load-more-songs-btn')
   searchSectionLoadMoreBtn.addEventListener('click', function () {
-    domManipulations.showSpinner()
-    connectedSockets.forEach(function (socket) {
-      sendDomManipulationsMessage({
-        'socket': socket,
-        'function': 'showSpinner'
-      })
+    remoteManipulations.showSpinner()
+    server.sendRemoteManipulationsMsg({
+      'func': 'showSpinner'
     })
+
     vkRequest.send({
       'method': 'audio.search',
       'requestParams': {
-        'access_token': vkAccessToken,
-        'user_id': vkUserID,
         'q': seacrhSectionSearchInput.dataset.currentValue,
         'auto_complete': 1,
         'sort': 2,
@@ -640,63 +475,48 @@ var isServer = true // eslint-disable-line no-unused-vars
     }).then(function (searchData) {
       searchSectionSonglist.dataset.audiosLoaded = +searchSectionSonglist.dataset.audiosLoaded + 10
       if (searchData.count === 0) {
-        domManipulations.addAttributeToElem({
+        remoteManipulations.addAttributeToElem({
           'selector': '#search-section_load-more-songs-btn',
           'attrName': 'hidden',
           'attrValue': 'true'
         })
-        connectedSockets.forEach(function (socket) {
-          sendDomManipulationsMessage({
-            'socket': socket,
-            'function': 'addAttributeToElem',
-            'args': {
-              'selector': '#search-section_load-more-songs-btn',
-              'attrName': 'hidden',
-              'attrValue': 'true'
-            }
-          })
+        server.sendRemoteManipulationsMsg({
+          'func': 'addAttributeToElem',
+          'args': {
+            'selector': '#search-section_load-more-songs-btn',
+            'attrName': 'hidden',
+            'attrValue': 'true'
+          }
         })
       }
-      domManipulations.insertItemsIntoSonglist({
+      remoteManipulations.insertItemsIntoSonglist({
         'songlistId': 'search-section_songlist',
         'songInfo': searchData.items
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'insertItemsIntoSonglist',
-          'args': {
-            'songlistId': 'search-section_songlist',
-            'songInfo': searchData.items
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'insertItemsIntoSonglist',
+        'args': {
+          'songlistId': 'search-section_songlist',
+          'songInfo': searchData.items
+        }
       })
-      domManipulations.hideSpinner()
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'hideSpinner'
-        })
+      remoteManipulations.hideSpinner()
+      server.sendRemoteManipulationsMsg({
+        'func': 'hideSpinner'
       })
     }).catch(function (err) {
-      domManipulations.hideSpinner()
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'hideSpinner'
-        })
+      remoteManipulations.hideSpinner()
+      server.sendRemoteManipulationsMsg({
+        'func': 'hideSpinner'
       })
-      domManipulations.showToast({
+      remoteManipulations.showToast({
         'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'showToast',
-          'args': {
-            'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'showToast',
+        'args': {
+          'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
+        }
       })
       console.error(err)
     })
@@ -744,7 +564,7 @@ var isServer = true // eslint-disable-line no-unused-vars
     var songlistItemElem = menuBtn.parentNode
     var contextMenuContent = ''
     // check if song is in user's audios and add appropriate message
-    if (songlistItemElem.dataset.songClass.indexOf(vkUserID) === 0) {
+    if (songlistItemElem.dataset.songClass.indexOf(localStorageData.vkUserID) === 0) {
       contextMenuContent += '<li class="mdl-menu__item remove-from-audios">' +
       (chrome.i18n.getMessage('deleteSong') || 'Delete song') + '</li>'
     } else {
@@ -799,12 +619,9 @@ var isServer = true // eslint-disable-line no-unused-vars
 
   // args {"songlistItemSelector"}
   function sendRequestAndRemoveAudio (args) {
-    domManipulations.showSpinner()
-    connectedSockets.forEach(function (socket) {
-      sendDomManipulationsMessage({
-        'socket': socket,
-        'function': 'showSpinner'
-      })
+    remoteManipulations.showSpinner()
+    server.sendRemoteManipulationsMsg({
+      'func': 'showSpinner'
     })
 
     var songlistItemElem = document.querySelector(args.songlistItemSelector)
@@ -816,64 +633,47 @@ var isServer = true // eslint-disable-line no-unused-vars
     vkRequest.send({
       'method': 'audio.delete',
       'requestParams': {
-        'access_token': vkAccessToken,
-        'user_id': vkUserID,
         'audio_id': songlistItemElem.dataset.songClass.split('_')[1],
         'owner_id': songlistItemElem.dataset.songClass.split('_')[0]
 
       }
     }).then(function (response) {
       if (response !== 1) throw new Error('Сталася помилка')
-      domManipulations.removeElem({
+      remoteManipulations.removeElem({
         'selector': 'div[data-song-class="' + songlistItemElem.dataset.songClass + '"]'
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'removeElem',
-          'args': {
-            'selector': 'div[data-song-class="' + songlistItemElem.dataset.songClass + '"]'
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'removeElem',
+        'args': {
+          'selector': 'div[data-song-class="' + songlistItemElem.dataset.songClass + '"]'
+        }
       })
-      domManipulations.hideSpinner()
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'hideSpinner'
-        })
+      remoteManipulations.hideSpinner()
+      server.sendRemoteManipulationsMsg({
+        'func': 'hideSpinner'
       })
-      domManipulations.showToast({
+      remoteManipulations.showToast({
         'innerText': chrome.i18n.getMessage('deleted') || 'Deleted'
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'showToast',
-          'args': {
-            'innerText': chrome.i18n.getMessage('deleted') || 'Deleted'
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'showToast',
+        'args': {
+          'innerText': chrome.i18n.getMessage('deleted') || 'Deleted'
+        }
       })
     }).catch(function (err) {
-      domManipulations.hideSpinner()
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'hideSpinner'
-        })
+      remoteManipulations.hideSpinner()
+      server.sendRemoteManipulationsMsg({
+        'func': 'hideSpinner'
       })
-      domManipulations.showToast({
+      remoteManipulations.showToast({
         'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'showToast',
-          'args': {
-            'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'showToast',
+        'args': {
+          'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
+        }
       })
       console.error(err)
     })
@@ -881,12 +681,9 @@ var isServer = true // eslint-disable-line no-unused-vars
 
   // args {"songlistItemSelector"}
   function sendRequestAndAddAudio (args) {
-    domManipulations.showSpinner()
-    connectedSockets.forEach(function (socket) {
-      sendDomManipulationsMessage({
-        'socket': socket,
-        'function': 'showSpinner'
-      })
+    remoteManipulations.showSpinner()
+    server.sendRemoteManipulationsMsg({
+      'func': 'showSpinner'
     })
 
     var songlistItemElem = document.querySelector(args.songlistItemSelector)
@@ -898,89 +695,56 @@ var isServer = true // eslint-disable-line no-unused-vars
     vkRequest.send({
       'method': 'audio.add',
       'requestParams': {
-        'access_token': vkAccessToken,
-        'user_id': vkUserID,
         'audio_id': songlistItemElem.dataset.songClass.split('_')[1],
         'owner_id': songlistItemElem.dataset.songClass.split('_')[0]
       }
     }).then(function (response) {
       if (typeof response !== 'number') throw new Error('Сталася помилка')
       var newSonglistItemElem = songlistItemElem.cloneNode(true)
-      newSonglistItemElem.dataset.songClass = vkUserID + '_' + response
+      newSonglistItemElem.dataset.songClass = localStorageData.vkUserID + '_' + response
 
-      domManipulations.prependElemWithHTML({
+      remoteManipulations.prependElemWithHTML({
         'html': newSonglistItemElem.outerHTML,
         'parentElemSelector': '#my-audios-section_songlist'
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'prependElemWithHTML',
-          'args': {
-            'html': newSonglistItemElem.outerHTML,
-            'parentElemSelector': '#my-audios-section_songlist'
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'prependElemWithHTML',
+        'args': {
+          'html': newSonglistItemElem.outerHTML,
+          'parentElemSelector': '#my-audios-section_songlist'
+        }
       })
-      domManipulations.hideSpinner()
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'hideSpinner'
-        })
+      remoteManipulations.hideSpinner()
+      server.sendRemoteManipulationsMsg({
+        'func': 'hideSpinner'
       })
-      domManipulations.showToast({
+      remoteManipulations.showToast({
         'innerText': chrome.i18n.getMessage('added') || 'Added'
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'showToast',
-          'args': {
-            'innerText': chrome.i18n.getMessage('added') || 'Added'
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'showToast',
+        'args': {
+          'innerText': chrome.i18n.getMessage('added') || 'Added'
+        }
       })
     }).catch(function (err) {
-      domManipulations.hideSpinner()
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'hideSpinner'
-        })
+      remoteManipulations.hideSpinner()
+      server.sendRemoteManipulationsMsg({
+        'func': 'hideSpinner'
       })
-      domManipulations.showToast({
+      remoteManipulations.showToast({
         'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'showToast',
-          'args': {
-            'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'showToast',
+        'args': {
+          'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
+        }
       })
       console.error(err)
     })
   }
 
-  // search in friends and groups lists
-  var profilesSectionSearch = {
-    'friends': new Jets({
-      searchTag: '#profiles-section_search-input',
-      contentTag: '#profiles-section_friends-profiles'
-    }),
-    'groups': new Jets({
-      searchTag: '#profiles-section_search-input',
-      contentTag: '#profiles-section_groups-profiles'
-    }),
-    'broadcasting': new Jets({
-      searchTag: '#profiles-section_search-input',
-      contentTag: '#profiles-section_broadcasting-profiles'
-    })
-  }
-  window.profilesSectionSearch = profilesSectionSearch
   document.getElementById('profiles-section').children[1].addEventListener('click', function () {
     var profilesSectionSearchInput = document.getElementById('profiles-section_search-input')
     profilesSectionSearchInput.value = ''
@@ -989,33 +753,27 @@ var isServer = true // eslint-disable-line no-unused-vars
 
   // show message on online and offline events
   window.addEventListener('online', function () {
-    domManipulations.showToast({
+    remoteManipulations.showToast({
       'innerText': chrome.i18n.getMessage('internetConnectionEstablished') || 'Internet connection established'
     })
-    connectedSockets.forEach(function (socket) {
-      sendDomManipulationsMessage({
-        'socket': socket,
-        'function': 'showToast',
-        'args': {
-          'innerText': chrome.i18n.getMessage('internetConnectionEstablished') || 'Internet connection established'
-        }
-      })
+    server.sendRemoteManipulationsMsg({
+      'func': 'showToast',
+      'args': {
+        'innerText': chrome.i18n.getMessage('internetConnectionEstablished') || 'Internet connection established'
+      }
     })
   }, false)
   window.addEventListener('offline', function () {
-    domManipulations.showToast({
+    remoteManipulations.showToast({
       'innerText': chrome.i18n.getMessage('internetConnectionLost') || 'Internet connection lost',
       'duration': 10000
     })
-    connectedSockets.forEach(function (socket) {
-      sendDomManipulationsMessage({
-        'socket': socket,
-        'function': 'showToast',
-        'args': {
-          'innerText': chrome.i18n.getMessage('internetConnectionLost') || 'Internet connection lost',
-          'duration': 10000
-        }
-      })
+    server.sendRemoteManipulationsMsg({
+      'func': 'showToast',
+      'args': {
+        'innerText': chrome.i18n.getMessage('internetConnectionLost') || 'Internet connection lost',
+        'duration': 10000
+      }
     })
   }, false)
 
@@ -1031,80 +789,63 @@ var isServer = true // eslint-disable-line no-unused-vars
     var profileId = profileslistItem.dataset.profileId
     var profileName = profileslistItem.querySelector('.profiles_item_title').innerText
 
-    domManipulations.showSpinner()
-    connectedSockets.forEach(function (socket) {
-      sendDomManipulationsMessage({
-        'socket': socket,
-        'function': 'showSpinner'
-      })
+    remoteManipulations.showSpinner()
+    server.sendRemoteManipulationsMsg({
+      'func': 'showSpinner'
     })
     vkRequest.send({
       'method': 'execute.vkExecGetProfileAudioAndWallData',
       'requestParams': {
-        'access_token': vkAccessToken,
-        'user_id': vkUserID,
         'owner_id': profileId
       }
     }).then(function (response) {
       // songslist items templating
-      domManipulations.cleanElemContent({
+      remoteManipulations.cleanElemContent({
         'selector': '#profile-section_songlist'
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'cleanElemContent',
-          'args': {
-            'selector': '#profile-section_songlist'
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'cleanElemContent',
+        'args': {
+          'selector': '#profile-section_songlist'
+        }
       })
-      domManipulations.insertItemsIntoSonglist({
+      remoteManipulations.insertItemsIntoSonglist({
         'songlistId': 'profile-section_songlist',
         'songInfo': response.userAudios.items
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'insertItemsIntoSonglist',
-          'args': {
-            'songlistId': 'profile-section_songlist',
-            'songInfo': response.userAudios.items
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'insertItemsIntoSonglist',
+        'args': {
+          'songlistId': 'profile-section_songlist',
+          'songInfo': response.userAudios.items
+        }
       })
 
       if (response.userAudiosCount < 21) {
-        domManipulations.addAttributeToElem({
+        remoteManipulations.addAttributeToElem({
           'selector': '#profile-section_load-more-songs-btn',
           'attrName': 'hidden',
           'attrValue': 'true'
         })
-        connectedSockets.forEach(function (socket) {
-          sendDomManipulationsMessage({
-            'socket': socket,
-            'function': 'addAttributeToElem',
-            'args': {
-              'selector': '#profile-section_load-more-songs-btn',
-              'attrName': 'hidden',
-              'attrValue': 'true'
-            }
-          })
+        server.sendRemoteManipulationsMsg({
+          'func': 'addAttributeToElem',
+          'args': {
+            'selector': '#profile-section_load-more-songs-btn',
+            'attrName': 'hidden',
+            'attrValue': 'true'
+          }
         })
       } else {
-        domManipulations.removeAttributeFromElem({
+        remoteManipulations.removeAttributeFromElem({
           'selector': '#profile-section_load-more-songs-btn',
           'attrName': 'hidden'
         })
-        connectedSockets.forEach(function (socket) {
-          sendDomManipulationsMessage({
-            'socket': socket,
-            'function': 'removeAttributeFromElem',
-            'args': {
-              'selector': '#profile-section_load-more-songs-btn',
-              'attrName': 'hidden'
-            }
-          })
+        server.sendRemoteManipulationsMsg({
+          'func': 'removeAttributeFromElem',
+          'args': {
+            'selector': '#profile-section_load-more-songs-btn',
+            'attrName': 'hidden'
+          }
         })
         profileSectionSonglist.dataset.userAudiosCount = response.userAudiosCount
         profileSectionSonglist.dataset.userAudiosLoaded = 20
@@ -1112,117 +853,87 @@ var isServer = true // eslint-disable-line no-unused-vars
 
       // wall posts templating
       profileSectionPostslist.dataset.postsLoaded = 20
-      domManipulations.cleanElemContent({
+      remoteManipulations.cleanElemContent({
         'selector': '#profile-section_postslist'
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'cleanElemContent',
-          'args': {
-            'selector': '#profile-section_postslist'
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'cleanElemContent',
+        'args': {
+          'selector': '#profile-section_postslist'
+        }
       })
-      domManipulations.insertItemsIntoPostslist({
+      remoteManipulations.insertItemsIntoPostslist({
         'postslistId': 'profile-section_postslist',
         'postsInfo': response.wallPosts.items
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'insertItemsIntoPostslist',
-          'args': {
-            'postslistId': 'profile-section_postslist',
-            'postsInfo': response.wallPosts.items
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'insertItemsIntoPostslist',
+        'args': {
+          'postslistId': 'profile-section_postslist',
+          'postsInfo': response.wallPosts.items
+        }
       })
       if (document.getElementById('profile-section_postslist').children.length === 0) {
-        domManipulations.addAttributeToElem({
+        remoteManipulations.addAttributeToElem({
           'selector': '#profile-section_load-more-posts-btn',
           'attrName': 'hidden',
           'attrValue': 'true'
         })
-        connectedSockets.forEach(function (socket) {
-          sendDomManipulationsMessage({
-            'socket': socket,
-            'function': 'addAttributeToElem',
-            'args': {
-              'selector': '#profile-section_load-more-posts-btn',
-              'attrName': 'hidden',
-              'attrValue': 'true'
-            }
-          })
+        server.sendRemoteManipulationsMsg({
+          'func': 'addAttributeToElem',
+          'args': {
+            'selector': '#profile-section_load-more-posts-btn',
+            'attrName': 'hidden',
+            'attrValue': 'true'
+          }
         })
       } else {
-        domManipulations.removeAttributeFromElem({
+        remoteManipulations.removeAttributeFromElem({
           'selector': '#profile-section_load-more-posts-btn',
           'attrName': 'hidden'
         })
-        connectedSockets.forEach(function (socket) {
-          sendDomManipulationsMessage({
-            'socket': socket,
-            'function': 'removeAttributeFromElem',
-            'args': {
-              'selector': '#profile-section_load-more-posts-btn',
-              'attrName': 'hidden'
-            }
-          })
+        server.sendRemoteManipulationsMsg({
+          'func': 'removeAttributeFromElem',
+          'args': {
+            'selector': '#profile-section_load-more-posts-btn',
+            'attrName': 'hidden'
+          }
         })
       }
 
-      domManipulations.setProfileSectionTitle({'title': profileName})
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'setProfileSectionTitle',
-          'args': {'title': profileName}
-        })
+      remoteManipulations.setProfileSectionTitle({'title': profileName})
+      server.sendRemoteManipulationsMsg({
+        'func': 'setProfileSectionTitle',
+        'args': {'title': profileName}
       })
-      domManipulations.setProfileSectionCurrentUserId({'currentUserId': profileId})
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'setProfileSectionCurrentUserId',
-          'args': {'currentUserId': profileId}
-        })
+      remoteManipulations.setProfileSectionCurrentUserId({'currentUserId': profileId})
+      server.sendRemoteManipulationsMsg({
+        'func': 'setProfileSectionCurrentUserId',
+        'args': {'currentUserId': profileId}
       })
-      domManipulations.navigateTo({'sectionId': '#profile-section'})
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'navigateTo',
-          'args': {'sectionId': '#profile-section'}
-        })
+      remoteManipulations.navigateTo({'sectionId': '#profile-section'})
+      server.sendRemoteManipulationsMsg({
+        'func': 'navigateTo',
+        'args': {'sectionId': '#profile-section'}
       })
 
-      domManipulations.hideSpinner()
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'hideSpinner'
-        })
+      remoteManipulations.hideSpinner()
+      server.sendRemoteManipulationsMsg({
+        'func': 'hideSpinner'
       })
     }).catch(function (err) {
-      domManipulations.hideSpinner()
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'hideSpinner'
-        })
+      remoteManipulations.hideSpinner()
+      server.sendRemoteManipulationsMsg({
+        'func': 'hideSpinner'
       })
-      domManipulations.showToast({
+      remoteManipulations.showToast({
         'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'showToast',
-          'args': {
-            'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'showToast',
+        'args': {
+          'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
+        }
       })
       console.error(err)
     })
@@ -1254,37 +965,29 @@ var isServer = true // eslint-disable-line no-unused-vars
    */
 
   profileSectionLoadMoreSongsBtn.addEventListener('click', function () {
-    domManipulations.showSpinner()
-    connectedSockets.forEach(function (socket) {
-      sendDomManipulationsMessage({
-        'socket': socket,
-        'function': 'showSpinner'
-      })
+    remoteManipulations.showSpinner()
+    server.sendRemoteManipulationsMsg({
+      'func': 'showSpinner'
     })
 
     vkRequest.send({
       'method': 'audio.get',
       'requestParams': {
-        'access_token': vkAccessToken,
-        'user_id': vkUserID,
-        'owner_id': domManipulations.getProfileSectionCurrentUserId(),
+        'owner_id': remoteManipulations.getProfileSectionCurrentUserId(),
         'offset': profileSectionSonglist.dataset.userAudiosLoaded,
         'count': 20
       }
     }).then(function (response) {
-      domManipulations.insertItemsIntoSonglist({
+      remoteManipulations.insertItemsIntoSonglist({
         'songlistId': 'profile-section_songlist',
         'songInfo': response.items
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'insertItemsIntoSonglist',
-          'args': {
-            'songlistId': 'profile-section_songlist',
-            'songInfo': response.items
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'insertItemsIntoSonglist',
+        'args': {
+          'songlistId': 'profile-section_songlist',
+          'songInfo': response.items
+        }
       })
 
       profileSectionSonglist.dataset.userAudiosLoaded = +profileSectionSonglist.dataset.userAudiosLoaded + 20
@@ -1292,62 +995,47 @@ var isServer = true // eslint-disable-line no-unused-vars
       // 6000 is vk limit
       if (!(+profileSectionSonglist.dataset.userAudiosLoaded < +profileSectionSonglist.dataset.userAudiosCount) ||
         !(+profileSectionSonglist.dataset.userAudiosLoaded < 6000)) {
-        domManipulations.addAttributeToElem({
+        remoteManipulations.addAttributeToElem({
           'selector': '#profile-section_load-more-songs-btn',
           'attrName': 'hidden',
           'attrValue': 'true'
         })
-        connectedSockets.forEach(function (socket) {
-          sendDomManipulationsMessage({
-            'socket': socket,
-            'function': 'addAttributeToElem',
-            'args': {
-              'selector': '#profile-section_load-more-songs-btn',
-              'attrName': 'hidden',
-              'attrValue': 'true'
-            }
-          })
+        server.sendRemoteManipulationsMsg({
+          'func': 'addAttributeToElem',
+          'args': {
+            'selector': '#profile-section_load-more-songs-btn',
+            'attrName': 'hidden',
+            'attrValue': 'true'
+          }
         })
       }
 
-      domManipulations.hideSpinner()
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'hideSpinner'
-        })
+      remoteManipulations.hideSpinner()
+      server.sendRemoteManipulationsMsg({
+        'func': 'hideSpinner'
       })
     }).catch(function (err) {
-      domManipulations.hideSpinner()
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'hideSpinner'
-        })
+      remoteManipulations.hideSpinner()
+      server.sendRemoteManipulationsMsg({
+        'func': 'hideSpinner'
       })
-      domManipulations.showToast({
+      remoteManipulations.showToast({
         'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'showToast',
-          'args': {
-            'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'showToast',
+        'args': {
+          'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
+        }
       })
       console.error(err)
     })
   })
 
   profileSectionLoadMorePostsBtn.addEventListener('click', function () {
-    domManipulations.showSpinner()
-    connectedSockets.forEach(function (socket) {
-      sendDomManipulationsMessage({
-        'socket': socket,
-        'function': 'showSpinner'
-      })
+    remoteManipulations.showSpinner()
+    server.sendRemoteManipulationsMsg({
+      'func': 'showSpinner'
     })
 
     var previousPostsCount = profileSectionPostslist.children.length
@@ -1355,87 +1043,67 @@ var isServer = true // eslint-disable-line no-unused-vars
     vkRequest.send({
       'method': 'wall.get',
       'requestParams': {
-        'access_token': vkAccessToken,
-        'user_id': vkUserID,
-        'owner_id': domManipulations.getProfileSectionCurrentUserId(),
+        'owner_id': remoteManipulations.getProfileSectionCurrentUserId(),
         'offset': +profileSectionPostslist.dataset.postsLoaded,
         'count': 20
       }
     }).then(function (response) {
-      domManipulations.insertItemsIntoPostslist({
+      remoteManipulations.insertItemsIntoPostslist({
         'postsInfo': response.items,
         'postslistId': 'profile-section_postslist'
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'insertItemsIntoPostslist',
-          'args': {
-            'postsInfo': response.items,
-            'postslistId': 'profile-section_postslist'
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'insertItemsIntoPostslist',
+        'args': {
+          'postsInfo': response.items,
+          'postslistId': 'profile-section_postslist'
+        }
       })
 
       profileSectionPostslist.dataset.postsLoaded = +profileSectionPostslist.dataset.postsLoaded + 20
 
       if (previousPostsCount === profileSectionPostslist.children.length) {
-        domManipulations.addAttributeToElem({
+        remoteManipulations.addAttributeToElem({
           'selector': '#profile-section_load-more-posts-btn',
           'attrName': 'hidden',
           'attrValue': 'true'
         })
-        connectedSockets.forEach(function (socket) {
-          sendDomManipulationsMessage({
-            'socket': socket,
-            'function': 'addAttributeToElem',
-            'args': {
-              'selector': '#profile-section_load-more-posts-btn',
-              'attrName': 'hidden',
-              'attrValue': 'true'
-            }
-          })
+        server.sendRemoteManipulationsMsg({
+          'func': 'addAttributeToElem',
+          'args': {
+            'selector': '#profile-section_load-more-posts-btn',
+            'attrName': 'hidden',
+            'attrValue': 'true'
+          }
         })
       }
 
-      domManipulations.hideSpinner()
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'hideSpinner'
-        })
+      remoteManipulations.hideSpinner()
+      server.sendRemoteManipulationsMsg({
+        'func': 'hideSpinner'
       })
     }).catch(function (err) {
-      domManipulations.hideSpinner()
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'hideSpinner'
-        })
+      remoteManipulations.hideSpinner()
+      server.sendRemoteManipulationsMsg({
+        'func': 'hideSpinner'
       })
-      domManipulations.showToast({
+      remoteManipulations.showToast({
         'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'showToast',
-          'args': {
-            'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'showToast',
+        'args': {
+          'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
+        }
       })
-      domManipulations.showToast({
+      remoteManipulations.showToast({
         'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'showToast',
-          'args': {
-            'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'showToast',
+        'args': {
+          'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
+        }
       })
       console.error(err)
     })
@@ -1447,60 +1115,48 @@ var isServer = true // eslint-disable-line no-unused-vars
   var currentPlaylistSectionSonglist = document.getElementById('current-playlist-section_songlist')
 
   function handleAddedSonglistItemAndSyncWithCurrentPlaylistSonglist () {
-    domManipulations.cleanElemContent({
+    remoteManipulations.cleanElemContent({
       'selector': '#current-playlist-section_songlist'
     })
-    connectedSockets.forEach(function (socket) {
-      sendDomManipulationsMessage({
-        'socket': socket,
-        'function': 'cleanElemContent',
-        'args': {
-          'selector': '#current-playlist-section_songlist'
-        }
-      })
+    server.sendRemoteManipulationsMsg({
+      'func': 'cleanElemContent',
+      'args': {
+        'selector': '#current-playlist-section_songlist'
+      }
     })
-    domManipulations.prependElemWithHTML({
+    remoteManipulations.prependElemWithHTML({
       'html': document.querySelector('.songlist[data-syncing-with-current-playlist-section-songlist="true"]').innerHTML,
       'parentElemSelector': '#current-playlist-section_songlist'
     })
-    connectedSockets.forEach(function (socket) {
-      sendDomManipulationsMessage({
-        'socket': socket,
-        'function': 'prependElemWithHTML',
-        'args': {
-          'html': document.querySelector('.songlist[data-syncing-with-current-playlist-section-songlist="true"]').innerHTML,
-          'parentElemSelector': '#current-playlist-section_songlist'
-        }
-      })
+    server.sendRemoteManipulationsMsg({
+      'func': 'prependElemWithHTML',
+      'args': {
+        'html': document.querySelector('.songlist[data-syncing-with-current-playlist-section-songlist="true"]').innerHTML,
+        'parentElemSelector': '#current-playlist-section_songlist'
+      }
     })
   }
 
   function handleRemovedSonglistItemAndSyncWithCurrentPlaylistSonglist () {
-    domManipulations.cleanElemContent({
+    remoteManipulations.cleanElemContent({
       'selector': '#current-playlist-section_songlist'
     })
-    connectedSockets.forEach(function (socket) {
-      sendDomManipulationsMessage({
-        'socket': socket,
-        'function': 'cleanElemContent',
-        'args': {
-          'selector': '#current-playlist-section_songlist'
-        }
-      })
+    server.sendRemoteManipulationsMsg({
+      'func': 'cleanElemContent',
+      'args': {
+        'selector': '#current-playlist-section_songlist'
+      }
     })
-    domManipulations.prependElemWithHTML({
+    remoteManipulations.prependElemWithHTML({
       'html': document.querySelector('.songlist[data-syncing-with-current-playlist-section-songlist="true"]').innerHTML,
       'parentElemSelector': '#current-playlist-section_songlist'
     })
-    connectedSockets.forEach(function (socket) {
-      sendDomManipulationsMessage({
-        'socket': socket,
-        'function': 'prependElemWithHTML',
-        'args': {
-          'html': document.querySelector('.songlist[data-syncing-with-current-playlist-section-songlist="true"]').innerHTML,
-          'parentElemSelector': '#current-playlist-section_songlist'
-        }
-      })
+    server.sendRemoteManipulationsMsg({
+      'func': 'prependElemWithHTML',
+      'args': {
+        'html': document.querySelector('.songlist[data-syncing-with-current-playlist-section-songlist="true"]').innerHTML,
+        'parentElemSelector': '#current-playlist-section_songlist'
+      }
     })
   }
 
@@ -1511,48 +1167,39 @@ var isServer = true // eslint-disable-line no-unused-vars
       changeSummary.added.forEach(function (newEl) {
         newEl.arrive('.songlist_item', handleAddedSonglistItemAndSyncWithCurrentPlaylistSonglist)
         newEl.leave('.songlist_item', handleRemovedSonglistItemAndSyncWithCurrentPlaylistSonglist)
-        domManipulations.cleanElemContent({
+        remoteManipulations.cleanElemContent({
           'selector': '#current-playlist-section_songlist'
         })
-        connectedSockets.forEach(function (socket) {
-          sendDomManipulationsMessage({
-            'socket': socket,
-            'function': 'cleanElemContent',
-            'args': {
-              'selector': '#current-playlist-section_songlist'
-            }
-          })
+        server.sendRemoteManipulationsMsg({
+          'func': 'cleanElemContent',
+          'args': {
+            'selector': '#current-playlist-section_songlist'
+          }
         })
-        domManipulations.prependElemWithHTML({
+        remoteManipulations.prependElemWithHTML({
           'html': document.querySelector('.songlist[data-syncing-with-current-playlist-section-songlist="true"]').innerHTML,
           'parentElemSelector': '#current-playlist-section_songlist'
         })
-        connectedSockets.forEach(function (socket) {
-          sendDomManipulationsMessage({
-            'socket': socket,
-            'function': 'prependElemWithHTML',
-            'args': {
-              'html': document.querySelector('.songlist[data-syncing-with-current-playlist-section-songlist="true"]').innerHTML,
-              'parentElemSelector': '#current-playlist-section_songlist'
-            }
-          })
+        server.sendRemoteManipulationsMsg({
+          'func': 'prependElemWithHTML',
+          'args': {
+            'html': document.querySelector('.songlist[data-syncing-with-current-playlist-section-songlist="true"]').innerHTML,
+            'parentElemSelector': '#current-playlist-section_songlist'
+          }
         })
       })
 
       changeSummary.removed.forEach(function (removedEl) {
         removedEl.unbindArrive('.songlist_item', handleAddedSonglistItemAndSyncWithCurrentPlaylistSonglist)
         removedEl.unbindLeave('.songlist_item', handleRemovedSonglistItemAndSyncWithCurrentPlaylistSonglist)
-        domManipulations.cleanElemContent({
+        remoteManipulations.cleanElemContent({
           'selector': '#current-playlist-section_songlist'
         })
-        connectedSockets.forEach(function (socket) {
-          sendDomManipulationsMessage({
-            'socket': socket,
-            'function': 'cleanElemContent',
-            'args': {
-              'selector': '#current-playlist-section_songlist'
-            }
-          })
+        server.sendRemoteManipulationsMsg({
+          'func': 'cleanElemContent',
+          'args': {
+            'selector': '#current-playlist-section_songlist'
+          }
         })
       })
     },
@@ -1574,17 +1221,14 @@ var isServer = true // eslint-disable-line no-unused-vars
     // if player was cleaned don't show error message
     if (document.querySelector('#player-controller_song-info').innerText === '') return
 
-    domManipulations.showToast({
+    remoteManipulations.showToast({
       'innerText': chrome.i18n.getMessage('songUnavailable') || 'Song unavailable'
     })
-    connectedSockets.forEach(function (socket) {
-      sendDomManipulationsMessage({
-        'socket': socket,
-        'function': 'showToast',
-        'args': {
-          'innerText': chrome.i18n.getMessage('songUnavailable') || 'Song unavailable'
-        }
-      })
+    server.sendRemoteManipulationsMsg({
+      'func': 'showToast',
+      'args': {
+        'innerText': chrome.i18n.getMessage('songUnavailable') || 'Song unavailable'
+      }
     })
 
     if (navigator.onLine) document.querySelector('#player-controller_skip-next-btn').dispatchEvent(new window.Event('click'))
@@ -1598,36 +1242,30 @@ var isServer = true // eslint-disable-line no-unused-vars
     if (!player.currentSonglist || ((player.currentSonglist.id !== songlistItem.parentNode.id) &&
       (currentPlaylistSectionSonglist.id !== songlistItem.parentNode.id))) {
       if (document.querySelector('.songlist_item.current')) {
-        domManipulations.removeClassFromElem({
+        remoteManipulations.removeClassFromElem({
           'selector': '.songlist_item.current',
           'className': 'current'
         })
-        connectedSockets.forEach(function (socket) {
-          sendDomManipulationsMessage({
-            'socket': socket,
-            'function': 'removeClassFromElem',
-            'args': {
-              'selector': '.songlist_item.current',
-              'className': 'current'
-            }
-          })
+        server.sendRemoteManipulationsMsg({
+          'func': 'removeClassFromElem',
+          'args': {
+            'selector': '.songlist_item.current',
+            'className': 'current'
+          }
         })
       }
 
       if (document.querySelector('.songlist_item.is-playing')) {
-        domManipulations.removeClassFromElem({
+        remoteManipulations.removeClassFromElem({
           'selector': '.songlist_item.is-playing',
           'className': 'is-playing'
         })
-        connectedSockets.forEach(function (socket) {
-          sendDomManipulationsMessage({
-            'socket': socket,
-            'function': 'removeClassFromElem',
-            'args': {
-              'selector': '.songlist_item.is-playing',
-              'className': 'is-playing'
-            }
-          })
+        server.sendRemoteManipulationsMsg({
+          'func': 'removeClassFromElem',
+          'args': {
+            'selector': '.songlist_item.is-playing',
+            'className': 'is-playing'
+          }
         })
       }
 
@@ -1648,150 +1286,123 @@ var isServer = true // eslint-disable-line no-unused-vars
     player.previousSong = player.currentSong
     if (player.previousSong) {
       if (document.querySelector('.songlist_item.current')) {
-        domManipulations.removeClassFromElem({
+        remoteManipulations.removeClassFromElem({
           'selector': '.songlist_item.current',
           'className': 'current'
         })
-        connectedSockets.forEach(function (socket) {
-          sendDomManipulationsMessage({
-            'socket': socket,
-            'function': 'removeClassFromElem',
-            'args': {
-              'selector': '.songlist_item.current',
-              'className': 'current'
-            }
-          })
+        server.sendRemoteManipulationsMsg({
+          'func': 'removeClassFromElem',
+          'args': {
+            'selector': '.songlist_item.current',
+            'className': 'current'
+          }
         })
       }
 
       if (document.querySelector('.songlist_item.is-playing')) {
-        domManipulations.removeClassFromElem({
+        remoteManipulations.removeClassFromElem({
           'selector': '.songlist_item.is-playing',
           'className': 'is-playing'
         })
-        connectedSockets.forEach(function (socket) {
-          sendDomManipulationsMessage({
-            'socket': socket,
-            'function': 'removeClassFromElem',
-            'args': {
-              'selector': '.songlist_item.is-playing',
-              'className': 'is-playing'
-            }
-          })
+        server.sendRemoteManipulationsMsg({
+          'func': 'removeClassFromElem',
+          'args': {
+            'selector': '.songlist_item.is-playing',
+            'className': 'is-playing'
+          }
         })
       }
     }
 
     player.currentSong = songlistItem
-    domManipulations.addClassToElem({
+    remoteManipulations.addClassToElem({
       'selector': 'div[data-song-class="' + songlistItem.dataset.songClass + '"]',
       'className': 'current'
     })
-    connectedSockets.forEach(function (socket) {
-      sendDomManipulationsMessage({
-        'socket': socket,
-        'function': 'addClassToElem',
-        'args': {
-          'selector': 'div[data-song-class="' + songlistItem.dataset.songClass + '"]',
-          'className': 'current'
-        }
-      })
+    server.sendRemoteManipulationsMsg({
+      'func': 'addClassToElem',
+      'args': {
+        'selector': 'div[data-song-class="' + songlistItem.dataset.songClass + '"]',
+        'className': 'current'
+      }
     })
-    domManipulations.addClassToElem({
+    remoteManipulations.addClassToElem({
       'selector': '.songlist_item.current',
       'className': 'is-playing'
     })
-    connectedSockets.forEach(function (socket) {
-      sendDomManipulationsMessage({
-        'socket': socket,
-        'function': 'addClassToElem',
-        'args': {
-          'selector': '.songlist_item.current',
-          'className': 'is-playing'
-        }
-      })
+    server.sendRemoteManipulationsMsg({
+      'func': 'addClassToElem',
+      'args': {
+        'selector': '.songlist_item.current',
+        'className': 'is-playing'
+      }
     })
 
     if (player.broadcast) player.setBroadcast(player.currentSong)
 
-    domManipulations.setElemInnerHTML({
+    remoteManipulations.setElemInnerHTML({
       'selector': '#player-controller_song-info',
       'html': songlistItem.dataset.songTitle.slice(0, 45)
     })
-    connectedSockets.forEach(function (socket) {
-      sendDomManipulationsMessage({
-        'socket': socket,
-        'function': 'setElemInnerHTML',
-        'args': {
-          'selector': '#player-controller_song-info',
-          'html': songlistItem.dataset.songTitle.slice(0, 45)
-        }
-      })
+    server.sendRemoteManipulationsMsg({
+      'func': 'setElemInnerHTML',
+      'args': {
+        'selector': '#player-controller_song-info',
+        'html': songlistItem.dataset.songTitle.slice(0, 45)
+      }
     })
 
-    domManipulations.addAttributeToElem({
+    remoteManipulations.addAttributeToElem({
       'selector': '#player-controller_add-songs-to-audios-btn',
       'attrName': 'data-current-song-id',
       'attrValue': songlistItem.dataset.songClass
     })
-    connectedSockets.forEach(function (socket) {
-      sendDomManipulationsMessage({
-        'socket': socket,
-        'function': 'addAttributeToElem',
-        'args': {
-          'selector': '#player-controller_add-songs-to-audios-btn',
-          'attrName': 'data-current-song-id',
-          'attrValue': songlistItem.dataset.songClass
-        }
-      })
+    server.sendRemoteManipulationsMsg({
+      'func': 'addAttributeToElem',
+      'args': {
+        'selector': '#player-controller_add-songs-to-audios-btn',
+        'attrName': 'data-current-song-id',
+        'attrValue': songlistItem.dataset.songClass
+      }
     })
 
     player.elem.currentTime = 0
     player.elem.src = songlistItem.dataset.songUrl
     player.elem.play()
-    domManipulations.changeSliderValue({
+    remoteManipulations.changeSliderValue({
       'selector': '#player-controller_song-range',
       'value': 0
     })
-    connectedSockets.forEach(function (socket) {
-      sendDomManipulationsMessage({
-        'socket': socket,
-        'function': 'changeSliderValue',
-        'args': {
-          'selector': '#player-controller_song-range',
-          'value': 0
-        }
-      })
+    server.sendRemoteManipulationsMsg({
+      'func': 'changeSliderValue',
+      'args': {
+        'selector': '#player-controller_song-range',
+        'value': 0
+      }
     })
 
-    domManipulations.setElemInnerHTML({
+    remoteManipulations.setElemInnerHTML({
       'selector': '#player-controller_current-time',
       'html': '0:00'
     })
-    connectedSockets.forEach(function (socket) {
-      sendDomManipulationsMessage({
-        'socket': socket,
-        'function': 'setElemInnerHTML',
-        'args': {
-          'selector': '#player-controller_current-time',
-          'html': '0:00'
-        }
-      })
+    server.sendRemoteManipulationsMsg({
+      'func': 'setElemInnerHTML',
+      'args': {
+        'selector': '#player-controller_current-time',
+        'html': '0:00'
+      }
     })
 
-    domManipulations.setElemInnerHTML({
+    remoteManipulations.setElemInnerHTML({
       'selector': '#player-controller_song-duration',
       'html': secondsTohhmmss(+songlistItem.dataset.songDuration)
     })
-    connectedSockets.forEach(function (socket) {
-      sendDomManipulationsMessage({
-        'socket': socket,
-        'function': 'setElemInnerHTML',
-        'args': {
-          'selector': '#player-controller_song-duration',
-          'html': secondsTohhmmss(+songlistItem.dataset.songDuration)
-        }
-      })
+    server.sendRemoteManipulationsMsg({
+      'func': 'setElemInnerHTML',
+      'args': {
+        'selector': '#player-controller_song-duration',
+        'html': secondsTohhmmss(+songlistItem.dataset.songDuration)
+      }
     })
   }
 
@@ -1802,42 +1413,34 @@ var isServer = true // eslint-disable-line no-unused-vars
     vkRequest.send({
       'method': 'audio.setBroadcast',
       'requestParams': {
-        'access_token': vkAccessToken,
-        'user_id': vkUserID,
         'audio': audio
       }
     })
   }
 
   player.elem.addEventListener('timeupdate', function (event) {
-    domManipulations.setElemInnerHTML({
+    remoteManipulations.setElemInnerHTML({
       'selector': '#player-controller_current-time',
       'html': secondsTohhmmss(event.target.currentTime, ':')
     })
-    connectedSockets.forEach(function (socket) {
-      sendDomManipulationsMessage({
-        'socket': socket,
-        'function': 'setElemInnerHTML',
-        'args': {
-          'selector': '#player-controller_current-time',
-          'html': secondsTohhmmss(event.target.currentTime, ':')
-        }
-      })
+    server.sendRemoteManipulationsMsg({
+      'func': 'setElemInnerHTML',
+      'args': {
+        'selector': '#player-controller_current-time',
+        'html': secondsTohhmmss(event.target.currentTime, ':')
+      }
     })
 
-    domManipulations.changeSliderValue({
+    remoteManipulations.changeSliderValue({
       'selector': '#player-controller_song-range',
       'value': event.target.currentTime / event.target.duration * 100
     })
-    connectedSockets.forEach(function (socket) {
-      sendDomManipulationsMessage({
-        'socket': socket,
-        'function': 'changeSliderValue',
-        'args': {
-          'selector': '#player-controller_song-range',
-          'value': event.target.currentTime / event.target.duration * 100
-        }
-      })
+    server.sendRemoteManipulationsMsg({
+      'func': 'changeSliderValue',
+      'args': {
+        'selector': '#player-controller_song-range',
+        'value': event.target.currentTime / event.target.duration * 100
+      }
     })
   })
 
@@ -1852,27 +1455,21 @@ var isServer = true // eslint-disable-line no-unused-vars
     // save value to set after next launch
     chrome.storage.local.set({'volumeRangeValue': event.target.value})
 
-    connectedSockets.forEach(function (socket) {
-      sendDomManipulationsMessage({
-        'socket': socket,
-        'function': 'changeSliderValue',
-        'args': {
-          'selector': '#player-controller_volume-range',
-          'value': event.target.value
-        }
-      })
+    server.sendRemoteManipulationsMsg({
+      'func': 'changeSliderValue',
+      'args': {
+        'selector': '#player-controller_volume-range',
+        'value': event.target.value
+      }
     })
     player.elem.volume = event.target.value / 100
   })
 
   // clean player method
   player.clean = function () {
-    domManipulations.cleanPlayer()
-    connectedSockets.forEach(function (socket) {
-      sendDomManipulationsMessage({
-        'socket': socket,
-        'function': 'cleanPlayer'
-      })
+    remoteManipulations.cleanPlayer()
+    server.sendRemoteManipulationsMsg({
+      'func': 'cleanPlayer'
     })
     player.previousSong = null
     player.currentSong = null
@@ -1881,137 +1478,113 @@ var isServer = true // eslint-disable-line no-unused-vars
 
   // play and pause events handling to change button appearance
   player.elem.addEventListener('play', function () {
-    domManipulations.setPlayPauseBtnIcon({
+    remoteManipulations.setPlayPauseBtnIcon({
       'icon': 'pause'
     })
-    connectedSockets.forEach(function (socket) {
-      sendDomManipulationsMessage({
-        'socket': socket,
-        'function': 'setPlayPauseBtnIcon',
-        'args': {
-          'icon': 'pause'
-        }
-      })
+    server.sendRemoteManipulationsMsg({
+      'func': 'setPlayPauseBtnIcon',
+      'args': {
+        'icon': 'pause'
+      }
     })
   })
 
   player.elem.addEventListener('pause', function () {
-    domManipulations.setPlayPauseBtnIcon({
+    remoteManipulations.setPlayPauseBtnIcon({
       'icon': 'play_arrow'
     })
-    connectedSockets.forEach(function (socket) {
-      sendDomManipulationsMessage({
-        'socket': socket,
-        'function': 'setPlayPauseBtnIcon',
-        'args': {
-          'icon': 'play_arrow'
-        }
-      })
+    server.sendRemoteManipulationsMsg({
+      'func': 'setPlayPauseBtnIcon',
+      'args': {
+        'icon': 'play_arrow'
+      }
     })
   })
 
   document.querySelector('#player-controller_loop-btn').addEventListener('click', function (event) {
     if (event.currentTarget.classList.contains('loop-true')) {
-      domManipulations.removeClassFromElem({
+      remoteManipulations.removeClassFromElem({
         'selector': '#player-controller_loop-btn',
         'className': 'loop-true'
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'removeClassFromElem',
-          'args': {
-            'selector': '#player-controller_loop-btn',
-            'className': 'loop-true'
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'removeClassFromElem',
+        'args': {
+          'selector': '#player-controller_loop-btn',
+          'className': 'loop-true'
+        }
       })
       player.loop = false
     } else {
-      domManipulations.addClassToElem({
+      remoteManipulations.addClassToElem({
         'selector': '#player-controller_loop-btn',
         'className': 'loop-true'
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'addClassToElem',
-          'args': {
-            'selector': '#player-controller_loop-btn',
-            'className': 'loop-true'
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'addClassToElem',
+        'args': {
+          'selector': '#player-controller_loop-btn',
+          'className': 'loop-true'
+        }
       })
       player.loop = true
     }
   })
   document.querySelector('#player-controller_shuffle-btn').addEventListener('click', function (event) {
     if (event.currentTarget.classList.contains('shuffle-true')) {
-      domManipulations.removeClassFromElem({
+      remoteManipulations.removeClassFromElem({
         'selector': '#player-controller_shuffle-btn',
         'className': 'shuffle-true'
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'removeClassFromElem',
-          'args': {
-            'selector': '#player-controller_shuffle-btn',
-            'className': 'shuffle-true'
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'removeClassFromElem',
+        'args': {
+          'selector': '#player-controller_shuffle-btn',
+          'className': 'shuffle-true'
+        }
       })
       player.shuffle = false
     } else {
-      domManipulations.addClassToElem({
+      remoteManipulations.addClassToElem({
         'selector': '#player-controller_shuffle-btn',
         'className': 'shuffle-true'
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'addClassToElem',
-          'args': {
-            'selector': '#player-controller_shuffle-btn',
-            'className': 'shuffle-true'
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'addClassToElem',
+        'args': {
+          'selector': '#player-controller_shuffle-btn',
+          'className': 'shuffle-true'
+        }
       })
       player.shuffle = true
     }
   })
   document.querySelector('#player-controller_broadcast-btn').addEventListener('click', function (event) {
     if (event.currentTarget.classList.contains('broadcast-true')) {
-      domManipulations.removeClassFromElem({
+      remoteManipulations.removeClassFromElem({
         'selector': '#player-controller_broadcast-btn',
         'className': 'broadcast-true'
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'removeClassFromElem',
-          'args': {
-            'selector': '#player-controller_broadcast-btn',
-            'className': 'broadcast-true'
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'removeClassFromElem',
+        'args': {
+          'selector': '#player-controller_broadcast-btn',
+          'className': 'broadcast-true'
+        }
       })
       player.setBroadcast()
       player.broadcast = false
     } else {
-      domManipulations.addClassToElem({
+      remoteManipulations.addClassToElem({
         'selector': '#player-controller_broadcast-btn',
         'className': 'broadcast-true'
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'addClassToElem',
-          'args': {
-            'selector': '#player-controller_broadcast-btn',
-            'className': 'broadcast-true'
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'addClassToElem',
+        'args': {
+          'selector': '#player-controller_broadcast-btn',
+          'className': 'broadcast-true'
+        }
       })
       if (player.currentSong) player.setBroadcast(player.currentSong)
       player.broadcast = true
@@ -2044,54 +1617,45 @@ var isServer = true // eslint-disable-line no-unused-vars
         if (player.currentSonglist.classList.contains('postlists_item_songlist') &&
          player.currentSonglist.parentNode.nextElementSibling) {
           if (document.querySelector('.songlist_item.is-playing')) {
-            domManipulations.removeClassFromElem({
+            remoteManipulations.removeClassFromElem({
               'selector': '.songlist_item.is-playing',
               'className': 'is-playing'
             })
-            connectedSockets.forEach(function (socket) {
-              sendDomManipulationsMessage({
-                'socket': socket,
-                'function': 'removeClassFromElem',
-                'args': {
-                  'selector': '.songlist_item.is-playing',
-                  'className': 'is-playing'
-                }
-              })
+            server.sendRemoteManipulationsMsg({
+              'func': 'removeClassFromElem',
+              'args': {
+                'selector': '.songlist_item.is-playing',
+                'className': 'is-playing'
+              }
             })
           }
           if (document.querySelector('.songlist_item.current')) {
-            domManipulations.removeClassFromElem({
+            remoteManipulations.removeClassFromElem({
               'selector': '.songlist_item.current',
               'className': 'current'
             })
-            connectedSockets.forEach(function (socket) {
-              sendDomManipulationsMessage({
-                'socket': socket,
-                'function': 'removeClassFromElem',
-                'args': {
-                  'selector': '.songlist_item.current',
-                  'className': 'current'
-                }
-              })
+            server.sendRemoteManipulationsMsg({
+              'func': 'removeClassFromElem',
+              'args': {
+                'selector': '.songlist_item.current',
+                'className': 'current'
+              }
             })
           }
           var nextSonglist = player.currentSonglist.parentNode.nextElementSibling.querySelector('.songlist')
           nextSonglist.firstElementChild.dispatchEvent(new window.Event('click'))
         } else {
           if (document.querySelector('.songlist_item.is-playing')) {
-            domManipulations.removeClassFromElem({
+            remoteManipulations.removeClassFromElem({
               'selector': '.songlist_item.is-playing',
               'className': 'is-playing'
             })
-            connectedSockets.forEach(function (socket) {
-              sendDomManipulationsMessage({
-                'socket': socket,
-                'function': 'removeClassFromElem',
-                'args': {
-                  'selector': '.songlist_item.is-playing',
-                  'className': 'is-playing'
-                }
-              })
+            server.sendRemoteManipulationsMsg({
+              'func': 'removeClassFromElem',
+              'args': {
+                'selector': '.songlist_item.is-playing',
+                'className': 'is-playing'
+              }
             })
           }
         }
@@ -2114,57 +1678,48 @@ var isServer = true // eslint-disable-line no-unused-vars
         if (myAudioSectionSonglist.firstElementChild) {
           player.playSong(myAudioSectionSonglist.firstElementChild)
         } else {
-          domManipulations.showToast({
+          remoteManipulations.showToast({
             'innerText': chrome.i18n.getMessage('noSongsInPlaylist') || 'There aren\'t any songs in playlist'
           })
-          connectedSockets.forEach(function (socket) {
-            sendDomManipulationsMessage({
-              'socket': socket,
-              'function': 'showToast',
-              'args': {
-                'innerText': chrome.i18n.getMessage('noSongsInPlaylist') || 'There aren\'t any songs in playlist'
-              }
-            })
+          server.sendRemoteManipulationsMsg({
+            'func': 'showToast',
+            'args': {
+              'innerText': chrome.i18n.getMessage('noSongsInPlaylist') || 'There aren\'t any songs in playlist'
+            }
           })
         }
       } else {
         player.elem.play()
-        domManipulations.addClassToElem({
+        remoteManipulations.addClassToElem({
           'selector': '.songlist_item.current',
           'className': 'is-playing'
         })
-        connectedSockets.forEach(function (socket) {
-          sendDomManipulationsMessage({
-            'socket': socket,
-            'function': 'addClassToElem',
-            'args': {
-              'selector': '.songlist_item.current',
-              'className': 'is-playing'
-            }
-          })
+        server.sendRemoteManipulationsMsg({
+          'func': 'addClassToElem',
+          'args': {
+            'selector': '.songlist_item.current',
+            'className': 'is-playing'
+          }
         })
       }
     } else {
       player.elem.pause()
-      domManipulations.removeClassFromElem({
+      remoteManipulations.removeClassFromElem({
         'selector': '.songlist_item.is-playing',
         'className': 'is-playing'
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'removeClassFromElem',
-          'args': {
-            'selector': '.songlist_item.is-playing',
-            'className': 'is-playing'
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'removeClassFromElem',
+        'args': {
+          'selector': '.songlist_item.is-playing',
+          'className': 'is-playing'
+        }
       })
     }
   })
 
   document.querySelector('#drawer-panel_header').addEventListener('click', function () {
-    domManipulations.navigateTo({'sectionId': '#my-audios-section'})
+    remoteManipulations.navigateTo({'sectionId': '#my-audios-section'})
   })
 
   document.querySelector('#log-out-btn').addEventListener('click', function () {
@@ -2175,32 +1730,24 @@ var isServer = true // eslint-disable-line no-unused-vars
 
   // update broadcastingList on click on tab
   document.querySelector('#profiles-section_tabs_broadcasting-tab').addEventListener('click', function () {
-    domManipulations.showSpinner()
-    connectedSockets.forEach(function (socket) {
-      sendDomManipulationsMessage({
-        'socket': socket,
-        'function': 'showSpinner'
-      })
+    remoteManipulations.showSpinner()
+    server.sendRemoteManipulationsMsg({
+      'func': 'showSpinner'
     })
     vkRequest.send({
       'method': 'audio.getBroadcastList',
       'requestParams': {
-        'access_token': vkAccessToken,
-        'user_id': vkUserID,
         'active': 1
       }
     }).then(function (response) {
-      domManipulations.cleanElemContent({
+      remoteManipulations.cleanElemContent({
         'selector': '#profiles-section_broadcasting-profiles'
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'cleanElemContent',
-          'args': {
-            'selector': '#profiles-section_broadcasting-profiles'
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'cleanElemContent',
+        'args': {
+          'selector': '#profiles-section_broadcasting-profiles'
+        }
       })
 
       response.forEach(function (currentValue, index, array) {
@@ -2215,69 +1762,51 @@ var isServer = true // eslint-disable-line no-unused-vars
         }
       })
 
-      domManipulations.insertItemsIntoBroadcastingProfileslist({
+      remoteManipulations.insertItemsIntoBroadcastingProfileslist({
         'profileslistId': 'profiles-section_broadcasting-profiles',
         'profilesInfo': response
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'insertItemsIntoBroadcastingProfileslist',
-          'args': {
-            'profileslistId': 'profiles-section_broadcasting-profiles',
-            'profilesInfo': response
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'insertItemsIntoBroadcastingProfileslist',
+        'args': {
+          'profileslistId': 'profiles-section_broadcasting-profiles',
+          'profilesInfo': response
+        }
       })
 
-      domManipulations.updateProfilesSectionSearch()
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'updateProfilesSectionSearch'
-        })
+      remoteManipulations.updateProfilesSectionSearch()
+      server.sendRemoteManipulationsMsg({
+        'func': 'updateProfilesSectionSearch'
       })
 
-      domManipulations.hideSpinner()
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'hideSpinner'
-        })
+      remoteManipulations.hideSpinner()
+      server.sendRemoteManipulationsMsg({
+        'func': 'hideSpinner'
       })
     }).catch(function (err) {
-      domManipulations.hideSpinner()
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'hideSpinner'
-        })
+      remoteManipulations.hideSpinner()
+      server.sendRemoteManipulationsMsg({
+        'func': 'hideSpinner'
       })
-      domManipulations.showToast({
+      remoteManipulations.showToast({
         'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'showToast',
-          'args': {
-            'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'showToast',
+        'args': {
+          'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
+        }
       })
       console.error(err)
     })
   })
 
   document.querySelector('#player-controller_add-songs-to-audios-btn').addEventListener('click', function (event) {
-    if (event.currentTarget.dataset.currentSongId.indexOf(vkUserID) === 0) return
+    if (event.currentTarget.dataset.currentSongId.indexOf(localStorageData.vkUserID) === 0) return
 
-    domManipulations.showSpinner()
-    connectedSockets.forEach(function (socket) {
-      sendDomManipulationsMessage({
-        'socket': socket,
-        'function': 'showSpinner'
-      })
+    remoteManipulations.showSpinner()
+    server.sendRemoteManipulationsMsg({
+      'func': 'showSpinner'
     })
 
     var songId = event.currentTarget.dataset.currentSongId
@@ -2285,86 +1814,66 @@ var isServer = true // eslint-disable-line no-unused-vars
     vkRequest.send({
       'method': 'audio.add',
       'requestParams': {
-        'access_token': vkAccessToken,
-        'user_id': vkUserID,
         'audio_id': songId.split('_')[1],
         'owner_id': songId.split('_')[0]
       }
     }).then(function (response) {
       if (typeof response !== 'number') throw new Error('Сталася помилка')
       var newSonglistItemElem = player.currentSong.cloneNode(true)
-      newSonglistItemElem.dataset.songClass = vkUserID + '_' + response
+      newSonglistItemElem.dataset.songClass = localStorageData.vkUserID + '_' + response
 
-      domManipulations.prependElemWithHTML({
+      remoteManipulations.prependElemWithHTML({
         'html': newSonglistItemElem.outerHTML,
         'parentElemSelector': '#my-audios-section_songlist'
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'prependElemWithHTML',
-          'args': {
-            'html': newSonglistItemElem.outerHTML,
-            'parentElemSelector': '#my-audios-section_songlist'
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'prependElemWithHTML',
+        'args': {
+          'html': newSonglistItemElem.outerHTML,
+          'parentElemSelector': '#my-audios-section_songlist'
+        }
       })
 
-      domManipulations.addAttributeToElem({
+      remoteManipulations.addAttributeToElem({
         'selector': '#player-controller_add-songs-to-audios-btn',
         'attrName': 'data-current-song-id',
-        'attrValue': vkUserID + '_' + response
+        'attrValue': localStorageData.vkUserID + '_' + response
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'addAttributeToElem',
-          'args': {
-            'selector': '#player-controller_add-songs-to-audios-btn',
-            'attrName': 'data-current-song-id',
-            'attrValue': vkUserID + '_' + response
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'addAttributeToElem',
+        'args': {
+          'selector': '#player-controller_add-songs-to-audios-btn',
+          'attrName': 'data-current-song-id',
+          'attrValue': localStorageData.vkUserID + '_' + response
+        }
       })
 
-      domManipulations.hideSpinner()
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'hideSpinner'
-        })
+      remoteManipulations.hideSpinner()
+      server.sendRemoteManipulationsMsg({
+        'func': 'hideSpinner'
       })
-      domManipulations.showToast({
+      remoteManipulations.showToast({
         'innerText': chrome.i18n.getMessage('added') || 'Added'
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'showToast',
-          'args': {
-            'innerText': chrome.i18n.getMessage('added') || 'Added'
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'showToast',
+        'args': {
+          'innerText': chrome.i18n.getMessage('added') || 'Added'
+        }
       })
     }).catch(function (err) {
-      domManipulations.hideSpinner()
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'hideSpinner'
-        })
+      remoteManipulations.hideSpinner()
+      server.sendRemoteManipulationsMsg({
+        'func': 'hideSpinner'
       })
-      domManipulations.showToast({
+      remoteManipulations.showToast({
         'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
       })
-      connectedSockets.forEach(function (socket) {
-        sendDomManipulationsMessage({
-          'socket': socket,
-          'function': 'showToast',
-          'args': {
-            'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
-          }
-        })
+      server.sendRemoteManipulationsMsg({
+        'func': 'showToast',
+        'args': {
+          'innerText': chrome.i18n.getMessage('errorOccurred') || 'Error occurred'
+        }
       })
       console.error(err)
     })
@@ -2372,7 +1881,7 @@ var isServer = true // eslint-disable-line no-unused-vars
 
   document.querySelector('#settings-section_connection-info_address').addEventListener('click', function (e) {
     copyTextToClipboard('http://' + e.currentTarget.innerHTML)
-    domManipulations.showToast({
+    remoteManipulations.showToast({
       'innerText': chrome.i18n.getMessage('copiedToClipboard') || 'Copied to clipboard'
     })
   })
@@ -2385,4 +1894,6 @@ var isServer = true // eslint-disable-line no-unused-vars
     document.execCommand('copy')
     document.body.removeChild(copyFrom)
   }
-}())
+
+  require('./appInit')(localStorageData.vkUserID, remoteManipulations, vkRequest)
+})
