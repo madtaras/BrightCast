@@ -36,7 +36,7 @@ All notable changes to BrightCast will be documented in this file.
 - address encoded in QR code (added "http://") to be automatically opened via scanners.
 
 ## [0.6.0 - 0.7.0]
-- #### Haven't logged changes.
+- Haven't logged changes.
 
 ## 0.6.0 - 2016-01-11
-- #### First published version of app.
+- First published version of app.
