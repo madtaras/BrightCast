@@ -3,6 +3,12 @@ All notable changes to BrightCast will be documented in this file.
 
 ## [Unreleased]
 
+## 0.8.0 - 2016-03-23
+### Changed
+- Started using browserify for bundling of dependencies.
+- Move server and localizations code to separate file.
+- Refactor js code and gulpfile tasks.
+
 ## 0.7.1 - 2016-03-21
 ### Added
 - Package.json file for installing all the dependencies via `npm install`.
