@@ -59,6 +59,12 @@ gulp.task('deleteRelease', () => {
   return del(['../BrightCastRelease/**'], {'force': true})
 })
 
+gulp.task('dev', ['deleteRelease'], function() {
+  gulp.task('default', ['release_dev'], function() {
+  })
+  gulp.start('release_dev',['default'])
+})
+
 // HTML
 gulp.task('html_dev', () => {
   'use strict'
