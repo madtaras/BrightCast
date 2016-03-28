@@ -10,23 +10,27 @@ var broadcastingProfileTemplate = document.getElementById('broadcastingProfileTe
 var songlistItemTemplate = document.getElementById('songlistItemTemplate').innerHTML
 var postslistItemTemplate = document.getElementById('postslistItemTemplate').innerHTML
 
-// function to insert user info into drawer header
-remoteManipulations.insertUserInfoIntoDrawerHeader = function (userInfo) {
-  document.getElementById('drawer-panel_header_user-name').innerHTML =
-    userInfo.first_name + ' ' + userInfo.last_name
-  // check if code is executed on BrightCast desktop
-  if (window.chrome && window.chrome.socket) {
+// fix can't set img src directly in BrightCast desktop (need to encode to base64 string)
+var isChromeApp = (window.chrome && window.chrome.socket)
+function setImgSrc (selector, url) {
+  if (!isChromeApp) {
+    document.querySelector(selector).src = url
+  } else {
     var xhr = new window.XMLHttpRequest()
-    xhr.open('GET', userInfo.photo_50, true)
+    xhr.open('GET', url, true)
     xhr.responseType = 'blob'
     xhr.onload = function () {
-      document.getElementById('drawer-panel_header_user-avatar').src =
-        window.URL.createObjectURL(this.response)
+      document.querySelector(selector).src = window.URL.createObjectURL(this.response)
     }
     xhr.send()
-  } else {
-    document.getElementById('drawer-panel_header_user-avatar').src = userInfo.photo_50
   }
+}
+
+// function to insert user info into drawer header
+remoteManipulations.insertUserInfoIntoDrawerHeader = function (userInfo) {
+  document.querySelector('#drawer-panel_header_user-name').innerHTML =
+    userInfo.first_name + ' ' + userInfo.last_name
+  setImgSrc('#drawer-panel_header_user-avatar', userInfo.photo_50)
 }
 
 // function to insert items into songlist
