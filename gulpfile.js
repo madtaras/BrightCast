@@ -1,4 +1,5 @@
 const gulp = require('gulp')
+const gulpsync = require('gulp-sync')(gulp)
 const merge = require('merge-stream')
 const buffer = require('vinyl-buffer')
 const source = require('vinyl-source-stream')
@@ -33,8 +34,29 @@ const AUTOPREFIXER_BROWSERS = [
   'FirefoxAndroid >= 40'
 ]
 
-// DEFAULT
-gulp.task('default', () => {
+// MAIN
+gulp.task('default', gulpsync.sync([
+  'deleteRelease',
+  [
+    'html_dev', 'css_dev', 'jsSignIn_dev', 'jsDesktopApp_dev', 'jsMobileApp_dev',
+    'fonts', 'icons', 'backgroundJS', 'appManifest', 'img', 'locales', 'checkFile'
+  ],
+  'watch'
+]))
+
+gulp.task('release_prod', gulpsync.sync([
+  'deleteRelease',
+  [
+    'html_prod', 'css_prod', 'jsSignIn_prod', 'jsDesktopApp_prod', 'jsMobileApp_prod',
+    'fonts', 'icons', 'backgroundJS', 'appManifest', 'img', 'locales', 'checkFile'
+  ]
+]))
+
+gulp.task('deleteRelease', () => {
+  return del(['./BrightCastRelease/**'])
+})
+
+gulp.task('watch', () => {
   gulp.watch('src/html/**', ['html_dev'])
   gulp.watch('src/css/**', ['css_dev'])
   gulp.watch(['src/js/common/**', 'src/js/desktop/**'], ['jsSignIn_dev', 'jsDesktopApp_dev'])
@@ -46,23 +68,6 @@ gulp.task('default', () => {
   gulp.watch('src/img/**', ['img'])
   gulp.watch('src/_locales/**', ['locales'])
   gulp.watch('src/checkFile', ['checkFile'])
-})
-
-// RELEASE
-gulp.task('release_dev', ['html_dev', 'css_dev', 'jsSignIn_dev', 'jsDesktopApp_dev', 'jsMobileApp_dev',
-'fonts', 'icons', 'backgroundJS', 'appManifest', 'img', 'locales', 'checkFile'])
-
-gulp.task('release_prod', ['html_prod', 'css_prod', 'jsSignIn_prod', 'jsDesktopApp_prod', 'jsMobileApp_prod',
-'fonts', 'icons', 'backgroundJS', 'appManifest', 'img', 'locales', 'checkFile'])
-
-gulp.task('deleteRelease', () => {
-  return del(['../BrightCastRelease/**'], {'force': true})
-})
-
-gulp.task('dev', ['deleteRelease'], function() {
-  gulp.task('default', ['release_dev'], function() {
-  })
-  gulp.start('release_dev',['default'])
 })
 
 // HTML
@@ -78,11 +83,11 @@ gulp.task('html_dev', () => {
 
   let desktop = gulp.src(['./src/html/pages/desktopApp.html', './src/html/pages/desktopSignIn.html'])
     .pipe(nunjucksRender())
-    .pipe(gulp.dest('../BrightCastRelease'))
+    .pipe(gulp.dest('./BrightCastRelease'))
 
   let mobile = gulp.src('./src/html/pages/mobileApp.html')
     .pipe(nunjucksRender())
-    .pipe(gulp.dest('../BrightCastRelease/public'))
+    .pipe(gulp.dest('./BrightCastRelease/public'))
 
   return merge(desktop, mobile)
 })
@@ -103,7 +108,7 @@ gulp.task('html_prod', () => {
       'removeComments': true,
       'collapseWhitespace': true
     }))
-    .pipe(gulp.dest('../BrightCastRelease'))
+    .pipe(gulp.dest('./BrightCastRelease'))
 
   let mobile = gulp.src('./src/html/pages/mobileApp.html')
     .pipe(nunjucksRender())
@@ -111,7 +116,7 @@ gulp.task('html_prod', () => {
       'removeComments': true,
       'collapseWhitespace': true
     }))
-    .pipe(gulp.dest('../BrightCastRelease/public'))
+    .pipe(gulp.dest('./BrightCastRelease/public'))
 
   return merge(desktop, mobile)
 })
@@ -122,16 +127,16 @@ gulp.task('css_dev', () => {
 
   let desktopApp = gulp.src(DESKTOP_APP_CSS_SOURCES)
     .pipe(concat('app.css'))
-    .pipe(gulp.dest('../BrightCastRelease'))
+    .pipe(gulp.dest('./BrightCastRelease'))
   let mobileApp = gulp.src(MOBILE_APP_CSS_SOURCES)
     .pipe(concat('app.css'))
     .pipe(autoprefixer({
       'browsers': AUTOPREFIXER_BROWSERS
     }))
-    .pipe(gulp.dest('../BrightCastRelease/public'))
+    .pipe(gulp.dest('./BrightCastRelease/public'))
   let desktopSignIn = gulp.src(DESKTOP_SIGN_IN_CSS_SOURCES)
     .pipe(concat('signIn.css'))
-    .pipe(gulp.dest('../BrightCastRelease'))
+    .pipe(gulp.dest('./BrightCastRelease'))
 
   return merge(desktopApp, mobileApp, desktopSignIn)
 })
@@ -142,18 +147,18 @@ gulp.task('css_prod', () => {
   let desktopApp = gulp.src(DESKTOP_APP_CSS_SOURCES)
     .pipe(concat('app.css'))
     .pipe(cssnano())
-    .pipe(gulp.dest('../BrightCastRelease'))
+    .pipe(gulp.dest('./BrightCastRelease'))
   let mobileApp = gulp.src(MOBILE_APP_CSS_SOURCES)
     .pipe(concat('app.css'))
     .pipe(autoprefixer({
       'browsers': AUTOPREFIXER_BROWSERS
     }))
     .pipe(cssnano())
-    .pipe(gulp.dest('../BrightCastRelease/public'))
+    .pipe(gulp.dest('./BrightCastRelease/public'))
   let desktopSignIn = gulp.src(DESKTOP_SIGN_IN_CSS_SOURCES)
     .pipe(concat('signIn.css'))
     .pipe(cssnano())
-    .pipe(gulp.dest('../BrightCastRelease'))
+    .pipe(gulp.dest('./BrightCastRelease'))
 
   return merge(desktopApp, mobileApp, desktopSignIn)
 })
@@ -167,7 +172,7 @@ gulp.task('jsSignIn_dev', () => {
   return b.bundle()
     .pipe(source('signIn.js'))
     .pipe(buffer())
-    .pipe(gulp.dest('../BrightCastRelease'))
+    .pipe(gulp.dest('./BrightCastRelease'))
 })
 
 gulp.task('jsDesktopApp_dev', () => {
@@ -178,7 +183,7 @@ gulp.task('jsDesktopApp_dev', () => {
   return b.bundle()
     .pipe(source('app.js'))
     .pipe(buffer())
-    .pipe(gulp.dest('../BrightCastRelease'))
+    .pipe(gulp.dest('./BrightCastRelease'))
 })
 
 gulp.task('jsMobileApp_dev', () => {
@@ -189,7 +194,7 @@ gulp.task('jsMobileApp_dev', () => {
   return b.bundle()
     .pipe(source('app.js'))
     .pipe(buffer())
-    .pipe(gulp.dest('../BrightCastRelease/public'))
+    .pipe(gulp.dest('./BrightCastRelease/public'))
 })
 
 // JS_prod
@@ -202,7 +207,7 @@ gulp.task('jsSignIn_prod', () => {
     .pipe(source('signIn.js'))
     .pipe(buffer())
     .pipe(uglify({'mangle': false}))
-    .pipe(gulp.dest('../BrightCastRelease'))
+    .pipe(gulp.dest('./BrightCastRelease'))
 })
 
 gulp.task('jsDesktopApp_prod', () => {
@@ -214,7 +219,7 @@ gulp.task('jsDesktopApp_prod', () => {
     .pipe(source('app.js'))
     .pipe(buffer())
     .pipe(uglify({'mangle': false}))
-    .pipe(gulp.dest('../BrightCastRelease'))
+    .pipe(gulp.dest('./BrightCastRelease'))
 })
 
 gulp.task('jsMobileApp_prod', () => {
@@ -226,7 +231,7 @@ gulp.task('jsMobileApp_prod', () => {
     .pipe(source('app.js'))
     .pipe(buffer())
     .pipe(uglify({'mangle': false}))
-    .pipe(gulp.dest('../BrightCastRelease/public'))
+    .pipe(gulp.dest('./BrightCastRelease/public'))
 })
 
 // FONTS
@@ -235,10 +240,10 @@ gulp.task('fonts', () => {
 
   let desktop = gulp.src('src/fonts/desktop/**/*', {
     base: 'src'
-  }).pipe(gulp.dest('../BrightCastRelease'))
+  }).pipe(gulp.dest('./BrightCastRelease'))
   let mobile = gulp.src('src/fonts/mobile/**/*', {
     base: 'src'
-  }).pipe(gulp.dest('../BrightCastRelease/public'))
+  }).pipe(gulp.dest('./BrightCastRelease/public'))
 
   return merge(desktop, mobile)
 })
@@ -253,7 +258,7 @@ gulp.task('icons', () => {
     'src/icons/desktop/icon128.png',
     'src/icons/broadcast.svg'
   ])
-    .pipe(gulp.dest('../BrightCastRelease/icons'))
+    .pipe(gulp.dest('./BrightCastRelease/icons'))
 
   let mobile = gulp.src([
     'src/icons/mobile/apple-touch-icon-60x60.png',
@@ -263,10 +268,10 @@ gulp.task('icons', () => {
     'src/icons/mobile/apple-touch-icon-180x180.png',
     'src/icons/broadcast.svg'
   ])
-    .pipe(gulp.dest('../BrightCastRelease/public/icons'))
+    .pipe(gulp.dest('./BrightCastRelease/public/icons'))
 
   let favicon = gulp.src('src/icons/mobile/favicon.ico')
-    .pipe(gulp.dest('../BrightCastRelease/public'))
+    .pipe(gulp.dest('./BrightCastRelease/public'))
 
   return merge(desktop, mobile, favicon)
 })
@@ -274,13 +279,13 @@ gulp.task('icons', () => {
 // BACKGROUND_JS
 gulp.task('backgroundJS', () => {
   return gulp.src('src/js/background.js')
-    .pipe(gulp.dest('../BrightCastRelease'))
+    .pipe(gulp.dest('./BrightCastRelease'))
 })
 
 // MANIFEST
 gulp.task('appManifest', () => {
   return gulp.src('src/manifest.json')
-    .pipe(gulp.dest('../BrightCastRelease'))
+    .pipe(gulp.dest('./BrightCastRelease'))
 })
 
 // IMGS
@@ -291,12 +296,12 @@ gulp.task('img', () => {
     'src/img/drawer-header-bg.jpg',
     'src/img/sign-in-page-bg.jpg'
   ])
-    .pipe(gulp.dest('../BrightCastRelease/img'))
+    .pipe(gulp.dest('./BrightCastRelease/img'))
 
   let mobile = gulp.src([
     'src/img/drawer-header-bg.jpg'
   ])
-    .pipe(gulp.dest('../BrightCastRelease/public/img'))
+    .pipe(gulp.dest('./BrightCastRelease/public/img'))
 
   return merge(desktop, mobile)
 })
@@ -306,10 +311,10 @@ gulp.task('locales', () => {
   'use strict'
 
   let desktop = gulp.src(['./src/_locales/**/*'])
-    .pipe(gulp.dest('../BrightCastRelease/_locales'))
+    .pipe(gulp.dest('./BrightCastRelease/_locales'))
 
   let mobile = gulp.src(['./src/_locales/**/*'])
-    .pipe(gulp.dest('../BrightCastRelease/public/_locales'))
+    .pipe(gulp.dest('./BrightCastRelease/public/_locales'))
 
   return merge(desktop, mobile)
 })
@@ -317,5 +322,5 @@ gulp.task('locales', () => {
 // CHECK-FILE
 gulp.task('checkFile', () => {
   return gulp.src('src/check')
-    .pipe(gulp.dest('../BrightCastRelease/public'))
+    .pipe(gulp.dest('./BrightCastRelease/public'))
 })

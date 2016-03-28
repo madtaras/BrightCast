@@ -4,12 +4,6 @@
 
 Install dependencies via `npm install`
 
-To build BrightCast use:
+Install Chrome Apps & Extensions Developer Tool https://goo.gl/vuvvDy
 
-* `gulp release_dev` - for development version
-* `gulp release_prod` - for production version
-
-When staring developement:
-
-1. Run `gulp release_dev`
-2. Run `gulp`
+When staring developement run `gulp`
