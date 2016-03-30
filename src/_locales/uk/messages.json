@@ -51,7 +51,7 @@
         "message": "Комп'ютер та мобільний пристрій повинні бути підключені до однієї мережі."
     },
     "settingsSectionConnectionInfoPart4": {
-        "message": "Вам потрібно відкрити порти для додатка. інструкція <a href='https://goo.gl/wFwtqP' target='_blank'>тут</a>"
+        "message": " Вам потрібно відкрити порти для додатка. інструкція <a href='https://goo.gl/wFwtqP' target='_blank'>тут</a>"
     },
     "support": {
         "message": "Підтримка"

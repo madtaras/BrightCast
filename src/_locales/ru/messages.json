@@ -51,7 +51,7 @@
         "message": "Компьютер и мобильное устройство должны быть подключены к той же сети."
     },
     "settingsSectionConnectionInfoPart4": {
-        "message": "Вам нужно открыть порты для приложения. Инструкция <a href='https://goo.gl/wFwtqP' target='_blank'>здесь</a>"
+        "message": " Вам нужно открыть порты для приложения. Инструкция <a href='https://goo.gl/wFwtqP' target='_blank'>здесь</a>"
     },
     "support": {
         "message": "Поддержка"
