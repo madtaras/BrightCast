@@ -7,14 +7,6 @@ module.exports = function (user_id, remoteManipulations, vkRequest) {
     }
   })
 
-  window.addEventListener('load', function () {
-    setTimeout(function () {
-      document.querySelector('#drawer-panel').style.display = 'flex'
-      document.querySelector('#content').style.display = 'block'
-      document.querySelector('.appLoading').classList.add('moveOut')
-    }, 700)
-  })
-
   if (!navigator.onLine) {
     setTimeout(function () {
       remoteManipulations.showToast({
@@ -142,8 +134,16 @@ module.exports = function (user_id, remoteManipulations, vkRequest) {
     })
 
     remoteManipulations.hideSpinner()
+
+    document.querySelector('#drawer-panel').style.display = 'flex'
+    document.querySelector('#content').style.display = 'block'
+    document.querySelector('.appLoading').classList.add('moveOut')
   }).catch(function (err) {
     remoteManipulations.hideSpinner()
+
+    document.querySelector('#drawer-panel').style.display = 'flex'
+    document.querySelector('#content').style.display = 'block'
+    document.querySelector('.appLoading').classList.add('moveOut')
     var errMsg
     if (+err.error_code === 5) {
       errMsg = chrome.i18n.getMessage('userAuthorizationFailed') || 'Error occurred :( Please sign out and sign in again.'
