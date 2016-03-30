@@ -56,9 +56,6 @@
     "settingsSectionConnectionInfoPart4": {
         "message": "Вам потрібно відкрити порти для додатка. інструкція <a href='https://goo.gl/wFwtqP' target='_blank'>тут</a>"
     },
-    "initialToast": {
-        "message": "Інформація для підключення віддаленого керування знаходиться на сторінці налаштувань"
-    },
     "support": {
         "message": "Підтримка"
     },

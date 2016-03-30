@@ -396,8 +396,6 @@ componentHandler = (function() {
     downgradeElements: downgradeNodesInternal
   };
 })();
-
-  module.exports = componentHandler
 /**
  * Describes the type of a registered component type managed by
  * componentHandler. Provided for benefit of the Closure compiler.
@@ -3944,4 +3942,5 @@ componentHandler.register({
     cssClass: 'mdl-js-ripple-effect',
     widget: false
 });
+module.exports = componentHandler
 }());

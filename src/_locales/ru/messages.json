@@ -56,9 +56,6 @@
     "settingsSectionConnectionInfoPart4": {
         "message": "Вам нужно открыть порты для приложения. Инструкция <a href='https://goo.gl/wFwtqP' target='_blank'>здесь</a>"
     },
-    "initialToast": {
-        "message": "Информация для подключения удаленного управления находится на странице настроек"
-    },
     "support": {
         "message": "Поддержка"
     },

@@ -56,9 +56,6 @@
     "settingsSectionConnectionInfoPart4": {
         "message": "You need to open ports for app. Instruction <a href='https://goo.gl/wFwtqP' target='_blank'>here</a>"
     },
-    "initialToast": {
-        "message": "Information to connect remote control is on the settings page"
-    },
     "support": {
         "message": "Support"
     },

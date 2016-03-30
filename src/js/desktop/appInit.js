@@ -142,11 +142,6 @@ module.exports = function (user_id, remoteManipulations, vkRequest) {
     })
 
     remoteManipulations.hideSpinner()
-    remoteManipulations.showToast({
-      'innerText': (chrome.i18n.getMessage('initialToast') ||
-        'Information to connect remote control is on the settings page'),
-      'duration': 10000
-    })
   }).catch(function (err) {
     remoteManipulations.hideSpinner()
     var errMsg
