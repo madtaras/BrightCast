@@ -5,10 +5,9 @@ chrome.storage.local.get(['vkUserID', 'vkAccessToken'], function (localStorageDa
   var guid = require('../common/functions/guid.js')
   var Arrive = require('../common/arrive.js') // eslint-disable-line no-unused-vars
   var server = require('./server/server.js')
-  var vkRequest = require('./vkRequest.js')
+  var vkRequest = require('./vkRequest.js')(localStorageData.vkUserID, localStorageData.vkAccessToken, '5.40')
   var remoteManipulations = require('../common/remoteManipulations.js')
   var player = require('./player.js')(remoteManipulations, server, vkRequest)
-  vkRequest.init(localStorageData.vkUserID, localStorageData.vkAccessToken, '5.40')
   require('./desktopLocalization.js')
   require('./shortcuts.js')
 
