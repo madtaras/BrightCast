@@ -506,29 +506,47 @@ chrome.storage.local.get(['vkUserID', 'vkAccessToken'], function (localStorageDa
    * Handling clicks on all songlist elements.
    */
   function handleClickOnSonglist (event) {
-    if (event.target.classList.contains('songlist_item_menu-btn')) {
-      event.stopPropagation()
-      openContextMenuOnSonglistItem(event.target, event)
-    } else if (event.target.classList.contains('songlist_item_menu-btn_icon')) {
-      event.stopPropagation()
-      openContextMenuOnSonglistItem(event.target.parentNode, event)
-    } else if (event.currentTarget.classList.contains('current')) {
-      document.querySelector('#player-controller_play-pause-btn').dispatchEvent(new window.Event('click'))
-    } else {
-      player.playSong(event.currentTarget)
+    var target = event.target
+    while (target !== this) {
+      if (target.classList.contains('songlist_item_menu-btn')) {
+        event.stopPropagation()
+        openContextMenuOnSonglistItem(target, event)
+        return
+      } else if (target.classList.contains('songlist_item_menu-btn_icon')) {
+        event.stopPropagation()
+        openContextMenuOnSonglistItem(target.parentNode, event)
+        return
+      } else if (target.classList.contains('current') && target.classList.contains('songlist_item')) {
+        document.querySelector('#player-controller_play-pause-btn').dispatchEvent(new window.Event('click'))
+        return
+      } else if (target.classList.contains('songlist_item')) {
+        player.playSong(target)
+        return
+      }
+      target = target.parentNode
     }
   }
 
-  document.body.arrive('.songlist_item', function () {
+  document.body.arrive('.songlist', function () {
     this.addEventListener('click', handleClickOnSonglist)
   })
 
-  document.body.arrive('.broadcasting-profiles_item', function () {
-    this.addEventListener('click', function () {
-      this.querySelector('.songlist_item').dispatchEvent(new window.Event('click'))
-    })
+  Array.prototype.forEach.call(document.querySelectorAll('.songlist'), function (songlist) {
+    songlist.addEventListener('click', handleClickOnSonglist)
   })
 
+  document.querySelector('#profiles-section_broadcasting-profiles').addEventListener('click', function (event) {
+    var target = event.target
+    while (target !== this) {
+      if (target.classList.contains('broadcasting-profiles_item')) {
+        player.playSong(target.querySelector('.songlist_item'))
+        return
+      }
+      target = target.parentNode
+    }
+  })
+
+  // Downloading songs
   function downloadAudioByUrl (audioUrl, songTitle) {
     window.open('data:text/html;charset=utf-8,' +
       encodeURIComponent('<!doctype html><html><head> <meta charset="utf-8"> <title>Downloading song</title> <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"> <style>html, body{height: 100%; width: 100%; margin: 0; padding: 0;}body{background: #212121; color: #fff; font-family: serif; display: flex; flex-direction: column; align-items: center; justify-content: center; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;}.title{font-size: 3em; margin: 0;}.sub-title{font-size: 1.3em;}@media screen and (min-width: 400px){.title{font-size: 4em;}.sub-title{text-align: center;font-size: 1.6em;}}@media screen and (min-width: 500px){.title{font-size: 5.4em;}.sub-title{font-size: 2.1em;}}@media screen and (min-width: 600px){.title{font-size: 6em;}.sub-title{font-size: 2.3em;}}@media screen and (min-width: 700px){.title{font-size: 7em;}.sub-title{font-size: 2.4em;}}@media screen and (min-width: 800px){.title{font-size: 7.7em;}.sub-title{font-size: 2.45em;}}@media screen and (min-width: 1000px){.title{font-size: 9em;}.sub-title{font-size: 2.55em;}}</style></head><body> <h1 class="title">BrightCast</h1> <h3 class="sub-title">Downloading "' + songTitle + '"</h3> <a class="download-song" id="download-song" href="' + audioUrl + '" hidden download>Download</a> <script>document.querySelector(\'#download-song\').click() </script></body></html>'),

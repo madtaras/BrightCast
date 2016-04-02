@@ -101,38 +101,55 @@
    * Handling clicks on all songlist elements.
    */
   function handleClickOnSonglist (event) {
-    if (event.target.classList.contains('songlist_item_menu-btn')) {
-      event.stopPropagation()
-      openContextMenuOnSonglistItem(event.target, event)
-    } else if (event.target.classList.contains('songlist_item_menu-btn_icon')) {
-      event.stopPropagation()
-      openContextMenuOnSonglistItem(event.target.parentNode, event)
-    } else {
-      sendRemoteManipulationsMsg({
-        'func': 'dispatchEventOnElem',
-        'args': {
-          'selector': 'div[data-song-class="' + event.currentTarget.dataset.songClass + '"]',
-          'event': 'click',
-          'flags': {bubbles: true}
-        }
-      })
+    var target = event.target
+    while (target !== this) {
+      if (target.classList.contains('songlist_item_menu-btn')) {
+        event.stopPropagation()
+        openContextMenuOnSonglistItem(event.target, event)
+        return
+      } else if (target.classList.contains('songlist_item_menu-btn_icon')) {
+        event.stopPropagation()
+        openContextMenuOnSonglistItem(target.parentNode, event)
+        return
+      } else if (target.classList.contains('songlist_item')) {
+        sendRemoteManipulationsMsg({
+          'func': 'dispatchEventOnElem',
+          'args': {
+            'selector': 'div[data-song-class="' + target.dataset.songClass + '"]',
+            'event': 'click',
+            'flags': {bubbles: true}
+          }
+        })
+        return
+      }
+      target = target.parentNode
     }
   }
 
-  document.body.arrive('.songlist_item', function () {
+  document.body.arrive('.songlist', function () {
     this.addEventListener('click', handleClickOnSonglist)
   })
 
-  document.body.arrive('.broadcasting-profiles_item', function () {
-    this.addEventListener('click', function () {
-      sendRemoteManipulationsMsg({
-        'func': 'dispatchEventOnElem',
-        'args': {
-          'selector': '.broadcasting-profiles_item[data-profile-id="' + this.dataset.profileId + '"] .songlist_item',
-          'event': 'click'
-        }
-      })
-    })
+  Array.prototype.forEach.call(document.querySelectorAll('.songlist'), function (songlist) {
+    songlist.addEventListener('click', handleClickOnSonglist)
+  })
+
+  document.querySelector('#profiles-section_broadcasting-profiles').addEventListener('click', function (event) {
+    var target = event.target
+    while (target !== this) {
+      if (target.classList.contains('broadcasting-profiles_item')) {
+        sendRemoteManipulationsMsg({
+          'func': 'dispatchEventOnElem',
+          'args': {
+            'selector': '.broadcasting-profiles_item[data-profile-id="' + target.dataset.profileId + '"] .songlist_item',
+            'event': 'click',
+            'flags': {bubbles: true}
+          }
+        })
+        return
+      }
+      target = target.parentNode
+    }
   })
 
   function openContextMenuOnSonglistItem (menuBtn, event) {
