@@ -792,7 +792,7 @@ chrome.storage.local.get(['vkUserID', 'vkAccessToken'], function (localStorageDa
       'func': 'showSpinner'
     })
     vkRequest.send({
-      'method': 'execute.vkExecGetProfileAudioAndWallData',
+      'method': 'execute.getProfileAudioAndWallData',
       'requestParams': {
         'owner_id': profileId
       }
