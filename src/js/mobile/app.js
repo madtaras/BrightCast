@@ -161,13 +161,13 @@
     // check if song is in user's audios and add appropriate message
     if (songlistItemElem.dataset.songClass.indexOf(vkUserID) === 0) {
       contextMenuContent += '<li class="mdl-menu__item remove-from-audios">' +
-      (localization.msgs.deleteSong.message || 'Видалити з моїх аудіозаписів') + '</li>'
+      (localization.msgs.deleteSong.message || 'Delete song') + '</li>'
     } else {
       contextMenuContent += '<li class="mdl-menu__item add-to-audios">' +
-      (localization.msgs.addSong.message || 'Додати до моїх аудіозаписів') + '</li>'
+      (localization.msgs.addSong.message || 'Add song') + '</li>'
     }
     contextMenuContent += '<li class="mdl-menu__item download">' +
-      (localization.msgs.download.message || 'Скачати') + '</li>'
+      (localization.msgs.download.message || 'Download') + '</li>'
 
     var menuBtnId = guid()
     menuBtn.id = menuBtnId
