@@ -32,8 +32,10 @@ body {
 }
 
 .auth-page_top-section {
+    background-image: url(img/sign-in-page-bg.jpg);
+    background-position: center center;
     background-size: cover;
-    background: url(img/sign-in-page-bg.jpg) no-repeat center center;
+    background-repeat: no-repeat;
     flex: 2;
     flex-direction: column;
 }
