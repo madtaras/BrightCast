@@ -487,7 +487,7 @@ module.exports = function (remoteManipulations, server, vkRequest) {
     }
   }
 
-  function handlePlayPauseBtnClick (event) {
+  player.togglePlayPause = function () {
     if (player.elem.paused) {
       if (!player.currentSong) {
         if (myAudioSectionSonglist.firstElementChild) {
@@ -527,7 +527,7 @@ module.exports = function (remoteManipulations, server, vkRequest) {
   player.elem.addEventListener('ended', player.playNextSong)
   document.querySelector('#player-controller_skip-previous-btn').addEventListener('click', player.playPreviousSong)
   document.querySelector('#player-controller_skip-next-btn').addEventListener('click', player.playNextSong)
-  document.querySelector('#player-controller_play-pause-btn').addEventListener('click', handlePlayPauseBtnClick)
+  document.querySelector('#player-controller_play-pause-btn').addEventListener('click', player.togglePlayPause)
 
   return player
 }

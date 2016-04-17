@@ -517,7 +517,7 @@ chrome.storage.local.get(['vkUserID', 'vkAccessToken'], function (localStorageDa
         openContextMenuOnSonglistItem(target.parentNode, event)
         return
       } else if (target.classList.contains('current') && target.classList.contains('songlist_item')) {
-        document.querySelector('#player-controller_play-pause-btn').dispatchEvent(new window.Event('click'))
+        player.togglePlayPause()
         return
       } else if (target.classList.contains('songlist_item')) {
         player.playSong(target)
