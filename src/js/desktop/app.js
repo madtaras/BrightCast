@@ -562,7 +562,7 @@ chrome.storage.local.get(['vkUserID', 'vkAccessToken'], function (localStorageDa
           var hyperlink = document.createElement('a')
           hyperlink.href = audioUrl
           hyperlink.target = '_blank'
-          hyperlink.download = songTitle || audioUrl
+          hyperlink.download = songTitle
 
           var mouseEvent = new MouseEvent('click', {
               view: window,

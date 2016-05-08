@@ -27,6 +27,7 @@
     "storage",
     "http://*.vk.com/",
     "https://*.vk.com/",
+    "https://*.vk-cdn.net/*",
     "system.network",
     {
       "socket": [
