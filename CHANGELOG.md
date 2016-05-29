@@ -3,11 +3,20 @@ All notable changes to BrightCast will be documented in this file.
 
 ## [Unreleased]
 
-## 0.8.0 - 2016-03-23
+## 0.8.0 - 2016-05-29
+### Added
+- README.md file.
+
 ### Changed
 - Started using browserify for bundling of dependencies.
 - Move server and localizations code to separate file.
 - Refactor js code and gulpfile tasks.
+- Way of downloading music (Now it's downloaded with correct name).
+
+### Fixed
+- Appearance of ripple btns on mobile after touch.
+- A lot of minor fixes.
+
 
 ## 0.7.1 - 2016-03-21
 ### Added
