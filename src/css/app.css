@@ -241,7 +241,7 @@ input, textarea {
 }
 
 .section_header_drawer-toggle-btn {
-position: absolute;
+    position: absolute;
     cursor: pointer;
     left: 8px;
     top: 13px;
@@ -273,7 +273,7 @@ position: absolute;
 .player-controller {
     background: #303030;
     color: #fff;
-    padding: 16px;
+    padding: 6px;
 }
 
 .player-controller_song-info-wrapper {
@@ -283,6 +283,8 @@ position: absolute;
 }
 
 .player-controller_song-info {
+    padding-top: 10px;
+    padding-left: 3px;
 }
 
 .player-controller_add-songs-to-audios-btn {
@@ -296,12 +298,6 @@ position: absolute;
 .player-controller_add-songs-to-audios-btn[data-current-song-id=""] {
     pointer-events: none;
     display: none;
-}
-
-.player-controller_current-time,
-.player-controller_song-duration {
-  width: 3em;
-  padding: 0 3px;
 }
 
 .player-controller_song-range-wrapper,
@@ -320,12 +316,6 @@ position: absolute;
 
 .player-controller_volume-range-wrapper {
    margin-bottom: 20px;
-}
-
-.player-controller_song-range-wrapper i,
-.player-controller_volume-range-wrapper i {
-  width: 3em;
-  padding: 0 3px;
 }
 
 .player-controller_song-range,
