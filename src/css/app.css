@@ -277,50 +277,12 @@ position: absolute;
 }
 
 .player-controller_song-info-wrapper {
-    display: block;
-    width: 100%;
+    display: flex;
     align-items: center;
     justify-content: space-between;
-    white-space: nowrap;
-    overflow: hidden;
 }
 
 .player-controller_song-info {
-  display: inline-block;
-  padding-left: 100%;
-  -webkit-animation: scroll 8.69s infinite linear;
-  -moz-animation: scroll 8.69s infinite linear;
-  animation: scroll 8.69s infinite linear;
-}
-@-webkit-keyframes scroll {
-    0% {
-        -webkit-transform: translate(0, 0);
-        transform: translate(0, 0);
-    }
-    100% {
-        -webkit-transform: translate(-100%, 0);
-        transform: translate(-100%, 0);
-    }
-}
-@-moz-keyframes scroll {
-    0% {
-        -webkit-transform: translate(0, 0);
-        transform: translate(0, 0);
-    }
-    100% {
-        -webkit-transform: translate(-100%, 0);
-        transform: translate(-100%, 0);
-    }
-}
-@-keyframes scroll {
-    0% {
-        -webkit-transform: translate(0, 0);
-        transform: translate(0, 0);
-    }
-    100% {
-        -webkit-transform: translate(-100%, 0);
-        transform: translate(-100%, 0);
-    }
 }
 
 .player-controller_add-songs-to-audios-btn {

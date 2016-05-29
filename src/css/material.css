@@ -220,63 +220,6 @@ ul, ol {
     line-height: 24px;
     letter-spacing: 0;
 }
-
-#drawer-panel,
-#content {
-    display: none;
-}
-.appLoading {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 9999999;
-    background: #212121;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 500ms;
-}
-.appLoading.moveOut {
-    transform: translate(0, -100%);
-}
-.appLoading_title {
-    font-size: 10em;
-    color: #fff;
-    -webkit-user-select: none;
-}
-@media screen and (min-width: 360px) {
-    .appLoading_title {
-        font-size: 5em;
-    }
-}
-@media screen and (min-width: 500px) {
-    .appLoading_title {
-        font-size: 6em;
-    }
-}
-@media screen and (min-width: 600px) {
-    .appLoading_title {
-        font-size: 8em;
-    }
-}
-@media screen and (min-width: 800px) {
-    .appLoading_title {
-        font-size: 9em;
-    }
-}
-@media screen and (min-width: 800px) {
-    .appLoading_title {
-        font-size: 10em;
-    }
-}
-@media screen and (min-width: 1000px) {
-    .appLoading_title {
-        font-size: 11em;
-    }
-}
-
 .mdl-typography--display-4 {
     font-family: "Roboto", "Helvetica", "Arial", sans-serif;
     font-size: 112px;
