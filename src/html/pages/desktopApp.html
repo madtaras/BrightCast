@@ -1,84 +1,28 @@
 {% extends "app.html" %}
 
-{% block head %} 
+{% block head %}
     <meta charset="utf-8">
     <title>BrightCast - VK Music Player</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0">
-    <style>
-        #drawer-panel,
-        #content {
-            display: none;
-        }
-        .appLoading {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 9999999;
-            background: #212121;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 500ms;
-        }
-        .appLoading.moveOut {
-            transform: translate(0, -100%);
-        }
-        .appLoading_title {
-            font-size: 10em;
-            color: #fff;
-            -webkit-user-select: none;
-        }
-        @media screen and (min-width: 360px) {
-            .appLoading_title {
-                font-size: 5em;
-            }
-        }
-        @media screen and (min-width: 500px) {
-            .appLoading_title {
-                font-size: 6em;
-            }
-        }
-        @media screen and (min-width: 600px) {
-            .appLoading_title {
-                font-size: 8em;
-            }
-        }
-        @media screen and (min-width: 800px) {
-            .appLoading_title {
-                font-size: 9em;
-            }
-        }
-        @media screen and (min-width: 800px) {
-            .appLoading_title {
-                font-size: 10em;
-            }
-        }
-        @media screen and (min-width: 1000px) {
-            .appLoading_title {
-                font-size: 11em;
-            }
-        }
-    </style>
+
     <link rel="stylesheet" href="app.css">
     <link href="fonts/desktop/material-icons.css" rel="stylesheet">
     <link href="fonts/desktop/main-font.css" rel="stylesheet">
 {% endblock %}
 
-{% block appLoading %} 
+{% block appLoading %}
     <div id="appLoading" class="appLoading">
         <h1 class="appLoading_title">BrightCast</h1>
     </div>
 {% endblock %}
 
-{% block desktopBroadCastTooltip %} 
+{% block desktopBroadCastTooltip %}
     <div class="mdl-tooltip" for="player-controller_broadcast-btn">
         Broadcast song <br> in status
     </div>
 {% endblock %}
 
-{% block desktopAdditionalMenuLinks %} 
+{% block desktopAdditionalMenuLinks %}
             <a class="drawer-panel_nav_link" href="#" data-open="#settings-section" data-i18n-content="settings">
                 Settings
             </a>
@@ -87,7 +31,7 @@
             </a>
 {% endblock %}
 
-{% block desktopSettingsSection %} 
+{% block desktopSettingsSection %}
     <div class="section" id="settings-section">
         <header class="section_header">
             <div class="section_header_row">
