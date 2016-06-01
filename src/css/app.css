@@ -315,10 +315,6 @@ input, textarea {
 .player-controller_volume-range-wrapper {
     margin-bottom: 20px;
 }
-.player-controller_song-range-wrapper i, .player-controller_volume-range-wrapper i {
-    width: 3em;
-    padding: 0 3px;
-}
 .player-controller_song-range, .player-controller_volume-range {
     height: 40px;
     margin: 0 !important;
