@@ -4984,7 +4984,7 @@ fieldset[disabled] .mdl-switch .mdl-switch__ripple-container .mdl-ripple, .mdl-s
 }
 .mdl-textfield__input {
     border: none;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    border-bottom: 1px solid rgb(238, 238, 238);
     display: block;
     font-size: 16px;
     font-family: "Helvetica", "Arial", sans-serif;

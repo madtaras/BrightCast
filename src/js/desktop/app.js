@@ -547,16 +547,20 @@ chrome.storage.local.get(['vkUserID', 'vkAccessToken'], function (localStorageDa
   })
 
   // Downloading songs
-  function downloadAudioByUrl (audioUrl, songTitle){
+  function downloadAudioByUrl (audioUrl, songTitle, songClass){
     var xhr = new XMLHttpRequest()
         xhr.open("GET", audioUrl, true)
-      xhr.onerror = function(err){
+      /*xhr.onerror = function(err){
+        $('#'+songClass).css({
+          'width':'100%',
+          'background': 'rgb(180,25,25)'
+        });
       }
       xhr.onprogress = function(xhrProgressEvent){
-      // Here you can update the status of the download (progressbar)
-      // XhrProgressEvent.total - upload file size in bytes
-      // XhrProgressEvent.loaded - size already loaded fragment in bytes
-      }
+        $('#'+songClass).css({
+          'width': ((xhrProgressEvent.loaded / xhrProgressEvent.total) * 100) + '%',
+        });
+      }*/
       xhr.onreadystatechange = function() {
         if (xhr.readyState == 4) {
           var hyperlink = document.createElement('a')
@@ -626,7 +630,7 @@ chrome.storage.local.get(['vkUserID', 'vkAccessToken'], function (localStorageDa
       })
     }
     menuContainer.querySelector('.mdl-menu__item.download').addEventListener('click', function () {
-      downloadAudioByUrl(songlistItemElem.dataset.songUrl, songlistItemElem.dataset.songTitle)
+      downloadAudioByUrl(songlistItemElem.dataset.songUrl, songlistItemElem.dataset.songTitle, songlistItemElem.dataset.songClass)
     })
   }
 

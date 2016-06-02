@@ -244,20 +244,24 @@ input, textarea {
     padding-top: 10px;
 }
 .player-controller_song-info-wrapper {
-    display: block;
+    display: flex;
     width: 100%;
     align-items: center;
     justify-content: space-between;
+}
+.player-controller_song-info_ticker {
+    width: 100%;
     white-space: nowrap;
     overflow: hidden;
 }
 .player-controller_song-info {
     display: inline-block;
-    padding-left: 100%;
+    padding: 15px 0 15px 100%;
     -webkit-animation: scroll 8.69s infinite linear;
     -moz-animation: scroll 8.69s infinite linear;
     animation: scroll 8.69s infinite linear;
-}
+  }
+
 @-webkit-keyframes scroll {
     0% {
         -webkit-transform: translate(0, 0);
@@ -464,9 +468,12 @@ body.user-audios-loaded .songlist:empty:after, body.user-audios-loaded .postslis
     padding-bottom: 70px;
 }
 .songlist_item {
-    padding-right: 16px;
+    display: block;
     height: 72px;
+}
+.songlist_item_info {
     display: flex;
+    padding-right: 16px;
     justify-content: flex-start;
     align-items: center;
     cursor: pointer;
@@ -510,6 +517,21 @@ body.user-audios-loaded .songlist:empty:after, body.user-audios-loaded .postslis
     font-size: 14px;
     color: gray;
 }
+
+/* Progress bar */
+
+.songlist_item_progress-bar {
+    width: 96%;
+    height: 2px;
+    display: block;
+}
+.songlist_item_progress-bar-percent {
+    width: 0;
+    height: 2px;
+    background: rgb(115, 195, 15);
+}
+/* Progress bar */
+
 .postslist_item {
     width: calc(100% - 16px);
     margin-right: auto;

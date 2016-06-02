@@ -3,6 +3,12 @@ var skipPrevBtn = document.querySelector('#player-controller_skip-previous-btn')
 var skipNextBtn = document.querySelector('#player-controller_skip-next-btn')
 var volumeRange = document.querySelector('#player-controller_volume-range')
 
+var searcSection = document.querySelector('#search-section')
+var searchSection_searchInput = document.querySelector('#search-section_search-input')
+
+var profilesSection = document.querySelector('#profiles-section')
+var profilesSection_searchInput = document.querySelector('#profiles-section_search-input')
+
 document.addEventListener('keydown', function (e) {
   if (!e.ctrlKey && !e.metaKey) return
 
@@ -23,5 +29,12 @@ document.addEventListener('keydown', function (e) {
     // arrow down
     if (volumeRange.value > 0) volumeRange.value = +volumeRange.value - 5
     volumeRange.dispatchEvent(new window.Event('input'))
+  } else if (e.keyCode === 70 ) {
+    // key f
+    if (searcSection.classList.contains('current')) {
+      searchSection_searchInput.focus()
+    } else if (profilesSection.classList.contains('current')) {
+      profilesSection_searchInput.focus()
+    }
   }
 })
