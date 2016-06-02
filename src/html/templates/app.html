@@ -277,25 +277,23 @@
         -->
 
     <script id="songlistItemTemplate" type="text/html">
-        <div class="songlist_item">
-            <div class="songlist_item_info" data-song-class="{{owner_id}}_{{id}}" data-song-duration="{{duration}}" data-song-url="{{url}}" data-song-title="{{artist}} - {{title}}" >
-                <div class="songlist_item_play-icon-wrapper">
-                    <i class="material-icons songlist_item_play-icon">play_arrow</i>
-                    <i class="material-icons songlist_item_pause-icon">pause</i>
-                </div>
-                <div class="songlist_item_descr">
-                    <span class="songlist_item_descr_song-title">{{title}}</span>
-                    <span class="songlist_item_descr_artist">{{artist}}</span>
-                </div>
-                <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect
-                  songlist_item_menu-btn">
-                    <i class="material-icons songlist_item_menu-btn_icon">more_vert</i>
-                </button>
-            </div>
-            <!--<div class="songlist_item_progress-bar">
-              <div class="songlist_item_progress-bar-percent" id="{{owner_id}}_{{id}}" ></div>
-            </div>-->
-        </div>
+      <div class="songlist_item" data-song-class="{{owner_id}}_{{id}}" data-song-duration="{{duration}}" data-song-url="{{url}}" data-song-title="{{artist}} - {{title}}">
+          <div class="songlist_item_play-icon-wrapper">
+              <i class="material-icons songlist_item_play-icon">play_arrow</i>
+              <i class="material-icons songlist_item_pause-icon">pause</i>
+          </div>
+          <div class="songlist_item_descr">
+              <span class="songlist_item_descr_song-title">{{title}}</span>
+              <span class="songlist_item_descr_artist">{{artist}}</span>
+          </div>
+          <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect
+                    songlist_item_menu-btn">
+              <i class="material-icons songlist_item_menu-btn_icon">more_vert</i>
+          </button>
+      </div>
+      <!--<div class="songlist_item_progress-bar">
+                <div class="songlist_item_progress-bar-percent" id="{{owner_id}}_{{id}}" ></div>
+              </div>-->
     </script>
 
     <script id="postslistItemTemplate" type="text/html">

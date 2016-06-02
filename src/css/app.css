@@ -468,10 +468,9 @@ body.user-audios-loaded .songlist:empty:after, body.user-audios-loaded .postslis
     padding-bottom: 70px;
 }
 .songlist_item {
-    display: block;
+    /*display: block;*/
     height: 72px;
-}
-.songlist_item_info {
+    padding-right: 16px;
     display: flex;
     padding-right: 16px;
     justify-content: flex-start;
