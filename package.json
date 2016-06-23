@@ -9,7 +9,6 @@
     "url": "git+https://madtaras@bitbucket.org/madtaras/brightcast.git"
   },
   "scripts": {
-    "postinstall": "sudo npm install -g gulp && gulp",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
