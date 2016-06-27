@@ -527,7 +527,7 @@ body.user-audios-loaded .songlist:empty:after, body.user-audios-loaded .postslis
 .songlist_item_progress-bar-percent {
     width: 0;
     height: 2px;
-    background: rgb(115, 195, 15);
+    background: rgb(128, 222, 234);
 }
 /* Progress bar */
 
