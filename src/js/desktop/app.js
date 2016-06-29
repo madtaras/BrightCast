@@ -557,7 +557,16 @@ chrome.storage.local.get(['vkUserID', 'vkAccessToken'], function (localStorageDa
         }
 
         xhr.onprogress = function(xhrProgressEvent){
-          document.getElementById(songClass).style.width = Math.floor((xhrProgressEvent.loaded / xhrProgressEvent.total) * 100) + '%'
+
+          var available_p = (xhrProgressEvent.loaded / xhrProgressEvent.total) * 100
+
+          if(available_p < 100 ){
+            document.getElementById(songClass).style.width = (available_p) + '%'
+          } else if(available_p == 100){
+            document.getElementById(songClass).className = 'songlist_item_complete'
+            document.getElementById(songClass).style.background = 'rgba(0, 0, 0, 0)'
+          }
+
         }
 
 
