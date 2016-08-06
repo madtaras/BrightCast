@@ -550,17 +550,26 @@ chrome.storage.local.get(['vkUserID', 'vkAccessToken'], function (localStorageDa
   function downloadAudioByUrl (audioUrl, songTitle, songClass){
     var xhr = new XMLHttpRequest()
         xhr.open("GET", audioUrl, true)
-      /*xhr.onerror = function(err){
-        $('#'+songClass).css({
-          'width':'100%',
-          'background': 'rgb(180,25,25)'
-        });
-      }
-      xhr.onprogress = function(xhrProgressEvent){
-        $('#'+songClass).css({
-          'width': ((xhrProgressEvent.loaded / xhrProgressEvent.total) * 100) + '%',
-        });
-      }*/
+
+        xhr.onerror = function(err){
+          document.getElementById(songClass).style.width = '100%'
+          document.getElementById(songClass).style.background = 'rgb(255, 23, 71)'
+        }
+
+        xhr.onprogress = function(xhrProgressEvent){
+
+          var available_p = (xhrProgressEvent.loaded / xhrProgressEvent.total) * 100
+
+          if(available_p < 100 ){
+            document.getElementById(songClass).style.width = (available_p) + '%'
+          } else if(available_p == 100){
+            document.getElementById(songClass).className = 'songlist_item_complete'
+            document.getElementById(songClass).style.background = 'rgba(0, 0, 0, 0)'
+          }
+
+        }
+
+
       xhr.onreadystatechange = function() {
         if (xhr.readyState == 4) {
           var hyperlink = document.createElement('a')
