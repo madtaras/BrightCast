@@ -61,6 +61,29 @@ input, textarea {
  * Drawer panel styles.
  */
 
+ .appLoading {
+     position: absolute;
+     left: 0px;
+     top: 0px;
+     width: 100%;
+     height: 100%;
+     z-index: 9999999;
+     background: #212121;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     transition: all 500ms;
+ }
+ .appLoading.moveOut {
+     transform: translate(0, -100%);
+ }
+ .appLoading_title {
+     font-size: 10em;
+     color: #fff;
+     -webkit-user-select: none;
+ }
+
+
 .drawer-panel {
     display: flex;
     flex-direction: column;
@@ -458,10 +481,26 @@ body.user-audios-loaded .songlist:empty:after, body.user-audios-loaded .postslis
     .songlist:empty:after, .postslist:empty:after, .profiles-section_broadcasting-profiles:empty {
         font-size: 3.5em;
     }
+    .appLoading_title {
+        font-size: 6em;
+    }
 }
 @media screen and (min-width: 600px) {
     .songlist:empty:after, .postslist:empty:after, .profiles-section_broadcasting-profiles:empty {
         font-size: 4.8em;
+    }
+    .appLoading_title {
+        font-size: 8em;
+    }
+}
+@media screen and (min-width: 800px) {
+    .appLoading_title {
+        font-size: 10em;
+    }
+}
+@media screen and (min-width: 1000px) {
+    .appLoading_title {
+        font-size: 11em;
     }
 }
 .songlist {
