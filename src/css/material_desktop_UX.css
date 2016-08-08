@@ -2,8 +2,8 @@
     border: 0;
 }
 
-.mdl-button:hover {
-    background-color: rgba(158, 158, 158, 0.20);
+`.mdl-button:hover {
+    ` background-color: rgba(158, 158, 158, 0.20);
 }
 
 .mdl-button:focus:not(:active) {
