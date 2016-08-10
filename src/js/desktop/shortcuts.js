@@ -9,6 +9,35 @@ var searchSection_searchInput = document.querySelector('#search-section_search-i
 var profilesSection = document.querySelector('#profiles-section')
 var profilesSection_searchInput = document.querySelector('#profiles-section_search-input')
 
+var remember_volumeRange
+
+chrome.commands.onCommand.addListener(function(command) {
+
+  if (command === 'play-pause') {
+      // Play/Pause
+      playPauseBtn.dispatchEvent(new window.Event('click'))
+  } else if (command === 'skip-prev') {
+      // Skip prev
+      skipPrevBtn.dispatchEvent(new window.Event('click'))
+  } else if (command === 'skip-nex') {
+      // Skip nex
+      skipNextBtn.dispatchEvent(new window.Event('click'))
+  } else if (command === 'mute') {
+      // Mute
+
+      remember_volumeRange = volumeRange.value
+
+      if (volumeRange.value != 0 ) {
+        volumeRange.value = 0
+        volumeRange.dispatchEvent(new window.Event('input'))
+      } else {
+        volumeRange.value = remember_volumeRange
+        volumeRange.dispatchEvent(new window.Event('input'))
+      }
+  }
+
+});
+
 document.addEventListener('keydown', function(e) {
     if (!e.ctrlKey && !e.metaKey) return
 

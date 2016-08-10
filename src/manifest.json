@@ -11,6 +11,41 @@
   "version_name": "0.8.0 beta",
   "default_locale": "en",
 
+  "commands":{
+
+    "play-pause":{
+      "suggested_key": {
+        "default": "Ctrl+Shift+7"
+      },
+      "description": "Play/Pause",
+      "global": true
+    },
+
+    "skip-prev":{
+      "suggested_key": {
+        "default": "Ctrl+Shift+6"
+      },
+      "description": "Skip prev",
+      "global": true
+    },
+
+    "skip-nex":{
+      "suggested_key": {
+        "default": "Ctrl+Shift+8"
+      },
+      "description": "Skip nex",
+      "global": true
+    },
+
+    "mute":{
+      "suggested_key": {
+        "default": "Ctrl+Shift+0"
+      },
+      "global": true
+    }
+
+  },
+
   "description": "__MSG_shortDescr__",
   "icons": {
     "16": "icons/icon16.png",
@@ -28,6 +63,7 @@
     "http://*.vk.com/",
     "https://*.vk.com/",
     "https://*.vk-cdn.net/*",
+    "https://*.vk.me/*",
     "system.network",
     {
       "socket": [
