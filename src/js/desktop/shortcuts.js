@@ -24,9 +24,6 @@ chrome.commands.onCommand.addListener(function(command) {
       skipNextBtn.dispatchEvent(new window.Event('click'))
   } else if (command === 'mute') {
       // Mute
-
-      remember_volumeRange = volumeRange.value
-
       if (volumeRange.value != 0 ) {
         remember_volumeRange = volumeRange.value
         volumeRange.value = 0
