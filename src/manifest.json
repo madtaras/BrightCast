@@ -41,6 +41,7 @@
       "suggested_key": {
         "default": "Ctrl+Shift+0"
       },
+      "description": "Mute",
       "global": true
     }
 
