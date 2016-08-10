@@ -4965,7 +4965,7 @@ fieldset[disabled] .mdl-switch .mdl-switch__ripple-container .mdl-ripple, .mdl-s
     width: 300px;
     max-width: 100%;
     margin: 0;
-    padding: 20px 0;
+    padding: 18px 0;
 }
 .mdl-textfield .mdl-button {
     position: absolute;
@@ -5076,7 +5076,7 @@ fieldset[disabled] .mdl-textfield .mdl-textfield__label, .mdl-textfield.is-disab
     transition-duration: 0.2s;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     display: inline-block;
-    max-width: 0.1px;
+    max-width: 0;
 }
 .mdl-textfield.is-focused .mdl-textfield__expandable-holder, .mdl-textfield.is-dirty .mdl-textfield__expandable-holder {
     max-width: 600px;
