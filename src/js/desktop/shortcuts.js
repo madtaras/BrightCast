@@ -28,6 +28,7 @@ chrome.commands.onCommand.addListener(function(command) {
       remember_volumeRange = volumeRange.value
 
       if (volumeRange.value != 0 ) {
+        remember_volumeRange = volumeRange.value
         volumeRange.value = 0
         volumeRange.dispatchEvent(new window.Event('input'))
       } else {
