@@ -546,6 +546,12 @@ chrome.storage.local.get(['vkUserID', 'vkAccessToken'], function (localStorageDa
     }
   })
 
+  // Lyrics songs
+
+  function lyricsAudioById (songClass){
+
+  }
+
   // Downloading songs
   function downloadAudioByUrl (audioUrl, songTitle, songClass){
     var xhr = new XMLHttpRequest()
