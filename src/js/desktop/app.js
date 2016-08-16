@@ -547,9 +547,50 @@ chrome.storage.local.get(['vkUserID', 'vkAccessToken'], function (localStorageDa
   })
 
   // Lyrics songs
+  function lyricsAudioById (songLyricsId, songClass){
 
-  function lyricsAudioById (songClass){
+    if(document.querySelector('.songlist_item_song-lyrics')){
+      remoteManipulations.removeElem({
+        'selector': '.songlist_item_song-lyrics'
+      })
+    }
 
+    remoteManipulations.showSpinner()
+    server.sendRemoteManipulationsMsg({
+      'func': 'showSpinner'
+    })
+
+    vkRequest.send({
+      'method': 'audio.getLyrics',
+      'requestParams': {
+        'lyrics_id': songLyricsId,
+      }
+    }).then(function (response) {
+      if (typeof response !== 'object') throw new Error('Сталася помилка')
+
+      var text_response = response.text.replace(/\n/g, "<br />")
+
+      remoteManipulations.appendElemWithHTML({
+        'appendElemSelector': '.descr-' + songClass,
+        'html': '<div class="songlist_item_song-lyrics lyrics-' + songLyricsId + '"></div>'
+      })
+
+      remoteManipulations.setElemInnerHTML({
+        'selector': '.lyrics-' + songLyricsId,
+        'html': text_response
+      })
+
+      remoteManipulations.hideSpinner()
+      server.sendRemoteManipulationsMsg({
+        'func': 'hideSpinner'
+      })
+    }).catch(function (err) {
+      remoteManipulations.hideSpinner()
+      server.sendRemoteManipulationsMsg({
+        'func': 'hideSpinner'
+      })
+      console.error(err)
+    })
   }
 
   // Downloading songs
@@ -610,6 +651,10 @@ chrome.storage.local.get(['vkUserID', 'vkAccessToken'], function (localStorageDa
     }
     contextMenuContent += '<li class="mdl-menu__item download">' +
       (chrome.i18n.getMessage('download') || 'Download') + '</li>'
+    if(songlistItemElem.dataset.songLyricsId != ''){
+      contextMenuContent += '<li class="mdl-menu__item lyrics">' +
+        (chrome.i18n.getMessage('showLyrics') || 'Show lyrics') + '</li>'
+    }
 
     var menuBtnId = guid()
     menuBtn.id = menuBtnId
@@ -647,6 +692,11 @@ chrome.storage.local.get(['vkUserID', 'vkAccessToken'], function (localStorageDa
     menuContainer.querySelector('.mdl-menu__item.download').addEventListener('click', function () {
       downloadAudioByUrl(songlistItemElem.dataset.songUrl, songlistItemElem.dataset.songTitle, songlistItemElem.dataset.songClass)
     })
+    if(songlistItemElem.dataset.songLyricsId != ''){
+      menuContainer.querySelector('.mdl-menu__item.lyrics').addEventListener('click', function () {
+        lyricsAudioById(songlistItemElem.dataset.songLyricsId, songlistItemElem.dataset.songClass)
+      })
+    }
   }
 
   function hideContextMenu () {
