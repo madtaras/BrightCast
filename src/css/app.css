@@ -628,6 +628,10 @@ body.user-audios-loaded .songlist:empty:after, body.user-audios-loaded .postslis
     text-overflow: ellipsis;
 }
 
+/*.songlist_item_descr:hover {
+    color: red;
+}*/
+
 .songlist_item_descr_song-title {
     font-size: 16px;
 }
@@ -665,8 +669,13 @@ body.user-audios-loaded .songlist:empty:after, body.user-audios-loaded .postslis
 
 /* lyrics song */
 .songlist_item_song-lyrics {
+  display: none;
   width: 100%;
   padding: 1em;
+}
+
+.songlist_item_song-lyrics.active {
+  display: block;
 }
 
 /*Post list*/
