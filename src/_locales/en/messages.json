@@ -95,6 +95,9 @@
     "deleteSong": {
         "message": "Delete song"
     },
+    "showLyrics": {
+        "message": "Show lyrics"
+    },
     "music": {
         "message": "Music"
     },

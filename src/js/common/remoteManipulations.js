@@ -202,6 +202,16 @@ remoteManipulations.prependElemWithHTML = function (args) {
   }
 }
 
+// args {"html", "appendElemSelector"}
+remoteManipulations.appendElemWithHTML = function (args) {
+  var elemToAppend = document.querySelector(args.appendElemSelector)
+  if (elemToAppend) {
+    elemToAppend.insertAdjacentHTML('beforeend', args.html)
+  } else {
+    throw new Error("Can't find element by selector: " + args.appendElemSelector)
+  }
+}
+
 var materialSnackbar = document.querySelector('#material-snackbar')
 remoteManipulations.showToast = function (opts) {
   materialSnackbar.MaterialSnackbar.showSnackbar({

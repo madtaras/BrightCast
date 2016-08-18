@@ -95,6 +95,9 @@
     "deleteSong": {
         "message": "Видалити пісню"
     },
+    "showLyrics": {
+        "message": "Текст пісні"
+    },
     "music": {
         "message": "Аудіозаписи"
     },
