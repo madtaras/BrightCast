@@ -335,7 +335,7 @@ gulp.task('checkFile', () => {
 
 // ZIP ARCHIVE
 gulp.task('buildAndArchieve', gulpsync.sync(['release_prod']), () => {
-    return gulp.src('./BrightCastRelease/*')
+    return gulp.src('./BrightCastRelease/**/**')
         .pipe(zip('BrightCastRelease.zip'))
         .pipe(gulp.dest('./'));
 });
