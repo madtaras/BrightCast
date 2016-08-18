@@ -522,7 +522,7 @@ chrome.storage.local.get(['vkUserID', 'vkAccessToken'], function (localStorageDa
       } else if (target.classList.contains('songlist_item')) {
         player.playSong(target)
         return
-      } else if(target.classList.contains('songlist_item_descr_song-title')){
+      } else if(target.classList.contains('songlist_item_descr_song-title') && target.parentNode.parentNode.dataset.songLyricsId ){
         event.stopPropagation()
         lyricsAudioToogle(target.parentNode, event)
         return
@@ -605,11 +605,9 @@ chrome.storage.local.get(['vkUserID', 'vkAccessToken'], function (localStorageDa
       } else if (!target_classList.contains('active') ) {
         target_classList.toggle('active')
       }
-      console.log(1);
     } else {
       var parent_data = target.parentNode.dataset
       lyricsAudioById(parent_data.songLyricsId, parent_data.songClass)
-      console.log(2);
     }
   }
 
