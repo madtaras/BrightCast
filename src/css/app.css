@@ -967,3 +967,32 @@ body {
     height: 55%;
     width: 55%;
 }
+
+.md-icons {
+    width: 1.3em;
+    height: auto;
+    padding: 0.2em;
+}
+
+.player-controller_md-icons {
+    width: 1.65em;
+    height: auto;
+    padding: 0.25em;
+}
+
+.out-btn_md-icons {
+    width: 2em;
+    height: auto;
+    padding: 0 .15em;
+}
+
+.volume-range_md-icons {
+    width: 13%;
+    height: auto;
+}
+
+.songlist_item_md-icons {
+  width: 2em;
+  height: auto;
+  padding: 0 .15em;
+}
