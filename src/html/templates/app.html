@@ -86,6 +86,7 @@
                     <span class="mdl-layout-title" data-i18n-content="myMusic">My music</span>
                     <div class="mdl-layout-spacer"></div>
                     <a class="log-out-btn" id="log-out-btn" href="#">
+                        <img class="out-btn_md-icons log-out-btn_icon" src="icons/ic_exit_to_app.svg"><span data-i18n-content="signOut">Sign out</span>
                     </a>
                 </div>
             </header>
@@ -117,6 +118,7 @@
                         </div>
                     </div>
                     <a class="log-out-btn" id="log-out-btn" href="#">
+                        <img class="out-btn_md-icons log-out-btn_icon" src="icons/ic_exit_to_app.svg"><span data-i18n-content="signOut">Sign out</span>
                     </a>
                 </div>
             </header>
@@ -148,6 +150,7 @@
                         </div>
                     </div>
                     <a class="log-out-btn" id="log-out-btn" href="#">
+                        <img class="out-btn_md-icons log-out-btn_icon" src="icons/ic_exit_to_app.svg"><span data-i18n-content="signOut">Sign out</span>
                     </a>
                 </div>
             </header>
@@ -185,6 +188,7 @@
                     <span class="mdl-layout-title" id="profile-section_title" data-open="#profile-section"></span>
                     <div class="mdl-layout-spacer"></div>
                     <a class="log-out-btn" id="log-out-btn" href="#">
+                        <img class="out-btn_md-icons log-out-btn_icon" src="icons/ic_exit_to_app.svg"><span data-i18n-content="signOut">Sign out</span>
                     </a>
                 </div>
             </header>
@@ -253,6 +257,8 @@
             <div class="broadcasting-profiles_item_songlist songlist" hidden>
                 <div class="songlist_item" data-song-class="{{status_audio.owner_id}}_{{status_audio.id}}" data-song-duration="{{status_audio.duration}}" data-song-url="{{status_audio.url}}" data-song-title="{{status_audio.title}} - {{status_audio.artist}}">
                     <div class="songlist_item_play-icon-wrapper">
+                      <img class="songlist_item_md-icons songlist_item_play-icon" src="icons/ic_play_arrow_black.svg">
+                      <img class="songlist_item_md-icons songlist_item_pause-icon" src="icons/ic_pause.svg">
                     </div>
                     <div class="songlist_item_descr">
                         <span class="songlist_item_descr_song-title">{{status_audio.title}}</span>
@@ -276,6 +282,8 @@
     <script id="songlistItemTemplate" type="text/html">
         <div class="songlist_item" data-song-class="{{owner_id}}_{{id}}" data-song-duration="{{duration}}" data-song-url="{{url}}" data-song-title="{{artist}} - {{title}}" data-song-lyrics-id="{{lyrics_id}}">
             <div class="songlist_item_play-icon-wrapper">
+                <img class="songlist_item_md-icons songlist_item_play-icon" src="icons/ic_play_arrow_black.svg">
+                <img class="songlist_item_md-icons songlist_item_pause-icon" src="icons/ic_pause.svg">
             </div>
             <div class="songlist_item_descr descr-{{owner_id}}_{{id}}">
                 <span class="songlist_item_descr_song-title">{{title}}</span>
