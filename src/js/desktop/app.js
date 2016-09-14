@@ -522,6 +522,10 @@ chrome.storage.local.get(['vkUserID', 'vkAccessToken'], function (localStorageDa
       } else if (target.classList.contains('songlist_item')) {
         player.playSong(target)
         return
+      } else if(target.classList.contains('songlist_item_descr_song-title')){
+        event.stopPropagation()
+        lyricsAudioToogle(target.parentNode, event)
+        return
       }
       target = target.parentNode
     }
@@ -546,7 +550,72 @@ chrome.storage.local.get(['vkUserID', 'vkAccessToken'], function (localStorageDa
     }
   })
 
-  // Downloading songs
+/**
+ * Lyrics songs
+ */
+
+  function lyricsAudioById (songLyricsId, songClass){
+
+    remoteManipulations.showSpinner()
+    server.sendRemoteManipulationsMsg({
+      'func': 'showSpinner'
+    })
+
+    vkRequest.send({
+      'method': 'audio.getLyrics',
+      'requestParams': {
+        'lyrics_id': songLyricsId,
+      }
+    }).then(function (response) {
+      if (typeof response !== 'object') throw new Error('Сталася помилка')
+
+      var text_response = response.text.replace(/\n/g, "<br />")
+
+      remoteManipulations.appendElemWithHTML({
+        'appendElemSelector': '.descr-' + songClass,
+        'html': '<div class="songlist_item_song-lyrics active" id="lyrics-' + songLyricsId + '"></div>'
+      })
+
+      remoteManipulations.setElemInnerHTML({
+        'selector': '#lyrics-' + songLyricsId,
+        'html': text_response
+      })
+
+      remoteManipulations.hideSpinner()
+      server.sendRemoteManipulationsMsg({
+        'func': 'hideSpinner'
+      })
+    }).catch(function (err) {
+      remoteManipulations.hideSpinner()
+      server.sendRemoteManipulationsMsg({
+        'func': 'hideSpinner'
+      })
+      console.error(err)
+    })
+  }
+
+  function lyricsAudioToogle(target, event) {
+
+    if(target.lastChild.id){
+
+      var target_classList = document.getElementById(target.lastChild.id).classList
+
+      if (target.lastChild.id && target_classList.contains('active') ) {
+        target_classList.toggle('active')
+      } else if (!target_classList.contains('active') ) {
+        target_classList.toggle('active')
+      }
+      console.log(1);
+    } else {
+      var parent_data = target.parentNode.dataset
+      lyricsAudioById(parent_data.songLyricsId, parent_data.songClass)
+      console.log(2);
+    }
+  }
+
+/**
+ * Downloading songs
+ */
   function downloadAudioByUrl (audioUrl, songTitle, songClass){
     var xhr = new XMLHttpRequest()
         xhr.open("GET", audioUrl, true)
@@ -592,10 +661,10 @@ chrome.storage.local.get(['vkUserID', 'vkAccessToken'], function (localStorageDa
     hideContextMenu()
     event.stopPropagation()
 
-    var songlistItemElem = menuBtn.parentNode
+    var songlistItemElem = menuBtn.parentNode.dataset
     var contextMenuContent = ''
     // check if song is in user's audios and add appropriate message
-    if (songlistItemElem.dataset.songClass.indexOf(localStorageData.vkUserID) === 0) {
+    if (songlistItemElem.songClass.indexOf(localStorageData.vkUserID) === 0) {
       contextMenuContent += '<li class="mdl-menu__item remove-from-audios">' +
       (chrome.i18n.getMessage('deleteSong') || 'Delete song') + '</li>'
     } else {
@@ -604,6 +673,10 @@ chrome.storage.local.get(['vkUserID', 'vkAccessToken'], function (localStorageDa
     }
     contextMenuContent += '<li class="mdl-menu__item download">' +
       (chrome.i18n.getMessage('download') || 'Download') + '</li>'
+    if(songlistItemElem.songLyricsId != ''){
+      contextMenuContent += '<li class="mdl-menu__item lyrics">' +
+        (chrome.i18n.getMessage('showLyrics') || 'Show lyrics') + '</li>'
+    }
 
     var menuBtnId = guid()
     menuBtn.id = menuBtnId
@@ -628,19 +701,31 @@ chrome.storage.local.get(['vkUserID', 'vkAccessToken'], function (localStorageDa
     if (menuContainer.querySelector('.mdl-menu__item.remove-from-audios')) {
       menuContainer.querySelector('.mdl-menu__item.remove-from-audios').addEventListener('click', function () {
         sendRequestAndRemoveAudio({
-          'songlistItemSelector': 'div[data-song-class="' + songlistItemElem.dataset.songClass + '"]'
+          'songlistItemSelector': 'div[data-song-class="' + songlistItemElem.songClass + '"]'
         })
       })
     } else if (menuContainer.querySelector('.mdl-menu__item.add-to-audios')) {
       menuContainer.querySelector('.mdl-menu__item.add-to-audios').addEventListener('click', function () {
         sendRequestAndAddAudio({
-          'songlistItemSelector': 'div[data-song-class="' + songlistItemElem.dataset.songClass + '"]'
+          'songlistItemSelector': 'div[data-song-class="' + songlistItemElem.songClass + '"]'
         })
       })
     }
+
     menuContainer.querySelector('.mdl-menu__item.download').addEventListener('click', function () {
-      downloadAudioByUrl(songlistItemElem.dataset.songUrl, songlistItemElem.dataset.songTitle, songlistItemElem.dataset.songClass)
+      downloadAudioByUrl(songlistItemElem.songUrl, songlistItemElem.songTitle, songlistItemElem.songClass)
     })
+
+    if(songlistItemElem.songLyricsId != '' && !document.getElementById('lyrics-' + songlistItemElem.songLyricsId )){
+      menuContainer.querySelector('.mdl-menu__item.lyrics').addEventListener('click', function () {
+        lyricsAudioById(songlistItemElem.songLyricsId, songlistItemElem.songClass)
+      })
+    } else if (songlistItemElem.songLyricsId != '' && document.getElementById('lyrics-' + songlistItemElem.songLyricsId )){
+      menuContainer.querySelector('.mdl-menu__item.lyrics').addEventListener('click', function () {
+        document.getElementById('lyrics-' + songlistItemElem.songLyricsId).classList.toggle('active')
+      })
+    }
+
   }
 
   function hideContextMenu () {
@@ -655,7 +740,7 @@ chrome.storage.local.get(['vkUserID', 'vkAccessToken'], function (localStorageDa
       'func': 'showSpinner'
     })
 
-    var songlistItemElem = document.querySelector(args.songlistItemSelector)
+    var songlistItemElem = document.querySelector(args.songlistItemSelector).dataset
     if (!songlistItemElem) {
       console.error('No elements by selector')
       return
@@ -664,19 +749,19 @@ chrome.storage.local.get(['vkUserID', 'vkAccessToken'], function (localStorageDa
     vkRequest.send({
       'method': 'audio.delete',
       'requestParams': {
-        'audio_id': songlistItemElem.dataset.songClass.split('_')[1],
-        'owner_id': songlistItemElem.dataset.songClass.split('_')[0]
+        'audio_id': songlistItemElem.songClass.split('_')[1],
+        'owner_id': songlistItemElem.songClass.split('_')[0]
 
       }
     }).then(function (response) {
       if (response !== 1) throw new Error('Сталася помилка')
       remoteManipulations.removeElem({
-        'selector': 'div[data-song-class="' + songlistItemElem.dataset.songClass + '"]'
+        'selector': 'div[data-song-class="' + songlistItemElem.songClass + '"]'
       })
       server.sendRemoteManipulationsMsg({
         'func': 'removeElem',
         'args': {
-          'selector': 'div[data-song-class="' + songlistItemElem.dataset.songClass + '"]'
+          'selector': 'div[data-song-class="' + songlistItemElem.songClass + '"]'
         }
       })
       remoteManipulations.hideSpinner()
@@ -726,8 +811,8 @@ chrome.storage.local.get(['vkUserID', 'vkAccessToken'], function (localStorageDa
     vkRequest.send({
       'method': 'audio.add',
       'requestParams': {
-        'audio_id': songlistItemElem.dataset.songClass.split('_')[1],
-        'owner_id': songlistItemElem.dataset.songClass.split('_')[0]
+        'audio_id': songlistItemElem.songClass.split('_')[1],
+        'owner_id': songlistItemElem.songClass.split('_')[0]
       }
     }).then(function (response) {
       if (typeof response !== 'number') throw new Error('Сталася помилка')
