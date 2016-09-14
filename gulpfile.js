@@ -267,7 +267,6 @@ gulp.task('icons', () => {
             'src/icons/*.svg'
         ])
         .pipe(gulp.dest('./BrightCastRelease/icons'))
-        .pipe(gulp.dest('./BrightCastRelease/public/icons'))
 
     let mobile = gulp.src([
             'src/icons/mobile/apple-touch-icon-60x60.png',
@@ -275,7 +274,7 @@ gulp.task('icons', () => {
             'src/icons/mobile/apple-touch-icon-120x120.png',
             'src/icons/mobile/apple-touch-icon-152x152.png',
             'src/icons/mobile/apple-touch-icon-180x180.png',
-            'src/icons/broadcast.svg'
+            'src/icons/*.svg'
         ])
         .pipe(gulp.dest('./BrightCastRelease/public/icons'))
 
