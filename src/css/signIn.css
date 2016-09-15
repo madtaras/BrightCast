@@ -40,6 +40,11 @@ body {
     flex-direction: column;
 }
 
+.info_md-icons {
+    width: 90%;
+    height: auto;
+}
+
 .auth-page_bottom-section {
     flex: 1;
     justify-content: center;
@@ -53,7 +58,7 @@ body {
 
 .auth-page_sign-in-btn {
     transform: scale(1.1);
-    background-color: #E91E63 !important; 
+    background-color: #E91E63 !important;
 }
 
 .auth-page_big-title {

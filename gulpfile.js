@@ -22,12 +22,14 @@ const DESKTOP_SIGN_IN_CSS_SOURCES = [
 const DESKTOP_APP_CSS_SOURCES = [
     './src/css/material.css',
     './src/css/material_desktop_UX.css',
+    './src/css/material_icon.css',
     './src/css/app.css'
 ]
 
 const MOBILE_APP_CSS_SOURCES = [
     './src/css/material.css',
     './src/css/material_mobile_UX.css',
+    './src/css/material_icon.css',
     './src/css/app.css'
 ]
 
