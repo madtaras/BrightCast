@@ -22,12 +22,14 @@ const DESKTOP_SIGN_IN_CSS_SOURCES = [
 const DESKTOP_APP_CSS_SOURCES = [
     './src/css/material.css',
     './src/css/material_desktop_UX.css',
+    './src/css/material_icon.css',
     './src/css/app.css'
 ]
 
 const MOBILE_APP_CSS_SOURCES = [
     './src/css/material.css',
     './src/css/material_mobile_UX.css',
+    './src/css/material_icon.css',
     './src/css/app.css'
 ]
 
@@ -264,7 +266,7 @@ gulp.task('icons', () => {
             'src/icons/desktop/icon16.png',
             'src/icons/desktop/icon48.png',
             'src/icons/desktop/icon128.png',
-            'src/icons/broadcast.svg'
+            'src/icons/*.svg'
         ])
         .pipe(gulp.dest('./BrightCastRelease/icons'))
 
@@ -274,7 +276,7 @@ gulp.task('icons', () => {
             'src/icons/mobile/apple-touch-icon-120x120.png',
             'src/icons/mobile/apple-touch-icon-152x152.png',
             'src/icons/mobile/apple-touch-icon-180x180.png',
-            'src/icons/broadcast.svg'
+            'src/icons/*.svg'
         ])
         .pipe(gulp.dest('./BrightCastRelease/public/icons'))
 

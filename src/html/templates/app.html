@@ -1,8 +1,10 @@
 <!doctype html>
 <html>
+
 <head>
     {% block head %} {% endblock %}
 </head>
+
 <body>
 
     {% block appLoading %} {% endblock %}
@@ -23,67 +25,55 @@
             <a class="drawer-panel_nav_link" href="#" data-open="#profiles-section" data-i18n-content="friendsAndCommunities">
                 Friends and communities
             </a>
-            <a class="drawer-panel_nav_link drawer-panel_nav_link_profile" href="#" data-open="#profile-section"
-              id="drawer-panel_nav_link_profile"></a>
+            <a class="drawer-panel_nav_link drawer-panel_nav_link_profile" href="#" data-open="#profile-section" id="drawer-panel_nav_link_profile"></a>
 
             <div class="player-controller">
                 <div class="player-controller_song-info-wrapper">
-                    <div class="player-controller_song-info_ticker" id="player-controller_song-info_ticker" >
+                    <div class="player-controller_song-info_ticker" id="player-controller_song-info_ticker">
                         <div class="player-controller_song-info" id="player-controller_song-info">Party on!</div>
                     </div>
                     <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect
-                    player-controller_btns_btn player-controller_add-songs-to-audios-btn"
-                    id="player-controller_add-songs-to-audios-btn" data-current-song-id="">
-                        <i class="material-icons">add</i>
-                    </button>
+                    player-controller_btns_btn player-controller_add-songs-to-audios-btn" id="player-controller_add-songs-to-audios-btn" data-current-song-id="">
+                    <img class="player-controller_md-icons" src="icons/ic_add.svg">
+                  </button>
                 </div>
                 <div class="player-controller_song-range-wrapper" id="player-controller_song-range-wrapper">
                     <span class="player-controller_current-time" id="player-controller_current-time">0:00</span>
-                    <input class="player-controller_song-range"
-                      id="player-controller_song-range" type="range"
-                      min="0" max="100" value="0" tabindex="0">
+                    <input class="player-controller_song-range" id="player-controller_song-range" type="range" min="0" max="100" value="0" tabindex="0">
                     <span class="player-controller_song-duration" id="player-controller_song-duration">0:00</span>
                 </div>
                 <div class="player-controller_volume-range-wrapper" id="player-controller_volume-range-wrapper">
-                    <i class="material-icons">volume_down</i>
-                    <input class="player-controller_volume-range"
-                      id="player-controller_volume-range" type="range"
-                      min="0" max="100" value="40" tabindex="0">
-                    <i class="material-icons">volume_up</i>
+                    <img class="volume-range_md-icons" src="icons/ic_volume_down.svg">
+                    <input class="player-controller_volume-range" id="player-controller_volume-range" type="range" min="0" max="100" value="40" tabindex="0">
+                    <img class="volume-range_md-icons" src="icons/ic_volume_up.svg">
                 </div>
                 <div class="player-controller_btns-row1">
-                    <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect player-controller_btns_btn"
-                      id="player-controller_skip-previous-btn">
-                        <i class="material-icons">skip_previous</i>
+                    <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect player-controller_btns_btn" id="player-controller_skip-previous-btn">
+                      <img class="player-controller_md-icons" src="icons/ic_skip_previous.svg">
                     </button>
-                    <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect player-controller_btns_btn"
-                      id="player-controller_play-pause-btn">
-                        <i class="material-icons" id="player-controller_play-pause-btn_icon">play_arrow</i>
+                    <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect player-controller_btns_btn" id="player-controller_play-pause-btn">
+                      <img class="player-controller_md-icons" id="player-controller_play-pause-btn_icon" src="icons/ic_play_arrow_white.svg">
                     </button>
-                    <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect player-controller_btns_btn"
-                      id="player-controller_skip-next-btn">
-                        <i class="material-icons">skip_next</i>
+                    <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect player-controller_btns_btn" id="player-controller_skip-next-btn">
+                      <img class="player-controller_md-icons" src="icons/ic_skip_next.svg">
                     </button>
                 </div>
                 <div class="player-controller_btns-row2">
-                    <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect player-controller_btns_btn player-controller_broadcast-btn"
-                      id="player-controller_broadcast-btn">
-                        <img src="icons/broadcast.svg" class="broadcast-ico">
+                    <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect player-controller_btns_btn player-controller_broadcast-btn" id="player-controller_broadcast-btn">
+                        <img class="player-controller_md-icons" src="icons/ic_broadcast.svg">
+                    </button> {% block desktopBroadCastTooltip %} {% endblock %}
+                    <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect player-controller_btns_btn player-controller_loop-btn" id="player-controller_loop-btn">
+                      <img class="player-controller_md-icons" src="icons/ic_cached.svg">
                     </button>
-                    {% block desktopBroadCastTooltip %} {% endblock %}
-                    <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect player-controller_btns_btn player-controller_loop-btn"
-                      id="player-controller_loop-btn">
-                        <i class="material-icons">loop</i>
-                    </button>
-                    <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect player-controller_btns_btn player-controller_shuffle-btn"
-                      id="player-controller_shuffle-btn">
-                        <i class="material-icons">shuffle</i>
+                    <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect player-controller_btns_btn player-controller_shuffle-btn" id="player-controller_shuffle-btn">
+                      <img class="player-controller_md-icons" src="icons/ic_shuffle.svg">
                     </button>
                 </div>
             </div>
             {% block desktopAdditionalMenuLinks %} {% endblock %}
         </nav>
-    </aside> <!-- #drawer-panel -->
+    </aside>
+    <!-- #drawer-panel -->
 
     <div id="content" class="content">
 
@@ -91,12 +81,12 @@
             <header class="section_header">
                 <div class="section_header_row">
                     <button class="mdl-button mdl-js-button mdl-button--icon section_header_drawer-toggle-btn">
-                        <i class="material-icons">menu</i>
+                        <img class="md-icons" src="icons/ic_menu.svg">
                     </button>
                     <span class="mdl-layout-title" data-i18n-content="myMusic">My music</span>
                     <div class="mdl-layout-spacer"></div>
                     <a class="log-out-btn" id="log-out-btn" href="#">
-                        <i class="material-icons log-out-btn_icon">exit_to_app</i><span data-i18n-content="signOut">Sign out</span>
+                        <img class="out-btn_md-icons log-out-btn_icon" src="icons/ic_exit_to_app.svg"><span data-i18n-content="signOut">Sign out</span>
                     </a>
                 </div>
             </header>
@@ -107,27 +97,28 @@
                     Load more
                 </button>
             </div>
-        </div> <!-- .section -->
+        </div>
+        <!-- .section -->
 
         <div class="section" id="search-section">
             <header class="section_header">
                 <div class="section_header_row">
                     <button class="mdl-button mdl-js-button mdl-button--icon section_header_drawer-toggle-btn">
-                        <i class="material-icons">menu</i>
+                      <img class="md-icons" src="icons/ic_menu.svg">
                     </button>
                     <span class="mdl-layout-title" data-i18n-content="search">Search</span>
                     <div class="mdl-layout-spacer"></div>
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable
                         mdl-textfield--floating-label mdl-textfield--align-right">
                         <label class="mdl-button mdl-js-button mdl-button--icon" for="search-section_search-input">
-                        <i class="material-icons">search</i>
+                        <img class="md-icons" src="icons/ic_search.svg">
                         </label>
                         <div class="mdl-textfield__expandable-holder">
                             <input class="mdl-textfield__input" type="text" name="sample" id="search-section_search-input">
                         </div>
                     </div>
                     <a class="log-out-btn" id="log-out-btn" href="#">
-                        <i class="material-icons log-out-btn_icon">exit_to_app</i><span data-i18n-content="signOut">Sign out</span>
+                        <img class="out-btn_md-icons log-out-btn_icon" src="icons/ic_exit_to_app.svg"><span data-i18n-content="signOut">Sign out</span>
                     </a>
                 </div>
             </header>
@@ -138,36 +129,36 @@
                     Load more
                 </button>
             </div>
-        </div> <!-- .section -->
+        </div>
+        <!-- .section -->
 
         <div class="section" id="profiles-section">
             <header class="section_header">
                 <div class="section_header_row">
                     <button class="mdl-button mdl-js-button mdl-button--icon section_header_drawer-toggle-btn">
-                        <i class="material-icons">menu</i>
+                      <img class="md-icons" src="icons/ic_menu.svg">
                     </button>
                     <span class="mdl-layout-title" data-i18n-content="friendsAndCommunities">Friends and communities</span>
                     <div class="mdl-layout-spacer"></div>
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable
                         mdl-textfield--floating-label mdl-textfield--align-right">
                         <label class="mdl-button mdl-js-button mdl-button--icon" for="profiles-section_search-input">
-                        <i class="material-icons">search</i>
+                        <img class="md-icons" src="icons/ic_search.svg">
                         </label>
                         <div class="mdl-textfield__expandable-holder">
                             <input class="mdl-textfield__input" type="text" name="sample" id="profiles-section_search-input">
                         </div>
                     </div>
                     <a class="log-out-btn" id="log-out-btn" href="#">
-                        <i class="material-icons log-out-btn_icon">exit_to_app</i><span data-i18n-content="signOut">Sign out</span>
+                        <img class="out-btn_md-icons log-out-btn_icon" src="icons/ic_exit_to_app.svg"><span data-i18n-content="signOut">Sign out</span>
                     </a>
                 </div>
             </header>
             <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
                 <div class="mdl-tabs__tab-bar">
                     <a href="#profiles-section_friends-tab" class="mdl-tabs__tab is-active" data-i18n-content="friends">Friends</a>
-                    <a href="#profiles-section_groups-tab" class="mdl-tabs__tab"  data-i18n-content="communities">Communities</a>
-                    <a href="#profiles-section_broadcasting-tab" class="mdl-tabs__tab"
-                        id="profiles-section_tabs_broadcasting-tab"  data-i18n-content="statuses">Statuses</a>
+                    <a href="#profiles-section_groups-tab" class="mdl-tabs__tab" data-i18n-content="communities">Communities</a>
+                    <a href="#profiles-section_broadcasting-tab" class="mdl-tabs__tab" id="profiles-section_tabs_broadcasting-tab" data-i18n-content="statuses">Statuses</a>
                 </div>
                 <div class="mdl-tabs__panel is-active" id="profiles-section_friends-tab">
                     <div class="profiles-section_profiles" id="profiles-section_friends-profiles">
@@ -185,18 +176,19 @@
                     </div>
                 </div>
             </div>
-        </div> <!-- .section -->
+        </div>
+        <!-- .section -->
 
         <div class="section" id="profile-section">
             <header class="section_header">
                 <div class="section_header_row">
                     <button class="mdl-button mdl-js-button mdl-button--icon section_header_drawer-toggle-btn">
-                        <i class="material-icons">menu</i>
+                        <img class="md-icons" src="icons/ic_search.svg">
                     </button>
                     <span class="mdl-layout-title" id="profile-section_title" data-open="#profile-section"></span>
                     <div class="mdl-layout-spacer"></div>
                     <a class="log-out-btn" id="log-out-btn" href="#">
-                        <i class="material-icons log-out-btn_icon">exit_to_app</i><span data-i18n-content="signOut">Sign out</span>
+                        <img class="out-btn_md-icons log-out-btn_icon" src="icons/ic_exit_to_app.svg"><span data-i18n-content="signOut">Sign out</span>
                     </a>
                 </div>
             </header>
@@ -220,13 +212,15 @@
                     </button>
                 </div>
             </div>
-        </div> <!-- .section -->
+        </div>
+        <!-- .section -->
 
         {% block desktopSettingsSection %} {% endblock %}
 
     </div>
 
-    <div class="mdl-spinner mdl-js-spinner is-active spinner" id="spinner" hidden></div> <!-- loading spinner -->
+    <div class="mdl-spinner mdl-js-spinner is-active spinner" id="spinner" hidden></div>
+    <!-- loading spinner -->
 
     <div id="material-snackbar" class="mdl-js-snackbar mdl-snackbar">
         <div class="mdl-snackbar__text"></div>
@@ -236,24 +230,23 @@
     <script id="profileTemplate" type="text/html">
         <div class="profiles_item" data-profile-id="{{profileId}}">
             <div class="profiles_item_user-icon-wrapper">
-                <i class="material-icons">{{profileType}}</i>
+                <img class="songlist_item_md-icons" src="icons/ic_{{profileType}}.svg">
             </div>
             <span class="profiles_item_title">{{profileTitle}}</span>
         </div>
     </script>
-        <!--
+    <!--
             profileId - id of user or group (if group use with "-")
             profileType - person or group
             profileTitle - name and surname of person or name of group
         -->
 
     <script id="broadcastingProfileTemplate" type="text/html">
-        <div class="broadcasting-profiles_item" data-profile-id="{{profileId}}"
-          data-song-info='{"class":"{{status_audio.owner_id}}_{{status_audio.id}}",
+        <div class="broadcasting-profiles_item" data-profile-id="{{profileId}}" data-song-info='{"class":"{{status_audio.owner_id}}_{{status_audio.id}}",
           "duration":"{{status_audio.duration}}","url":"{{status_audio.url}}",
           "songTitle":"{{status_audio.title}} - {{status_audio.artist}}"}'>
             <div class="broadcasting-profiles_item_user-icon-wrapper">
-                <i class="material-icons">{{profileType}}</i>
+                <img class="songlist_item_md-icons" src="icons/ic_{{profileType}}.svg">
             </div>
             <div class="broadcasting-profiles_item_descr">
                 <span class="broadcasting-profiles_item_descr_title">{{profileTitle}}</span>
@@ -262,12 +255,10 @@
                 </span>
             </div>
             <div class="broadcasting-profiles_item_songlist songlist" hidden>
-                <div class="songlist_item" data-song-class="{{status_audio.owner_id}}_{{status_audio.id}}"
-                  data-song-duration="{{status_audio.duration}}" data-song-url="{{status_audio.url}}"
-                  data-song-title="{{status_audio.title}} - {{status_audio.artist}}">
+                <div class="songlist_item" data-song-class="{{status_audio.owner_id}}_{{status_audio.id}}" data-song-duration="{{status_audio.duration}}" data-song-url="{{status_audio.url}}" data-song-title="{{status_audio.title}} - {{status_audio.artist}}">
                     <div class="songlist_item_play-icon-wrapper">
-                        <i class="material-icons songlist_item_play-icon">play_arrow</i>
-                        <i class="material-icons songlist_item_pause-icon">pause</i>
+                      <img class="songlist_item_md-icons songlist_item_play-icon" src="icons/ic_play_arrow_black.svg">
+                      <img class="songlist_item_md-icons songlist_item_pause-icon" src="icons/ic_pause.svg">
                     </div>
                     <div class="songlist_item_descr">
                         <span class="songlist_item_descr_song-title">{{status_audio.title}}</span>
@@ -275,13 +266,13 @@
                     </div>
                     <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect
                       songlist_item_menu-btn">
-                        <i class="material-icons songlist_item_menu-btn_icon">more_vert</i>
+                      <img class="md-icons" src="icons/ic_more_vert.svg">
                     </button>
                 </div>
             </div>
         </div>
     </script>
-        <!--
+    <!--
             profileId - id of user or group (if group use with "-")
             profileType - person or group
             profileTitle - name and surname of person or name of group
@@ -289,27 +280,23 @@
         -->
 
     <script id="songlistItemTemplate" type="text/html">
-      <div class="songlist_item"  data-song-class="{{owner_id}}_{{id}}"
-                                  data-song-duration="{{duration}}"
-                                  data-song-url="{{url}}"
-                                  data-song-title="{{artist}} - {{title}}"
-                                  data-song-lyrics-id="{{lyrics_id}}">
-          <div class="songlist_item_play-icon-wrapper">
-              <i class="material-icons songlist_item_play-icon">play_arrow</i>
-              <i class="material-icons songlist_item_pause-icon">pause</i>
-          </div>
-          <div class="songlist_item_descr descr-{{owner_id}}_{{id}}">
-              <span class="songlist_item_descr_song-title">{{title}}</span>
-              <span class="songlist_item_descr_artist">{{artist}}</span>
-              <div class="songlist_item_progress-bar">
-                  <div class="songlist_item_progress-bar-percent" id="{{owner_id}}_{{id}}" ></div>
-              </div>
-          </div>
-          <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect
+        <div class="songlist_item" data-song-class="{{owner_id}}_{{id}}" data-song-duration="{{duration}}" data-song-url="{{url}}" data-song-title="{{artist}} - {{title}}" data-song-lyrics-id="{{lyrics_id}}">
+            <div class="songlist_item_play-icon-wrapper">
+                <img class="songlist_item_md-icons songlist_item_play-icon" src="icons/ic_play_arrow_black.svg">
+                <img class="songlist_item_md-icons songlist_item_pause-icon" src="icons/ic_pause.svg">
+            </div>
+            <div class="songlist_item_descr descr-{{owner_id}}_{{id}}">
+                <span class="songlist_item_descr_song-title">{{title}}</span>
+                <span class="songlist_item_descr_artist">{{artist}}</span>
+                <div class="songlist_item_progress-bar">
+                    <div class="songlist_item_progress-bar-percent" id="{{owner_id}}_{{id}}"></div>
+                </div>
+            </div>
+            <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect
                     songlist_item_menu-btn">
-              <i class="material-icons songlist_item_menu-btn_icon">more_vert</i>
+              <img class="md-icons" src="icons/ic_more_vert.svg">
           </button>
-      </div>
+        </div>
     </script>
 
     <script id="postslistItemTemplate" type="text/html">
@@ -318,7 +305,7 @@
             <div class="postlists_item_songlist songlist" id="postlist_item_songlist-{{from_id}}_{{id}}"></div>
         </div>
     </script>
-        <!--
+    <!--
             from_id
             id - post id
         -->
@@ -326,4 +313,5 @@
     <script src="app.js"></script>
 
 </body>
+
 </html>

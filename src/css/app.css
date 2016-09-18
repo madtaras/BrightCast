@@ -157,10 +157,6 @@ input, textarea {
     align-items: center;
 }
 
-.log-out-btn_icon {
-    padding-right: 10px;
-}
-
 .drawer-panel_nav_link_profile:empty {
     display: none;
 }
@@ -961,9 +957,4 @@ body {
     background: #9E9E9E;
     color: #000;
     font-size: 1.2em;
-}
-
-.broadcast-ico {
-    height: 55%;
-    width: 55%;
 }
