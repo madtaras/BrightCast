@@ -33,7 +33,7 @@ body {
 
 .auth-page_top-section {
     background-image: url(img/sign-in-page-bg.jpg);
-    background-position: center center;
+    background-position: center top;
     background-size: cover;
     background-repeat: no-repeat;
     flex: 2;
@@ -58,7 +58,7 @@ body {
 
 .auth-page_sign-in-btn {
     transform: scale(1.1);
-    background-color: #E91E63 !important;
+    background-color: #25B5BA !important;
 }
 
 .auth-page_big-title {
